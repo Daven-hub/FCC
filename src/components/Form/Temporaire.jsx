@@ -526,7 +526,7 @@ export default function Temporaire() {
                             {/* Question 1 */}
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block mb-2">1. a) Au cours des deux dernières années, avez-vous, ou un membre de votre famille, eu la tuberculose ou été en contact étroit avec une personne qui a la tuberculose?</label>
+                                    <label className="block mb-2"> Au cours des deux dernières années, avez-vous, ou un membre de votre famille, eu la tuberculose ou été en contact étroit avec une personne qui a la tuberculose?</label>
                                     <div className="flex gap-4 mt-1">
                                         <label><input type="radio" value="oui" {...register('tuberculoseContact')} className="mr-2" /> Oui</label>
                                         <label><input type="radio" value="non" {...register('tuberculoseContact')} className="mr-2" /> Non</label>
@@ -534,7 +534,7 @@ export default function Temporaire() {
                                 </div>
 
                                 <div>
-                                    <label className="block mb-2">b) Avez-vous un trouble physique ou mental qui nécessiterait des services sociaux et/ou des soins de santé autres que des médicaments, durant votre séjour au Canada?</label>
+                                    <label className="block mb-2"> Avez-vous un trouble physique ou mental qui nécessiterait des services sociaux et/ou des soins de santé autres que des médicaments, durant votre séjour au Canada?</label>
                                     <div className="flex gap-4 mt-1">
                                         <label><input type="radio" value="oui" {...register('troublePhysiqueMental')} className="mr-2" /> Oui</label>
                                         <label><input type="radio" value="non" {...register('troublePhysiqueMental')} className="mr-2" /> Non</label>
@@ -543,7 +543,7 @@ export default function Temporaire() {
 
                                 {(watch('tuberculoseContact') === 'oui' || watch('troublePhysiqueMental') === 'oui') && (
                                     <div>
-                                        <label className="block mb-2">c) Veuillez fournir les détails et le nom du membre de la famille (s'il y a lieu)</label>
+                                        <label className="block mb-2">Veuillez fournir les détails et le nom du membre de la famille (s'il y a lieu)</label>
                                         <textarea {...register('detailsTuberculoseTrouble')} rows={3} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                                     </div>
                                 )}
@@ -552,7 +552,7 @@ export default function Temporaire() {
                             {/* Question 2 */}
                             <div className="space-y-4 pt-4">
                                 <div>
-                                    <label className="block mb-2">2. a) Êtes-vous resté au Canada après l'expiration de votre statut, avez fréquenté l'école sans permis d'études au Canada, avez travaillé sans permis de travail au Canada?</label>
+                                    <label className="block mb-2"> Êtes-vous resté au Canada après l'expiration de votre statut, avez fréquenté l'école sans permis d'études au Canada, avez travaillé sans permis de travail au Canada?</label>
                                     <div className="flex gap-4 mt-1">
                                         <label><input type="radio" value="oui" {...register('statutExpire')} className="mr-2" /> Oui</label>
                                         <label><input type="radio" value="non" {...register('statutExpire')} className="mr-2" /> Non</label>
@@ -560,7 +560,7 @@ export default function Temporaire() {
                                 </div>
 
                                 <div>
-                                    <label className="block mb-2">b) Vous a-t-on déjà refusé un visa ou un permis, interdit l'entrée ou demandé de quitter le Canada ou tout autre pays ou territoire?</label>
+                                    <label className="block mb-2">Vous a-t-on déjà refusé un visa ou un permis, interdit l'entrée ou demandé de quitter le Canada ou tout autre pays ou territoire?</label>
                                     <div className="flex gap-4 mt-1">
                                         <label><input type="radio" value="oui" {...register('refusEntree')} className="mr-2" /> Oui</label>
                                         <label><input type="radio" value="non" {...register('refusEntree')} className="mr-2" /> Non</label>
@@ -568,7 +568,7 @@ export default function Temporaire() {
                                 </div>
 
                                 <div>
-                                    <label className="block mb-2">c) Avez-vous déjà fait une demande pour entrer ou demeurer au Canada?</label>
+                                    <label className="block mb-2">Avez-vous déjà fait une demande pour entrer ou demeurer au Canada?</label>
                                     <div className="flex gap-4 mt-1">
                                         <label><input type="radio" value="oui" {...register('demandePrecedenteCanada')} className="mr-2" /> Oui</label>
                                         <label><input type="radio" value="non" {...register('demandePrecedenteCanada')} className="mr-2" /> Non</label>
@@ -577,7 +577,7 @@ export default function Temporaire() {
 
                                 {(watch('statutExpire') === 'oui' || watch('refusEntree') === 'oui' || watch('demandePrecedenteCanada') === 'oui') && (
                                     <div>
-                                        <label className="block mb-2">d) Veuillez fournir des détails</label>
+                                        <label className="block mb-2"> Veuillez fournir des détails</label>
                                         <textarea {...register('detailsStatutRefusDemande')} rows={3} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                                     </div>
                                 )}
