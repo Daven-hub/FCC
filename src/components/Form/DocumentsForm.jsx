@@ -223,7 +223,7 @@ const FamilyDocumentsPage = () => {
                             </div>
                             <div className="ml-3">
                                 <p className="text-sm text-primary">
-                                    Tous les documents doivent être en format PDF et clairement lisibles. La taille maximale par fichier est de 5MB.
+                                    Tous les documents doivent être en format PDF et clairement lisibles. La taille maximale par fichier est de 3.5MB.
                                 </p>
                             </div>
                         </div>
