@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiUpload, FiCheck, FiTrash2 } from 'react-icons/fi';
+import { submitFamilyDocuments } from '../../services/documentService';
 
 const FamilyDocumentsPage = () => {
     const navigate = useNavigate();
@@ -49,6 +50,19 @@ const FamilyDocumentsPage = () => {
 
     const handleFileUpload = (category, document, file) => {
         if (!file) return;
+
+        // Vérifier la taille du fichier (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('La taille maximale du fichier est de 5MB');
+            return;
+        }
+
+        // Vérifier le type de fichier (PDF ou image)
+        const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+        if (!validTypes.includes(file.type)) {
+            alert('Seuls les fichiers PDF, JPEG et PNG sont acceptés');
+            return;
+        }
 
         setUploadProgress(prev => ({
             ...prev,
@@ -160,6 +174,7 @@ const FamilyDocumentsPage = () => {
                                     type="file"
                                     className="hidden"
                                     onChange={(e) => handleFileUpload(category, document, e.target.files[0])}
+                                    accept=".pdf,.jpg,.jpeg,.png"
                                 />
                             </label>
                         )}
@@ -169,20 +184,28 @@ const FamilyDocumentsPage = () => {
         );
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitStatus("loading");
 
-        // Simuler l'envoi au serveur
-        setTimeout(() => {
-            console.log("Données soumises:", {
-                ...JSON.parse(localStorage.getItem('familyInfoData')),
+        try {
+            // Combiner les données du formulaire avec celles sauvegardées
+            const completeData = {
+                ...JSON.parse(localStorage.getItem('familyInfoData') || {}),
                 ...formData
-            });
-            setSubmitStatus("success");
+            };
 
-            // Redirection ou autre action après soumission
-        }, 2000);
+            await submitFamilyDocuments(completeData);
+            setSubmitStatus("success");
+            
+            // Redirection après un délai
+            setTimeout(() => {
+                navigate('/confirmation');
+            }, 1500);
+        } catch (error) {
+            console.error("Submission error:", error);
+            setSubmitStatus("error");
+        }
     };
 
     return (
@@ -224,7 +247,7 @@ const FamilyDocumentsPage = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {renderFileUpload("preuvesFonds", "documentsEntreprise", "Tout document Entreprise (Immatriculation, Registre de Commerce, etc...)")}
                                 {renderFileUpload("preuvesFonds", "relevesBancairesEntreprise", "Relevés bancaires Entreprise des 6 derniers mois")}
-                                {renderFileUpload("preuvesFonds", "relevesBancairesPersonnels", "Relevés bancaire 6 derniers mois (Banque et/ou Microfinance)")}
+                                {renderFileUpload("preuvesFonds", "relevesBancairesPersonnels", "Relevés bancaire personnelle 6 derniers mois (Banque et/ou Microfinance)")}
                             </div>
                         </div>
 
@@ -289,6 +312,10 @@ const FamilyDocumentsPage = () => {
                         ) : submitStatus === "success" ? (
                             <span className="flex items-center justify-center">
                                 <FiCheck className="mr-2" /> Demande envoyée avec succès
+                            </span>
+                        ) : submitStatus === "error" ? (
+                            <span className="flex items-center justify-center">
+                                <span className="text-red-500">Erreur lors de l'envoi. Veuillez réessayer.</span>
                             </span>
                         ) : (
                             "Soumettre la demande"

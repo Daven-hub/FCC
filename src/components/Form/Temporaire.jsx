@@ -1,32 +1,129 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { FiCheck } from 'react-icons/fi';
+import { FiCheck, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { submitTemporaryResidentApplication } from '../../services/temporaireService';
 
 export default function Temporaire() {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [formData, setFormData] = useState({
+        // Identité Personnelle
+        nomFamille: '',
+        prenoms: '',
+        dateNaissance: '',
+        iuc: '',
+        sexe: '',
+        villeNaissance: '',
+        paysNaissance: '',
+        citoyennete: '',
+        aUtiliseAutreNom: 'non',
+        ancienNom: '',
+        ancienPrenom: '',
 
-    const {
-        register,
-        handleSubmit,
-        watch,
-    } = useForm();
+        // Résidence
+        paysResidenceActuelle: '',
+        statutResidenceActuelle: '',
+        residenceAnterieure: 'non',
+        paysResidenceAnterieure: '',
+        statutResidenceAnterieure: '',
+        residenceDe: '',
+        residenceA: '',
+        demandeAutrePays: 'non',
+        paysDemande: '',
+        statutDemande: '',
+        demandeDe: '',
+        demandeA: '',
 
-    const autreNom = watch('aUtiliseAutreNom');
-    const residenceAnterieure = watch('residenceAnterieure');
-    const demandeAutrePays = watch('demandeAutrePays');
-    const etatMatrimonial = watch('etatMatrimonial');
+        // État matrimonial
+        etatMatrimonial: '',
+        dateMariageUnion: '',
+        nomConjoint: '',
+        prenomConjoint: '',
 
-    const onSubmit = async (data) => {
-        setIsSubmitting(true);
+        // Langues
+        langueMaternelle: '',
+        langueAise: '',
+        communicationDeuxLangues: '',
+        evaluationLangue: '',
+
+        // Passeport
+        numeroPasseport: '',
+        paysDelivrancePasseport: '',
+        dateDelivrancePasseport: '',
+        dateExpirationPasseport: '',
+        passeportTaiwan: '',
+        passeportIsrael: '',
+
+        // Pièce d'identité nationale
+        aPieceIdentite: 'non',
+        numeroPiece: '',
+        paysDelivrancePiece: '',
+        dateDelivrancePiece: '',
+        dateExpirationPiece: '',
+
+        // Carte verte
+        aCarteVerte: 'non',
+        numeroCarteVerte: '',
+        expirationCarteVerte: '',
+
+        // Coordonnées
+        adressePostale: '',
+        villePostale: '',
+        provincePostale: '',
+        codePostal: '',
+        paysPostal: '',
+        adresseIdentique: 'non',
+        appartementUnite: '',
+        numeroRue: '',
+        nomRue: '',
+        villeVillage: '',
+        paysTerritoire: '',
+        typeTelephone: 'canada',
+        typeTelephoneDetail: '',
+        indicatifPays: '',
+        numeroTelephone: '',
+        posteTelephone: '',
+        typeAutreTelephone: 'canada',
+        typeAutreTelephoneDetail: '',
+        indicatifAutreTelephone: '',
+        numeroAutreTelephone: '',
+        posteAutreTelephone: '',
+        typeTelecopieur: 'canada',
+        indicatifTelecopieur: '',
+        numeroTelecopieur: '',
+        posteTelecopieur: '',
+
+        // Antécédents
+        tuberculoseContact: 'non',
+        troublePhysiqueMental: 'non',
+        detailsTuberculoseTrouble: '',
+        statutExpire: 'non',
+        refusEntree: 'non',
+        demandePrecedenteCanada: 'non',
+        detailsStatutRefusDemande: '',
+        antecedentsJudiciaires: 'non',
+        detailsAntecedentsJudiciaires: '',
+
+        // Déclaration
+        declarationAgreed: false
+    });
+
+    const [submitStatus, setSubmitStatus] = useState(null);
+
+    const handleChange = (field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitStatus("loading");
+
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            console.log('Données soumises:', data);
-            setSubmitSuccess(true);
+            await submitTemporaryResidentApplication(formData);
+            setSubmitStatus("success");
         } catch (error) {
-            console.error('Erreur:', error);
-        } finally {
-            setIsSubmitting(false);
+            console.error("Submission error:", error);
+            setSubmitStatus("error");
         }
     };
 
@@ -37,66 +134,145 @@ export default function Temporaire() {
                     <h1 className="text-3xl font-bold text-primary mb-2">Demande de statut de résident temporaire</h1>
                     <p className="text-gray-600 mb-6">Veuillez remplir toutes les informations requises</p>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                    <form onSubmit={handleSubmit}>
                         {/* Identité Personnelle */}
                         <section className="bg-gray-50 p-5 rounded-lg space-y-6">
                             <h2 className="text-xl font-semibold">Identité Personnelle</h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label>Nom de famille</label>
-                                    <input {...register('nomFamille')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom de famille</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.nomFamille}
+                                        onChange={e => handleChange('nomFamille', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Prénom(s)</label>
-                                    <input {...register('prenoms')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Prénom(s)</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.prenoms}
+                                        onChange={e => handleChange('prenoms', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Date de naissance</label>
-                                    <input type="date" {...register('dateNaissance')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+                                    <input
+                                        type="date"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.dateNaissance}
+                                        onChange={e => handleChange('dateNaissance', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Numéro IUC</label>
-                                    <input {...register('iuc')} className="input" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Numéro IUC</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.iuc}
+                                        onChange={e => handleChange('iuc', e.target.value)}
+                                    />
                                 </div>
                                 <div>
-                                    <label>Sexe</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Sexe</label>
                                     <div className="flex gap-4 mt-1">
-                                        <label><input type="radio" value="Homme" {...register('sexe')} /> Homme</label>
-                                        <label><input type="radio" value="Femme" {...register('sexe')} /> Femme</label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.sexe === 'Homme'}
+                                                onChange={() => handleChange('sexe', 'Homme')}
+                                                required
+                                            />
+                                            <span className="ml-2">Homme</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.sexe === 'Femme'}
+                                                onChange={() => handleChange('sexe', 'Femme')}
+                                            />
+                                            <span className="ml-2">Femme</span>
+                                        </label>
                                     </div>
                                 </div>
                                 <div>
-                                    <label>Lieu de naissance (Ville)</label>
-                                    <input {...register('villeNaissance')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Lieu de naissance (Ville)</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.villeNaissance}
+                                        onChange={e => handleChange('villeNaissance', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Pays de naissance</label>
-                                    <input {...register('paysNaissance')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.paysNaissance}
+                                        onChange={e => handleChange('paysNaissance', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Citoyenneté</label>
-                                    <input {...register('citoyennete')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Citoyenneté</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.citoyennete}
+                                        onChange={e => handleChange('citoyennete', e.target.value)}
+                                        required
+                                    />
                                 </div>
                             </div>
 
                             <div>
-                                <label>Avez-vous utilisé un autre nom ?</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous utilisé un autre nom ?</label>
                                 <div className="flex gap-4 mt-1">
-                                    <label><input type="radio" value="non" {...register('aUtiliseAutreNom')} /> Non</label>
-                                    <label><input type="radio" value="oui" {...register('aUtiliseAutreNom')} /> Oui</label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.aUtiliseAutreNom === 'non'}
+                                            onChange={() => handleChange('aUtiliseAutreNom', 'non')}
+                                            required
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.aUtiliseAutreNom === 'oui'}
+                                            onChange={() => handleChange('aUtiliseAutreNom', 'oui')}
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
                                 </div>
                             </div>
 
-                            {autreNom === "oui" && (
+                            {formData.aUtiliseAutreNom === "oui" && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label>Ancien nom de famille</label>
-                                        <input {...register('ancienNom')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Ancien nom de famille</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.ancienNom}
+                                            onChange={e => handleChange('ancienNom', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>Prénom(s) utilisé(s)</label>
-                                        <input {...register('ancienPrenom')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Prénom(s) utilisé(s)</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.ancienPrenom}
+                                            onChange={e => handleChange('ancienPrenom', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                 </div>
                             )}
@@ -108,69 +284,157 @@ export default function Temporaire() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label>Pays de résidence actuel</label>
-                                    <input {...register('paysResidenceActuelle')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays de résidence actuel</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.paysResidenceActuelle}
+                                        onChange={e => handleChange('paysResidenceActuelle', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Statut</label>
-                                    <input {...register('statutResidenceActuelle')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.statutResidenceActuelle}
+                                        onChange={e => handleChange('statutResidenceActuelle', e.target.value)}
+                                        required
+                                    />
                                 </div>
                             </div>
 
                             <div>
-                                <label>Résidence dans un autre pays les 5 dernières années ?</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Résidence dans un autre pays les 5 dernières années ?</label>
                                 <div className="flex gap-4 mt-1">
-                                    <label><input type="radio" value="non" {...register('residenceAnterieure')} /> Non</label>
-                                    <label><input type="radio" value="oui" {...register('residenceAnterieure')} /> Oui</label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.residenceAnterieure === 'non'}
+                                            onChange={() => handleChange('residenceAnterieure', 'non')}
+                                            required
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.residenceAnterieure === 'oui'}
+                                            onChange={() => handleChange('residenceAnterieure', 'oui')}
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
                                 </div>
                             </div>
 
-                            {residenceAnterieure === "oui" && (
+                            {formData.residenceAnterieure === "oui" && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label>Pays</label>
-                                        <input {...register('paysResidenceAnterieure')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.paysResidenceAnterieure}
+                                            onChange={e => handleChange('paysResidenceAnterieure', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>Statut</label>
-                                        <input {...register('statutResidenceAnterieure')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.statutResidenceAnterieure}
+                                            onChange={e => handleChange('statutResidenceAnterieure', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>De</label>
-                                        <input type="date" {...register('residenceDe')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">De</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.residenceDe}
+                                            onChange={e => handleChange('residenceDe', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>À</label>
-                                        <input type="date" {...register('residenceA')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">À</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.residenceA}
+                                            onChange={e => handleChange('residenceA', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                 </div>
                             )}
 
                             <div>
-                                <label>Faites-vous la demande depuis un autre pays ?</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Faites-vous la demande depuis un autre pays ?</label>
                                 <div className="flex gap-4 mt-1">
-                                    <label><input type="radio" value="non" {...register('demandeAutrePays')} /> Non</label>
-                                    <label><input type="radio" value="oui" {...register('demandeAutrePays')} /> Oui</label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.demandeAutrePays === 'non'}
+                                            onChange={() => handleChange('demandeAutrePays', 'non')}
+                                            required
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.demandeAutrePays === 'oui'}
+                                            onChange={() => handleChange('demandeAutrePays', 'oui')}
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
                                 </div>
                             </div>
 
-                            {demandeAutrePays === "oui" && (
+                            {formData.demandeAutrePays === "oui" && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label>Pays</label>
-                                        <input {...register('paysDemande')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.paysDemande}
+                                            onChange={e => handleChange('paysDemande', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>Statut</label>
-                                        <input {...register('statutDemande')} className="input" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.statutDemande}
+                                            onChange={e => handleChange('statutDemande', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>De</label>
-                                        <input type="date" {...register('demandeDe')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">De</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.demandeDe}
+                                            onChange={e => handleChange('demandeDe', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>À</label>
-                                        <input type="date" {...register('demandeA')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">À</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.demandeA}
+                                            onChange={e => handleChange('demandeA', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                 </div>
                             )}
@@ -182,8 +446,13 @@ export default function Temporaire() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label>État matrimonial actuel</label>
-                                    <select {...register('etatMatrimonial')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial actuel</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.etatMatrimonial}
+                                        onChange={e => handleChange('etatMatrimonial', e.target.value)}
+                                        required
+                                    >
                                         <option value="">-- Sélectionnez --</option>
                                         <option value="celibataire">Célibataire</option>
                                         <option value="marie">Marié(e)</option>
@@ -194,20 +463,36 @@ export default function Temporaire() {
                                 </div>
                             </div>
 
-                            {(etatMatrimonial === "marie" || etatMatrimonial === "union") && (
+                            {(formData.etatMatrimonial === "marie" || formData.etatMatrimonial === "union") && (
                                 <>
                                     <div>
-                                        <label>Date du mariage ou début de l’union</label>
-                                        <input type="date" {...register('dateMariageUnion')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date du mariage ou début de l'union</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.dateMariageUnion}
+                                            onChange={e => handleChange('dateMariageUnion', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label>Nom de famille du conjoint</label>
-                                            <input {...register('nomConjoint')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Nom de famille du conjoint</label>
+                                            <input
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={formData.nomConjoint}
+                                                onChange={e => handleChange('nomConjoint', e.target.value)}
+                                                required
+                                            />
                                         </div>
                                         <div>
-                                            <label>Prénom(s) du conjoint</label>
-                                            <input {...register('prenomConjoint')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Prénom(s) du conjoint</label>
+                                            <input
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={formData.prenomConjoint}
+                                                onChange={e => handleChange('prenomConjoint', e.target.value)}
+                                                required
+                                            />
                                         </div>
                                     </div>
                                 </>
@@ -220,18 +505,33 @@ export default function Temporaire() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label>Langue maternelle</label>
-                                    <input {...register('langueMaternelle')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Langue maternelle</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.langueMaternelle}
+                                        onChange={e => handleChange('langueMaternelle', e.target.value)}
+                                        required
+                                    />
                                 </div>
 
                                 <div>
-                                    <label>Dans quelle langue êtes-vous le plus à l’aise ?</label>
-                                    <input {...register('langueAise')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Dans quelle langue êtes-vous le plus à l'aise ?</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.langueAise}
+                                        onChange={e => handleChange('langueAise', e.target.value)}
+                                        required
+                                    />
                                 </div>
 
                                 <div>
-                                    <label>Pouvez-vous communiquer en français et en anglais ?</label>
-                                    <select {...register('communicationDeuxLangues')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pouvez-vous communiquer en français et en anglais ?</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.communicationDeuxLangues}
+                                        onChange={e => handleChange('communicationDeuxLangues', e.target.value)}
+                                        required
+                                    >
                                         <option value="">-- Sélectionnez --</option>
                                         <option value="oui">Oui</option>
                                         <option value="non">Non</option>
@@ -239,8 +539,13 @@ export default function Temporaire() {
                                 </div>
 
                                 <div>
-                                    <label>Avez-vous fait évaluer vos compétences linguistiques ?</label>
-                                    <select {...register('evaluationLangue')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous fait évaluer vos compétences linguistiques ?</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.evaluationLangue}
+                                        onChange={e => handleChange('evaluationLangue', e.target.value)}
+                                        required
+                                    >
                                         <option value="">-- Sélectionnez --</option>
                                         <option value="oui">Oui</option>
                                         <option value="non">Non</option>
@@ -255,32 +560,64 @@ export default function Temporaire() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label>Numéro du passeport</label>
-                                    <input {...register('numeroPasseport')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Numéro du passeport</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.numeroPasseport}
+                                        onChange={e => handleChange('numeroPasseport', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Pays ou territoire de délivrance</label>
-                                    <input {...register('paysDelivrancePasseport')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire de délivrance</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.paysDelivrancePasseport}
+                                        onChange={e => handleChange('paysDelivrancePasseport', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Date de délivrance</label>
-                                    <input type="date" {...register('dateDelivrancePasseport')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de délivrance</label>
+                                    <input
+                                        type="date"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.dateDelivrancePasseport}
+                                        onChange={e => handleChange('dateDelivrancePasseport', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Date d’expiration</label>
-                                    <input type="date" {...register('dateExpirationPasseport')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date d'expiration</label>
+                                    <input
+                                        type="date"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.dateExpirationPasseport}
+                                        onChange={e => handleChange('dateExpirationPasseport', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Utilisez-vous un passeport délivré par Taiwan ?</label>
-                                    <select {...register('passeportTaiwan')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Utilisez-vous un passeport délivré par Taiwan ?</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.passeportTaiwan}
+                                        onChange={e => handleChange('passeportTaiwan', e.target.value)}
+                                        required
+                                    >
                                         <option value="">-- Sélectionnez --</option>
                                         <option value="oui">Oui</option>
                                         <option value="non">Non</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label>Utilisez-vous un passeport national israélien ?</label>
-                                    <select {...register('passeportIsrael')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Utilisez-vous un passeport national israélien ?</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.passeportIsrael}
+                                        onChange={e => handleChange('passeportIsrael', e.target.value)}
+                                        required
+                                    >
                                         <option value="">-- Sélectionnez --</option>
                                         <option value="oui">Oui</option>
                                         <option value="non">Non</option>
@@ -294,30 +631,69 @@ export default function Temporaire() {
                             <h2 className="text-xl font-semibold">Pièce d'identité nationale</h2>
 
                             <div>
-                                <label>Avez-vous une pièce d'identité nationale ?</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous une pièce d'identité nationale ?</label>
                                 <div className="flex gap-4 mt-1">
-                                    <label><input type="radio" value="oui" {...register('aPieceIdentite')} /> Oui</label>
-                                    <label><input type="radio" value="non" {...register('aPieceIdentite')} /> Non</label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.aPieceIdentite === 'oui'}
+                                            onChange={() => handleChange('aPieceIdentite', 'oui')}
+                                            required
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.aPieceIdentite === 'non'}
+                                            onChange={() => handleChange('aPieceIdentite', 'non')}
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
                                 </div>
                             </div>
 
-                            {watch('aPieceIdentite') === 'oui' && (
+                            {formData.aPieceIdentite === 'oui' && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label>Numéro de la pièce</label>
-                                        <input {...register('numeroPiece')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de la pièce</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.numeroPiece}
+                                            onChange={e => handleChange('numeroPiece', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>Pays ou territoire de délivrance</label>
-                                        <input {...register('paysDelivrancePiece')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire de délivrance</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.paysDelivrancePiece}
+                                            onChange={e => handleChange('paysDelivrancePiece', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>Date de délivrance</label>
-                                        <input type="date" {...register('dateDelivrancePiece')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date de délivrance</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.dateDelivrancePiece}
+                                            onChange={e => handleChange('dateDelivrancePiece', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>Date d’expiration</label>
-                                        <input type="date" {...register('dateExpirationPiece')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date d'expiration</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.dateExpirationPiece}
+                                            onChange={e => handleChange('dateExpirationPiece', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                 </div>
                             )}
@@ -328,22 +704,50 @@ export default function Temporaire() {
                             <h2 className="text-xl font-semibold">Carte de résident permanent des États-Unis</h2>
 
                             <div>
-                                <label>Avez-vous une carte verte américaine ?</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous une carte verte américaine ?</label>
                                 <div className="flex gap-4 mt-1">
-                                    <label><input type="radio" value="oui" {...register('aCarteVerte')} /> Oui</label>
-                                    <label><input type="radio" value="non" {...register('aCarteVerte')} /> Non</label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.aCarteVerte === 'oui'}
+                                            onChange={() => handleChange('aCarteVerte', 'oui')}
+                                            required
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.aCarteVerte === 'non'}
+                                            onChange={() => handleChange('aCarteVerte', 'non')}
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
                                 </div>
                             </div>
 
-                            {watch('aCarteVerte') === 'oui' && (
+                            {formData.aCarteVerte === 'oui' && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label>Numéro de la pièce</label>
-                                        <input {...register('numeroCarteVerte')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de la pièce</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.numeroCarteVerte}
+                                            onChange={e => handleChange('numeroCarteVerte', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>Date d’expiration</label>
-                                        <input type="date" {...register('expirationCarteVerte')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date d'expiration</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.expirationCarteVerte}
+                                            onChange={e => handleChange('expirationCarteVerte', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                 </div>
                             )}
@@ -355,24 +759,49 @@ export default function Temporaire() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label>Adresse postale actuelle</label>
-                                    <input {...register('adressePostale')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Adresse postale actuelle</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.adressePostale}
+                                        onChange={e => handleChange('adressePostale', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Ville</label>
-                                    <input {...register('villePostale')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.villePostale}
+                                        onChange={e => handleChange('villePostale', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Province/État</label>
-                                    <input {...register('provincePostale')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Province/État</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.provincePostale}
+                                        onChange={e => handleChange('provincePostale', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Code postal</label>
-                                    <input {...register('codePostal')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Code postal</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.codePostal}
+                                        onChange={e => handleChange('codePostal', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Pays</label>
-                                    <input {...register('paysPostal')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.paysPostal}
+                                        onChange={e => handleChange('paysPostal', e.target.value)}
+                                        required
+                                    />
                                 </div>
                             </div>
                         </section>
@@ -383,136 +812,249 @@ export default function Temporaire() {
 
                             {/* Adresse du domicile */}
                             <div>
-                                <label>Adresse du domicile</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse du domicile</label>
                                 <div className="mt-2 mb-4">
-                                    <label className="mr-4">
-                                        <input type="radio" value="non" {...register('adresseIdentique')} className="mr-2" />
-                                        Non
+                                    <label className="mr-4 flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.adresseIdentique === 'non'}
+                                            onChange={() => handleChange('adresseIdentique', 'non')}
+                                            required
+                                        />
+                                        <span className="ml-2">Non</span>
                                     </label>
-                                    <label>
-                                        <input type="radio" value="oui" {...register('adresseIdentique')} className="mr-2" />
-                                        Oui
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.adresseIdentique === 'oui'}
+                                            onChange={() => handleChange('adresseIdentique', 'oui')}
+                                        />
+                                        <span className="ml-2">Oui</span>
                                     </label>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label>No d'app/unité</label>
-                                    <input {...register('appartementUnite')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">No d'app/unité</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.appartementUnite}
+                                        onChange={e => handleChange('appartementUnite', e.target.value)}
+                                    />
                                 </div>
                                 <div>
-                                    <label>Numéro de rue</label>
-                                    <input {...register('numeroRue')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de rue</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.numeroRue}
+                                        onChange={e => handleChange('numeroRue', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Nom de rue</label>
-                                    <input {...register('nomRue')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom de rue</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.nomRue}
+                                        onChange={e => handleChange('nomRue', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div>
-                                    <label>Ville/Village</label>
-                                    <input {...register('villeVillage')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.villeVillage}
+                                        onChange={e => handleChange('villeVillage', e.target.value)}
+                                        required
+                                    />
                                 </div>
                                 <div className="md:col-span-2">
-                                    <label>Pays ou territoire</label>
-                                    <input {...register('paysTerritoire')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.paysTerritoire}
+                                        onChange={e => handleChange('paysTerritoire', e.target.value)}
+                                        required
+                                    />
                                 </div>
                             </div>
 
                             {/* Numéro de téléphone */}
                             <div className="pt-4">
-                                <label>Numéro de téléphone</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label>
                                 <div className="mt-2 mb-4">
-                                    <label className="mr-4">
-                                        <input type="radio" value="canada" {...register('typeTelephone')} className="mr-2" />
-                                        Canada/États-Unis
+                                    <label className="mr-4 flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.typeTelephone === 'canada'}
+                                            onChange={() => handleChange('typeTelephone', 'canada')}
+                                            required
+                                        />
+                                        <span className="ml-2">Canada/États-Unis</span>
                                     </label>
-                                    <label>
-                                        <input type="radio" value="autre" {...register('typeTelephone')} className="mr-2" />
-                                        Autre
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.typeTelephone === 'autre'}
+                                            onChange={() => handleChange('typeTelephone', 'autre')}
+                                        />
+                                        <span className="ml-2">Autre</span>
                                     </label>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div>
-                                        <label>Type</label>
-                                        <input {...register('typeTelephoneDetail')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.typeTelephoneDetail}
+                                            onChange={e => handleChange('typeTelephoneDetail', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>Indicatif de pays</label>
-                                        <input {...register('indicatifPays')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Indicatif de pays</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.indicatifPays}
+                                            onChange={e => handleChange('indicatifPays', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>No.</label>
-                                        <input {...register('numeroTelephone')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">No.</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.numeroTelephone}
+                                            onChange={e => handleChange('numeroTelephone', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div>
-                                        <label>Poste</label>
-                                        <input {...register('posteTelephone')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Poste</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.posteTelephone}
+                                            onChange={e => handleChange('posteTelephone', e.target.value)}
+                                        />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Autre numéro de téléphone */}
                             <div className="pt-4">
-                                <label>Autre numéro de téléphone</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Autre numéro de téléphone</label>
                                 <div className="mt-2 mb-4">
-                                    <label className="mr-4">
-                                        <input type="radio" value="canada" {...register('typeAutreTelephone')} className="mr-2" />
-                                        Canada/États-Unis
+                                    <label className="mr-4 flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.typeAutreTelephone === 'canada'}
+                                            onChange={() => handleChange('typeAutreTelephone', 'canada')}
+                                        />
+                                        <span className="ml-2">Canada/États-Unis</span>
                                     </label>
-                                    <label>
-                                        <input type="radio" value="autre" {...register('typeAutreTelephone')} className="mr-2" />
-                                        Autre
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.typeAutreTelephone === 'autre'}
+                                            onChange={() => handleChange('typeAutreTelephone', 'autre')}
+                                        />
+                                        <span className="ml-2">Autre</span>
                                     </label>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div>
-                                        <label>Type</label>
-                                        <input {...register('typeAutreTelephoneDetail')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.typeAutreTelephoneDetail}
+                                            onChange={e => handleChange('typeAutreTelephoneDetail', e.target.value)}
+                                        />
                                     </div>
                                     <div>
-                                        <label>Indicatif</label>
-                                        <input {...register('indicatifAutreTelephone')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Indicatif</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.indicatifAutreTelephone}
+                                            onChange={e => handleChange('indicatifAutreTelephone', e.target.value)}
+                                        />
                                     </div>
                                     <div>
-                                        <label>No.</label>
-                                        <input {...register('numeroAutreTelephone')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">No.</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.numeroAutreTelephone}
+                                            onChange={e => handleChange('numeroAutreTelephone', e.target.value)}
+                                        />
                                     </div>
                                     <div>
-                                        <label>Poste</label>
-                                        <input {...register('posteAutreTelephone')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Poste</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.posteAutreTelephone}
+                                            onChange={e => handleChange('posteAutreTelephone', e.target.value)}
+                                        />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Numéro de télécopieur */}
                             <div className="pt-4">
-                                <label>Numéro de télécopieur</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de télécopieur</label>
                                 <div className="mt-2 mb-4">
-                                    <label className="mr-4">
-                                        <input type="radio" value="canada" {...register('typeTelecopieur')} className="mr-2" />
-                                        Canada/États-Unis
+                                    <label className="mr-4 flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.typeTelecopieur === 'canada'}
+                                            onChange={() => handleChange('typeTelecopieur', 'canada')}
+                                        />
+                                        <span className="ml-2">Canada/États-Unis</span>
                                     </label>
-                                    <label>
-                                        <input type="radio" value="autre" {...register('typeTelecopieur')} className="mr-2" />
-                                        Autre
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.typeTelecopieur === 'autre'}
+                                            onChange={() => handleChange('typeTelecopieur', 'autre')}
+                                        />
+                                        <span className="ml-2">Autre</span>
                                     </label>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
-                                        <label>Indicatif de pays</label>
-                                        <input {...register('indicatifTelecopieur')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Indicatif de pays</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.indicatifTelecopieur}
+                                            onChange={e => handleChange('indicatifTelecopieur', e.target.value)}
+                                        />
                                     </div>
                                     <div>
-                                        <label>No.</label>
-                                        <input {...register('numeroTelecopieur')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">No.</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.numeroTelecopieur}
+                                            onChange={e => handleChange('numeroTelecopieur', e.target.value)}
+                                        />
                                     </div>
                                     <div>
-                                        <label>Poste</label>
-                                        <input {...register('posteTelecopieur')} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Poste</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.posteTelecopieur}
+                                            onChange={e => handleChange('posteTelecopieur', e.target.value)}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -526,25 +1068,65 @@ export default function Temporaire() {
                             {/* Question 1 */}
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block mb-2"> Au cours des deux dernières années, avez-vous, ou un membre de votre famille, eu la tuberculose ou été en contact étroit avec une personne qui a la tuberculose?</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Au cours des deux dernières années, avez-vous, ou un membre de votre famille, eu la tuberculose ou été en contact étroit avec une personne qui a la tuberculose?</label>
                                     <div className="flex gap-4 mt-1">
-                                        <label><input type="radio" value="oui" {...register('tuberculoseContact')} className="mr-2" /> Oui</label>
-                                        <label><input type="radio" value="non" {...register('tuberculoseContact')} className="mr-2" /> Non</label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.tuberculoseContact === 'oui'}
+                                                onChange={() => handleChange('tuberculoseContact', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.tuberculoseContact === 'non'}
+                                                onChange={() => handleChange('tuberculoseContact', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block mb-2"> Avez-vous un trouble physique ou mental qui nécessiterait des services sociaux et/ou des soins de santé autres que des médicaments, durant votre séjour au Canada?</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous un trouble physique ou mental qui nécessiterait des services sociaux et/ou des soins de santé autres que des médicaments, durant votre séjour au Canada?</label>
                                     <div className="flex gap-4 mt-1">
-                                        <label><input type="radio" value="oui" {...register('troublePhysiqueMental')} className="mr-2" /> Oui</label>
-                                        <label><input type="radio" value="non" {...register('troublePhysiqueMental')} className="mr-2" /> Non</label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.troublePhysiqueMental === 'oui'}
+                                                onChange={() => handleChange('troublePhysiqueMental', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.troublePhysiqueMental === 'non'}
+                                                onChange={() => handleChange('troublePhysiqueMental', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
                                     </div>
                                 </div>
 
-                                {(watch('tuberculoseContact') === 'oui' || watch('troublePhysiqueMental') === 'oui') && (
+                                {(formData.tuberculoseContact === 'oui' || formData.troublePhysiqueMental === 'oui') && (
                                     <div>
-                                        <label className="block mb-2">Veuillez fournir les détails et le nom du membre de la famille (s'il y a lieu)</label>
-                                        <textarea {...register('detailsTuberculoseTrouble')} rows={3} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Veuillez fournir les détails et le nom du membre de la famille (s'il y a lieu)</label>
+                                        <textarea
+                                            rows={3}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.detailsTuberculoseTrouble}
+                                            onChange={e => handleChange('detailsTuberculoseTrouble', e.target.value)}
+                                            required
+                                        ></textarea>
                                     </div>
                                 )}
                             </div>
@@ -552,33 +1134,90 @@ export default function Temporaire() {
                             {/* Question 2 */}
                             <div className="space-y-4 pt-4">
                                 <div>
-                                    <label className="block mb-2"> Êtes-vous resté au Canada après l'expiration de votre statut, avez fréquenté l'école sans permis d'études au Canada, avez travaillé sans permis de travail au Canada?</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Êtes-vous resté au Canada après l'expiration de votre statut, avez fréquenté l'école sans permis d'études au Canada, avez travaillé sans permis de travail au Canada?</label>
                                     <div className="flex gap-4 mt-1">
-                                        <label><input type="radio" value="oui" {...register('statutExpire')} className="mr-2" /> Oui</label>
-                                        <label><input type="radio" value="non" {...register('statutExpire')} className="mr-2" /> Non</label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.statutExpire === 'oui'}
+                                                onChange={() => handleChange('statutExpire', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.statutExpire === 'non'}
+                                                onChange={() => handleChange('statutExpire', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block mb-2">Vous a-t-on déjà refusé un visa ou un permis, interdit l'entrée ou demandé de quitter le Canada ou tout autre pays ou territoire?</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Vous a-t-on déjà refusé un visa ou un permis, interdit l'entrée ou demandé de quitter le Canada ou tout autre pays ou territoire?</label>
                                     <div className="flex gap-4 mt-1">
-                                        <label><input type="radio" value="oui" {...register('refusEntree')} className="mr-2" /> Oui</label>
-                                        <label><input type="radio" value="non" {...register('refusEntree')} className="mr-2" /> Non</label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.refusEntree === 'oui'}
+                                                onChange={() => handleChange('refusEntree', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.refusEntree === 'non'}
+                                                onChange={() => handleChange('refusEntree', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block mb-2">Avez-vous déjà fait une demande pour entrer ou demeurer au Canada?</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà fait une demande pour entrer ou demeurer au Canada?</label>
                                     <div className="flex gap-4 mt-1">
-                                        <label><input type="radio" value="oui" {...register('demandePrecedenteCanada')} className="mr-2" /> Oui</label>
-                                        <label><input type="radio" value="non" {...register('demandePrecedenteCanada')} className="mr-2" /> Non</label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.demandePrecedenteCanada === 'oui'}
+                                                onChange={() => handleChange('demandePrecedenteCanada', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.demandePrecedenteCanada === 'non'}
+                                                onChange={() => handleChange('demandePrecedenteCanada', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
                                     </div>
                                 </div>
 
-                                {(watch('statutExpire') === 'oui' || watch('refusEntree') === 'oui' || watch('demandePrecedenteCanada') === 'oui') && (
+                                {(formData.statutExpire === 'oui' || formData.refusEntree === 'oui' || formData.demandePrecedenteCanada === 'oui') && (
                                     <div>
-                                        <label className="block mb-2"> Veuillez fournir des détails</label>
-                                        <textarea {...register('detailsStatutRefusDemande')} rows={3} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Veuillez fournir des détails</label>
+                                        <textarea
+                                            rows={3}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.detailsStatutRefusDemande}
+                                            onChange={e => handleChange('detailsStatutRefusDemande', e.target.value)}
+                                            required
+                                        ></textarea>
                                     </div>
                                 )}
                             </div>
@@ -586,31 +1225,72 @@ export default function Temporaire() {
                             {/* Question 3 */}
                             <div className="space-y-4 pt-4">
                                 <div>
-                                    <label className="block mb-2">Avez-vous déjà commis, été arrêté, accusé, ou reconnu coupable d'une infraction pénale quelconque dans un pays ou territoire?</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà commis, été arrêté, accusé, ou reconnu coupable d'une infraction pénale quelconque dans un pays ou territoire?</label>
                                     <div className="flex gap-4 mt-1">
-                                        <label><input type="radio" value="oui" {...register('antecedentsJudiciaires')} className="mr-2" /> Oui</label>
-                                        <label><input type="radio" value="non" {...register('antecedentsJudiciaires')} className="mr-2" /> Non</label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.antecedentsJudiciaires === 'oui'}
+                                                onChange={() => handleChange('antecedentsJudiciaires', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.antecedentsJudiciaires === 'non'}
+                                                onChange={() => handleChange('antecedentsJudiciaires', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
                                     </div>
                                 </div>
 
-                                {watch('antecedentsJudiciaires') === 'oui' && (
+                                {formData.antecedentsJudiciaires === 'oui' && (
                                     <div>
-                                        <label className="block mb-2">Veuillez fournir des détails</label>
-                                        <textarea {...register('detailsAntecedentsJudiciaires')} rows={3} className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Veuillez fournir des détails</label>
+                                        <textarea
+                                            rows={3}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.detailsAntecedentsJudiciaires}
+                                            onChange={e => handleChange('detailsAntecedentsJudiciaires', e.target.value)}
+                                            required
+                                        ></textarea>
                                     </div>
                                 )}
                             </div>
                         </section>
 
+                        {/* Déclaration */}
+                        <section className="bg-gray-50 p-5 rounded-lg space-y-6">
+                            <h2 className="text-xl font-semibold">Déclaration</h2>
+                            <div className="space-y-4">
+                                <div className="flex items-start">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                        checked={formData.declarationAgreed}
+                                        onChange={e => handleChange('declarationAgreed', e.target.checked)}
+                                        required
+                                    />
+                                    <label className="ml-2 block text-sm text-gray-700">
+                                        Je déclare que les renseignements fournis dans le présent formulaire sont exacts et complets. Je comprends qu'on pourrait refuser ma demande si j'ai fourni des renseignements faux ou trompeurs ou si j'ai omis des renseignements.
+                                    </label>
+                                </div>
+                            </div>
+                        </section>
 
-                        {/* Bouton */}
+                        {/* Bouton de soumission */}
                         <div className="flex justify-end">
                             <button
                                 type="submit"
-                                disabled={isSubmitting}
-                                className={`px-6 py-3 rounded-lg transition ${isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700 text-white"}`}
+                                disabled={submitStatus === "loading"}
+                                className={`px-6 py-3 rounded-lg transition ${submitStatus === "loading" ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700 text-white"}`}
                             >
-                                {isSubmitting ? (
+                                {submitStatus === "loading" ? (
                                     <span className="flex items-center justify-center">
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -618,9 +1298,13 @@ export default function Temporaire() {
                                         </svg>
                                         Envoi en cours...
                                     </span>
-                                ) : submitSuccess ? (
+                                ) : submitStatus === "success" ? (
                                     <span className="flex items-center justify-center">
                                         <FiCheck className="mr-2" /> Demande envoyée avec succès
+                                    </span>
+                                ) : submitStatus === "error" ? (
+                                    <span className="flex items-center justify-center">
+                                        <FiX className="mr-2" /> Erreur lors de l'envoi
                                     </span>
                                 ) : (
                                     "Soumettre la demande"

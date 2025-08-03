@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FiUpload, FiCheck, FiX, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiCheck, FiX, FiPlus, FiTrash2 } from "react-icons/fi";
+import { submitFamilyApplication } from "../../services/familyService";
 
 export default function FamilyForm() {
     const [formData, setFormData] = useState({
@@ -42,7 +43,6 @@ export default function FamilyForm() {
         declarationAgreed: false,
     });
 
-    const [uploadProgress, setUploadProgress] = useState({});
     const [submitStatus, setSubmitStatus] = useState(null);
 
     const handleChange = (section, field, value) => {
@@ -79,140 +79,17 @@ export default function FamilyForm() {
         setFormData(prev => ({ ...prev, [section]: updated }));
     };
 
-    const handleFileUpload = (category, document, file) => {
-        if (!file) return;
-
-        // Simulate upload progress
-        setUploadProgress(prev => ({
-            ...prev,
-            [`${category}-${document}`]: 0
-        }));
-
-        const interval = setInterval(() => {
-            setUploadProgress(prev => {
-                const newProgress = prev[`${category}-${document}`] + 10;
-                if (newProgress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        setUploadProgress(prev => {
-                            const newState = { ...prev };
-                            delete newState[`${category}-${document}`];
-                            return newState;
-                        });
-                    }, 500);
-                }
-                return {
-                    ...prev,
-                    [`${category}-${document}`]: newProgress
-                };
-            });
-        }, 100);
-
-        setFormData(prev => ({
-            ...prev,
-            documents: {
-                ...prev.documents,
-                [category]: {
-                    ...prev.documents[category],
-                    [document]: {
-                        provided: true,
-                        file: {
-                            name: file.name,
-                            size: file.size,
-                            type: file.type,
-                            lastModified: file.lastModified
-                        }
-                    }
-                }
-            }
-        }));
-    };
-
-    const handleRemoveFile = (category, document) => {
-        setFormData(prev => ({
-            ...prev,
-            documents: {
-                ...prev.documents,
-                [category]: {
-                    ...prev.documents[category],
-                    [document]: { provided: false, file: null }
-                }
-            }
-        }));
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitStatus("loading");
 
-        // Simulate form submission
-        setTimeout(() => {
-            console.log("Form data submitted:", formData);
+        try {
+            await submitFamilyApplication(formData);
             setSubmitStatus("success");
-        }, 2000);
-    };
-
-    const renderFileUpload = (category, document, label) => {
-        const docState = formData.documents?.[category]?.[document];
-        const progress = uploadProgress[`${category}-${document}`];
-
-        if (!docState) return null;
-
-        return (
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex justify-between items-center mb-2">
-                    <label className="font-medium text-gray-700">{label}</label>
-                    {docState.provided ? (
-                        <span className="flex items-center text-green-600">
-                            <FiCheck className="mr-1" /> Fourni
-                        </span>
-                    ) : (
-                        <span className="text-gray-500">Manquant</span>
-                    )}
-                </div>
-
-                {docState.provided ? (
-                    <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
-                        <div>
-                            <p className="font-medium">{docState.file.name}</p>
-                            <p className="text-sm text-gray-500">
-                                {(docState.file.size / 1024).toFixed(1)} KB - {docState.file.type}
-                            </p>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={() => handleRemoveFile(category, document)}
-                            className="text-red-500 hover:text-red-700 p-1"
-                        >
-                            <FiTrash2 />
-                        </button>
-                    </div>
-                ) : (
-                    <div className="relative">
-                        {progress !== undefined ? (
-                            <div className="bg-gray-200 rounded-full h-2.5">
-                                <div
-                                    className="bg-blue-600 h-2.5 rounded-full"
-                                    style={{ width: `${progress}%` }}
-                                ></div>
-                            </div>
-                        ) : (
-                            <label className="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <FiUpload className="w-8 h-8 text-gray-400 mb-2" />
-                                <p className="text-sm text-gray-500">
-                                    <span className="font-medium text-blue-600">Cliquer pour uploader</span> ou glisser-déposer
-                                </p>
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    onChange={(e) => handleFileUpload(category, document, e.target.files[0])}
-                                />
-                            </label>
-                        )}
-                    </div>
-                )}
-            </div>
-        );
+        } catch (error) {
+            console.error("Submission error:", error);
+            setSubmitStatus("error");
+        }
     };
 
     return (
@@ -220,9 +97,9 @@ export default function FamilyForm() {
             <div className="bg-white rounded-xl shadow-md overflow-hidden">
                 <div className="p-6">
                     <h1 className="text-3xl font-bold text-primary mb-2">Information sur la famille</h1>
-                    <p className="text-gray-600 mb-6">Veuillez remplir toutes les informations requises et uploader les documents nécessaires</p>
+                    <p className="text-gray-600 mb-6">Veuillez remplir toutes les informations requises</p>
 
-                    <div>
+                    <form onSubmit={handleSubmit}>
                         {['applicant', 'epouse', 'father', 'mother'].map(section => (
                             <section key={section} className="mb-8 bg-gray-50 p-5 rounded-lg">
                                 <h2 className="text-xl font-semibold text-gray-800 mb-4 capitalize">
@@ -237,6 +114,7 @@ export default function FamilyForm() {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData[section].name}
                                             onChange={e => handleChange(section, 'name', e.target.value)}
+                                            required
                                         />
                                     </div>
                                     <div>
@@ -246,6 +124,7 @@ export default function FamilyForm() {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData[section].dob}
                                             onChange={e => handleChange(section, 'dob', e.target.value)}
+                                            required
                                         />
                                     </div>
                                     <div>
@@ -254,6 +133,7 @@ export default function FamilyForm() {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData[section].country}
                                             onChange={e => handleChange(section, 'country', e.target.value)}
+                                            required
                                         />
                                     </div>
                                     <div>
@@ -262,6 +142,7 @@ export default function FamilyForm() {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData[section].occupation}
                                             onChange={e => handleChange(section, 'occupation', e.target.value)}
+                                            required
                                         />
                                     </div>
                                     {(section !== 'father' && section !== 'mother') && (
@@ -271,6 +152,7 @@ export default function FamilyForm() {
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 value={formData[section].maritalStatus}
                                                 onChange={e => handleChange(section, 'maritalStatus', e.target.value)}
+                                                required
                                             />
                                         </div>
                                     )}
@@ -280,6 +162,7 @@ export default function FamilyForm() {
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                             value={formData[section].address}
                                             onChange={e => handleChange(section, 'address', e.target.value)}
+                                            required
                                         />
                                     </div>
                                 </div>
@@ -304,6 +187,7 @@ export default function FamilyForm() {
                                         {group === 'children' ? 'Enfants' : 'Frères et sœurs'}
                                     </h2>
                                     <button
+                                        type="button"
                                         onClick={() => handleAddEntry(group)}
                                         className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary transition"
                                     >
@@ -322,6 +206,7 @@ export default function FamilyForm() {
                                                     {group === 'children' ? 'Enfant' : 'Frère/Sœur'} #{idx + 1}
                                                 </h3>
                                                 <button
+                                                    type="button"
                                                     onClick={() => handleRemoveEntry(group, idx)}
                                                     className="text-red-500 hover:text-red-700 p-1"
                                                 >
@@ -335,6 +220,7 @@ export default function FamilyForm() {
                                                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                                         value={entry.name}
                                                         onChange={e => handleEntryChange(group, idx, 'name', e.target.value)}
+                                                        required
                                                     />
                                                 </div>
                                                 <div>
@@ -344,6 +230,7 @@ export default function FamilyForm() {
                                                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                                         value={entry.dob}
                                                         onChange={e => handleEntryChange(group, idx, 'dob', e.target.value)}
+                                                        required
                                                     />
                                                 </div>
                                                 <div>
@@ -352,6 +239,7 @@ export default function FamilyForm() {
                                                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                                         value={entry.country}
                                                         onChange={e => handleEntryChange(group, idx, 'country', e.target.value)}
+                                                        required
                                                     />
                                                 </div>
                                                 <div>
@@ -360,6 +248,7 @@ export default function FamilyForm() {
                                                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                                         value={entry.occupation}
                                                         onChange={e => handleEntryChange(group, idx, 'occupation', e.target.value)}
+                                                        required
                                                     />
                                                 </div>
                                                 <div>
@@ -368,6 +257,7 @@ export default function FamilyForm() {
                                                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                                         value={entry.maritalStatus}
                                                         onChange={e => handleEntryChange(group, idx, 'maritalStatus', e.target.value)}
+                                                        required
                                                     />
                                                 </div>
                                                 <div>
@@ -376,6 +266,7 @@ export default function FamilyForm() {
                                                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                                         value={entry.address}
                                                         onChange={e => handleEntryChange(group, idx, 'address', e.target.value)}
+                                                        required
                                                     />
                                                 </div>
                                             </div>
@@ -396,9 +287,27 @@ export default function FamilyForm() {
                             </section>
                         ))}
 
+                        <div className="mb-6">
+                            <label className="inline-flex items-center">
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                    checked={formData.declarationAgreed}
+                                    onChange={e => setFormData(prev => ({
+                                        ...prev,
+                                        declarationAgreed: e.target.checked
+                                    }))}
+                                    required
+                                />
+                                <span className="ml-2 text-gray-700">
+                                    Je déclare que les informations fournies sont exactes et complètes.
+                                </span>
+                            </label>
+                        </div>
+
                         <div className="flex justify-between mt-6">
                             <button
-                                onClick={handleSubmit}
+                                type="submit"
                                 disabled={submitStatus === "loading"}
                                 className={`px-6 py-3 rounded-lg transition ${submitStatus === "loading" ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700 text-white"}`}
                             >
@@ -414,12 +323,16 @@ export default function FamilyForm() {
                                     <span className="flex items-center justify-center">
                                         <FiCheck className="mr-2" /> Demande envoyée avec succès
                                     </span>
+                                ) : submitStatus === "error" ? (
+                                    <span className="flex items-center justify-center">
+                                        <FiX className="mr-2" /> Erreur lors de l'envoi
+                                    </span>
                                 ) : (
                                     "Soumettre la demande"
                                 )}
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
