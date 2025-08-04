@@ -20,6 +20,7 @@ export default function FormulaireDemandeCanadienne() {
         prenoms: '',
         dateNaissance: '',
         iuc: '',
+        email: '',
         serviceMilitaire: 'Non',
         temoinViolations: 'Non',
         affiliationOrganisation: 'Non',
@@ -128,6 +129,15 @@ export default function FormulaireDemandeCanadienne() {
                                         value={formData.iuc}
                                         onChange={handleInputChange}
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.email}
+                                        onChange={e => handleChange('email', e.target.value)}
+                                        required
                                     />
                                 </div>
                             </div>

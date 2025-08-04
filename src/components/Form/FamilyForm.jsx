@@ -11,7 +11,8 @@ export default function FamilyForm() {
             occupation: "",
             maritalStatus: "",
             address: "",
-            coming: false
+            coming: false,
+            email: ''
         },
         epouse: {
             name: "",
@@ -124,6 +125,15 @@ export default function FamilyForm() {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData[section].dob}
                                             onChange={e => handleChange(section, 'dob', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.email}
+                                            onChange={e => handleChange('email', e.target.value)}
                                             required
                                         />
                                     </div>

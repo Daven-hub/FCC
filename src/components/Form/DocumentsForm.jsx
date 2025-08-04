@@ -6,6 +6,10 @@ import { submitFamilyDocuments } from '../../services/documentService';
 const FamilyDocumentsPage = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
+        userInfo: {
+            nom: '',
+            email: ''
+        },
         documents: {
             identite: {
                 acteNaissance: { provided: false, file: null },
@@ -47,6 +51,17 @@ const FamilyDocumentsPage = () => {
             }));
         }
     }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            userInfo: {
+                ...prev.userInfo,
+                [name]: value
+            }
+        }));
+    };
 
     const handleFileUpload = (category, document, file) => {
         if (!file) return;
@@ -213,6 +228,41 @@ const FamilyDocumentsPage = () => {
             <h1 className="text-3xl font-bold text-primary mb-6">LISTE DES DOCUMENTS VISAS VISITEURS AFFAIRES</h1>
 
             <form onSubmit={handleSubmit}>
+                {/* Nouvelle section pour les informations utilisateur */}
+                <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Informations Personnelles</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="nom" className="block text-sm font-medium text-gray-700 mb-1">
+                                Nom complet
+                            </label>
+                            <input
+                                type="text"
+                                id="nom"
+                                name="nom"
+                                value={formData.userInfo.nom}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                                Adresse email
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={formData.userInfo.email}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                                required
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div className="mb-8">
                     <div className="bg-blue-50 border-l-4 border-primary p-4 mb-6">
                         <div className="flex">
