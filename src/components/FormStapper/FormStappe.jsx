@@ -2649,17 +2649,18 @@ const CombinedApplicationForm = () => {
     ];
 
     return (
-        <div className="px-[6.5%] mx-auto py-8">
-            <div className="mb-10 text-center">
-                <h1 className="text-3xl font-bold text-gray-900">Formulaire de demande combinée</h1>
-                <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+        <div className="px-4 sm:px-[6.5%] mx-auto py-6 md:py-8">
+            {/* En-tête */}
+            <div className="mb-6 md:mb-10 text-center">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Formulaire de demande combinée</h1>
+                <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
                     Remplissez soigneusement toutes les sections du formulaire. Les champs marqués d'un astérisque (*) sont obligatoires.
                 </p>
             </div>
 
-            {/* Stepper amélioré */}
-            <div className="mb-12">
-                <nav className="flex items-center justify-center">
+            {/* Stepper responsive */}
+            <div className="mb-8 md:mb-12 overflow-x-auto">
+                <nav className="flex items-center justify-start sm:justify-center min-w-max">
                     {steps.map((step, index) => (
                         <div key={index} className="flex items-center">
                             {/* Étape */}
@@ -2671,7 +2672,7 @@ const CombinedApplicationForm = () => {
                                 {/* Cercle de l'étape */}
                                 <span className={`
               flex items-center justify-center 
-              w-10 h-10 rounded-full 
+              w-8 h-8 sm:w-10 sm:h-10 rounded-full 
               ${index === activeStep
                                         ? 'bg-primary text-white border-2 border-primary shadow-md'
                                         : index < activeStep
@@ -2681,33 +2682,30 @@ const CombinedApplicationForm = () => {
               transition-all duration-300
             `}>
                                     {index < activeStep ? (
-                                        <FiCheck className="w-5 h-5" />
+                                        <FiCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                                     ) : (
-                                        <span className="font-medium">{index + 1}</span>
+                                        <span className="font-medium text-sm sm:text-base">{index + 1}</span>
                                     )}
                                 </span>
 
-                                {/* Titre de l'étape */}
+                                {/* Titre de l'étape - masqué sur mobile si trop long */}
                                 <span className={`
-              mt-3 text-sm font-medium 
+              mt-2 sm:mt-3 text-xs sm:text-sm font-medium 
               ${index === activeStep ? 'text-primary font-semibold' : 'text-gray-500'}
               transition-all duration-300
+              ${steps.length > 4 ? 'hidden xs:block' : ''}
             `}>
-                                    {step.title}
+                                    {step.title.split(' ')[0]} {steps.length <= 4 && step.title.split(' ').slice(1).join(' ')}
                                 </span>
-
-                                {/* Ligne active derrière l'étape courante */}
-                                {index === activeStep && (
-                                    <span className="absolute -z-10 w-20 h-1 bg-primary-100 top-5"></span>
-                                )}
                             </button>
 
-                            {/* Ligne de séparation entre les étapes */}
+                            {/* Ligne de séparation entre les étapes - masquée sur mobile si trop d'étapes */}
                             {index < steps.length - 1 && (
                                 <div className={`
-              w-16 h-1 mx-2 
+              w-8 sm:w-16 h-1 mx-1 sm:mx-2
               ${index < activeStep ? 'bg-primary' : 'bg-gray-200'}
               transition-all duration-500
+              ${steps.length > 4 ? 'hidden sm:block' : ''}
             `}></div>
                             )}
                         </div>
@@ -2716,18 +2714,19 @@ const CombinedApplicationForm = () => {
             </div>
 
             {/* Contenu du formulaire */}
-            <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-xl p-8">
+            <form onSubmit={handleSubmit} className="bg-white shadow-md sm:shadow-xl rounded-lg sm:rounded-xl p-4 sm:p-6 md:p-8">
                 {steps[activeStep].component}
 
-                {/* Boutons de navigation */}
-                <div className="mt-10 flex justify-between border-t pt-6">
+                {/* Boutons de navigation responsive */}
+                <div className="mt-6 sm:mt-10 flex justify-between border-t pt-4 sm:pt-6">
                     {activeStep > 0 ? (
                         <button
                             type="button"
                             onClick={prevStep}
-                            className="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
+                            className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-gray-300 shadow-sm text-sm sm:text-base font-medium rounded-md sm:rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
                         >
-                            <FiChevronLeft className="mr-2" /> Précédent
+                            <FiChevronLeft className="mr-1 sm:mr-2" />
+                            <span className="hidden xs:inline">Précédent</span>
                         </button>
                     ) : (
                         <div></div>
@@ -2737,26 +2736,31 @@ const CombinedApplicationForm = () => {
                         <button
                             type="button"
                             onClick={nextStep}
-                            className="ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
+                            className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
                         >
-                            Suivant <FiChevronRight className="ml-2" />
+                            <span className="hidden xs:inline">Suivant</span>
+                            <FiChevronRight className="ml-1 sm:ml-2" />
                         </button>
                     ) : (
                         <button
                             type="submit"
                             disabled={submitStatus === "loading" || !formData.declarationAgreed}
-                            className="ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                            className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
                         >
                             {submitStatus === "loading" ? (
                                 <>
-                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Envoi en cours...
+                                    <span className="hidden sm:inline">Envoi en cours...</span>
+                                    <span className="sm:hidden">Envoi...</span>
                                 </>
                             ) : (
-                                "Soumettre la demande"
+                                <>
+                                    <span className="hidden sm:inline">Soumettre la demande</span>
+                                    <span className="sm:hidden">Soumettre</span>
+                                </>
                             )}
                         </button>
                     )}
