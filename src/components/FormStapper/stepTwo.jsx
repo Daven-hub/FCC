@@ -2270,7 +2270,7 @@ const CombinedApplicationForm = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayEntry('familyInfo', 'children')}
-                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                             >
                                 <FiPlus className="mr-1" /> Ajouter un enfant
                             </button>
@@ -2357,7 +2357,7 @@ const CombinedApplicationForm = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayEntry('familyInfo', 'siblings')}
-                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                             >
                                 <FiPlus className="mr-1" /> Ajouter un frère/sœur
                             </button>
@@ -2563,8 +2563,8 @@ const CombinedApplicationForm = () => {
                                 <h3 className="text-sm font-medium text-blue-800">Instructions pour les documents</h3>
                                 <div className="mt-2 text-sm text-blue-700">
                                     <ul className="list-disc pl-5 space-y-1">
-                                        <li>Tous les documents doivent être en format PDF, JPG, JPEG ou PNG</li>
-                                        <li>Taille maximale par fichier : 3.8MB</li>
+                                        <li>Tous les documents doivent être en format PDF, JPEG ou PNG</li>
+                                        <li>Taille maximale par fichier : 4MB</li>
                                         <li>Les documents dans d'autres langues que le français ou l'anglais doivent être accompagnés d'une traduction certifiée</li>
                                         <li>Les scans doivent être clairs et lisibles</li>
                                     </ul>
@@ -2649,83 +2649,43 @@ const CombinedApplicationForm = () => {
     ];
 
     return (
-        <div className="px-[6.5%] mx-auto py-8">
-            <div className="mb-10 text-center">
-                <h1 className="text-3xl font-bold text-gray-900">Formulaire de demande combinée</h1>
-                <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-                    Remplissez soigneusement toutes les sections du formulaire. Les champs marqués d'un astérisque (*) sont obligatoires.
-                </p>
+        <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold text-gray-900">Formulaire de demande combinée</h1>
+                <p className="mt-2 text-sm text-gray-600">Remplissez soigneusement toutes les sections du formulaire. Les champs marqués d'un astérisque (*) sont obligatoires.</p>
             </div>
 
-            {/* Stepper amélioré */}
-            <div className="mb-12">
-                <nav className="flex items-center justify-center">
+            <div className="mb-8">
+                <nav className="flex items-center">
                     {steps.map((step, index) => (
                         <div key={index} className="flex items-center">
-                            {/* Étape */}
                             <button
                                 type="button"
                                 onClick={() => setActiveStep(index)}
-                                className={`relative flex flex-col items-center transition-all duration-300 ${index <= activeStep ? 'text-primary' : 'text-gray-400'}`}
+                                className={`flex flex-col items-center ${index <= activeStep ? 'text-blue-600' : 'text-gray-500'}`}
                             >
-                                {/* Cercle de l'étape */}
-                                <span className={`
-              flex items-center justify-center 
-              w-10 h-10 rounded-full 
-              ${index === activeStep
-                                        ? 'bg-primary text-white border-2 border-primary shadow-md'
-                                        : index < activeStep
-                                            ? 'bg-primary-100 text-primary border-2 border-primary'
-                                            : 'bg-gray-50 border-2 border-gray-300'
-                                    }
-              transition-all duration-300
-            `}>
-                                    {index < activeStep ? (
-                                        <FiCheck className="w-5 h-5" />
-                                    ) : (
-                                        <span className="font-medium">{index + 1}</span>
-                                    )}
+                                <span className={`flex items-center justify-center w-8 h-8 rounded-full ${index === activeStep ? 'bg-blue-100 border border-blue-300' : index < activeStep ? 'bg-green-100 border border-green-300' : 'bg-gray-100 border border-gray-300'}`}>
+                                    {index < activeStep ? <FiCheck className="w-4 h-4 text-green-600" /> : index + 1}
                                 </span>
-
-                                {/* Titre de l'étape */}
-                                <span className={`
-              mt-3 text-sm font-medium 
-              ${index === activeStep ? 'text-primary font-semibold' : 'text-gray-500'}
-              transition-all duration-300
-            `}>
-                                    {step.title}
-                                </span>
-
-                                {/* Ligne active derrière l'étape courante */}
-                                {index === activeStep && (
-                                    <span className="absolute -z-10 w-20 h-1 bg-primary-100 top-5"></span>
-                                )}
+                                <span className={`mt-2 text-xs font-medium ${index === activeStep ? 'text-blue-600' : ''}`}>{step.title}</span>
                             </button>
-
-                            {/* Ligne de séparation entre les étapes */}
                             {index < steps.length - 1 && (
-                                <div className={`
-              w-16 h-1 mx-2 
-              ${index < activeStep ? 'bg-primary' : 'bg-gray-200'}
-              transition-all duration-500
-            `}></div>
+                                <div className="w-16 h-0.5 bg-gray-300 mx-2"></div>
                             )}
                         </div>
                     ))}
                 </nav>
             </div>
 
-            {/* Contenu du formulaire */}
-            <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-xl p-8">
+            <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6">
                 {steps[activeStep].component}
 
-                {/* Boutons de navigation */}
-                <div className="mt-10 flex justify-between border-t pt-6">
+                <div className="mt-8 flex justify-between">
                     {activeStep > 0 ? (
                         <button
                             type="button"
                             onClick={prevStep}
-                            className="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
+                            className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
                             <FiChevronLeft className="mr-2" /> Précédent
                         </button>
@@ -2737,7 +2697,7 @@ const CombinedApplicationForm = () => {
                         <button
                             type="button"
                             onClick={nextStep}
-                            className="ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
                             Suivant <FiChevronRight className="ml-2" />
                         </button>
@@ -2745,7 +2705,7 @@ const CombinedApplicationForm = () => {
                         <button
                             type="submit"
                             disabled={submitStatus === "loading" || !formData.declarationAgreed}
-                            className="ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {submitStatus === "loading" ? (
                                 <>
