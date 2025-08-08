@@ -190,6 +190,7 @@ const CombinedApplicationForm = () => {
         }));
     };
 
+
     // Gestion des changements pour les sections imbriquées
     const handleNestedChange = (section, field, value) => {
         setFormData(prev => ({
@@ -228,12 +229,32 @@ const CombinedApplicationForm = () => {
         });
     };
 
-    // Ajouter une entrée à un tableau
-    const addArrayEntry = (arrayName, defaultValue = {}) => {
-        setFormData(prev => ({
-            ...prev,
-            [arrayName]: [...prev[arrayName], defaultValue]
-        }));
+    // Modifiez la fonction addArrayEntry pour gérer les chemins imbriqués
+    const addArrayEntry = (path, defaultValue = {}) => {
+        const pathParts = path.split('.');
+
+        if (pathParts.length === 1) {
+            // Cas simple (pas d'imbrication)
+            setFormData(prev => ({
+                ...prev,
+                [path]: [...prev[path], defaultValue]
+            }));
+        } else {
+            // Cas imbriqué (comme 'famille.children')
+            setFormData(prev => {
+                const newState = { ...prev };
+                let current = newState;
+
+                for (let i = 0; i < pathParts.length - 1; i++) {
+                    current = current[pathParts[i]];
+                }
+
+                const lastKey = pathParts[pathParts.length - 1];
+                current[lastKey] = [...current[lastKey], defaultValue];
+
+                return newState;
+            });
+        }
     };
 
     // Supprimer une entrée d'un tableau
@@ -253,8 +274,8 @@ const CombinedApplicationForm = () => {
         if (!file) return;
 
         // Vérifications du fichier
-        if (file.size > 5 * 1024 * 1024) {
-            alert('La taille maximale du fichier est de 5MB');
+        if (file.size > 4 * 1024 * 1024) {
+            alert('La taille maximale du fichier est de 3MB');
             return;
         }
 
@@ -264,33 +285,7 @@ const CombinedApplicationForm = () => {
             return;
         }
 
-        // Simulation de la progression
-        setUploadProgress(prev => ({
-            ...prev,
-            [`${category}-${document}`]: 0
-        }));
-
-        const interval = setInterval(() => {
-            setUploadProgress(prev => {
-                const newProgress = prev[`${category}-${document}`] + 10;
-                if (newProgress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        setUploadProgress(prev => {
-                            const newState = { ...prev };
-                            delete newState[`${category}-${document}`];
-                            return newState;
-                        });
-                    }, 500);
-                }
-                return {
-                    ...prev,
-                    [`${category}-${document}`]: newProgress
-                };
-            });
-        }, 100);
-
-        // Mise à jour de l'état
+        // Mise à jour de l'état avec le vrai fichier
         setFormData(prev => ({
             ...prev,
             documents: {
@@ -299,12 +294,10 @@ const CombinedApplicationForm = () => {
                     ...prev.documents[category],
                     [document]: {
                         provided: true,
-                        file: {
-                            name: file.name,
-                            size: file.size,
-                            type: file.type,
-                            lastModified: file.lastModified
-                        }
+                        file: file, // Stocke le vrai fichier maintenant
+                        name: file.name,
+                        size: file.size,
+                        type: file.type
                     }
                 }
             }
@@ -817,7 +810,8 @@ const CombinedApplicationForm = () => {
 
                     {formData.voyages === 'Oui' && (
                         <div className="mt-4 space-y-4">
-                            <div className="overflow-x-auto">
+                            {/* Version desktop (table) */}
+                            <div className="hidden md:block overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
@@ -831,7 +825,7 @@ const CombinedApplicationForm = () => {
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {formData.detailsVoyages.map((voyage, index) => (
-                                            <tr key={index}>
+                                            <tr key={`desktop-${index}`}>
                                                 <td className="px-4 py-2 whitespace-nowrap">
                                                     <input
                                                         value={voyage.pays || ''}
@@ -883,10 +877,75 @@ const CombinedApplicationForm = () => {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* Version mobile (cards) */}
+                            <div className="md:hidden space-y-4">
+                                {formData.detailsVoyages.map((voyage, index) => (
+                                    <div key={`mobile-${index}`} className="bg-white p-4 rounded-lg shadow border border-gray-200">
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Pays</label>
+                                                <input
+                                                    value={voyage.pays || ''}
+                                                    onChange={(e) => handleArrayChange('detailsVoyages', index, 'pays', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700">Du (MM/AAAA)</label>
+                                                    <input
+                                                        value={voyage.dateDebut || ''}
+                                                        onChange={(e) => handleArrayChange('detailsVoyages', index, 'dateDebut', e.target.value)}
+                                                        placeholder="MM/AAAA"
+                                                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700">Au (MM/AAAA)</label>
+                                                    <input
+                                                        value={voyage.dateFin || ''}
+                                                        onChange={(e) => handleArrayChange('detailsVoyages', index, 'dateFin', e.target.value)}
+                                                        placeholder="MM/AAAA"
+                                                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Endroit</label>
+                                                <input
+                                                    value={voyage.endroit || ''}
+                                                    onChange={(e) => handleArrayChange('detailsVoyages', index, 'endroit', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">But du voyage</label>
+                                                <input
+                                                    value={voyage.but || ''}
+                                                    onChange={(e) => handleArrayChange('detailsVoyages', index, 'but', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                            <div className="flex justify-end">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeArrayEntry('detailsVoyages', index)}
+                                                    className="text-red-500 hover:text-red-700 flex items-center"
+                                                >
+                                                    <FiTrash2 className="mr-1" />
+                                                    Supprimer
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
                             <button
                                 type="button"
                                 onClick={() => addArrayEntry('detailsVoyages')}
-                                className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition"
+                                className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition w-full md:w-auto justify-center"
                             >
                                 <FiPlus className="mr-2" />
                                 Ajouter un voyage
@@ -1439,633 +1498,665 @@ const CombinedApplicationForm = () => {
             title: "Antécédents",
             component: (
                 <div className="space-y-6">
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Au cours des deux dernières années, avez-vous, ou un membre de votre famille, eu la tuberculose ou été en contact étroit avec une personne qui a la tuberculose?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.tuberculoseContact === 'oui'}
-                                        onChange={() => handleChange('tuberculoseContact', 'oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.tuberculoseContact === 'non'}
-                                        onChange={() => handleChange('tuberculoseContact', 'non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
+                    {/* Section 1 - Santé */}
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Santé</h3>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Au cours des deux dernières années, avez-vous, ou un membre de votre famille, eu la tuberculose ou été en contact étroit avec une personne qui a la tuberculose?</label>
+                                    <div className="flex flex-wrap gap-4 mt-2">
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.tuberculoseContact === 'oui'}
+                                                onChange={() => handleChange('tuberculoseContact', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.tuberculoseContact === 'non'}
+                                                onChange={() => handleChange('tuberculoseContact', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous un trouble physique ou mental qui nécessiterait des services sociaux et/ou des soins de santé autres que des médicaments, durant votre séjour au Canada?</label>
+                                    <div className="flex flex-wrap gap-4 mt-2">
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.troublePhysiqueMental === 'oui'}
+                                                onChange={() => handleChange('troublePhysiqueMental', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.troublePhysiqueMental === 'non'}
+                                                onChange={() => handleChange('troublePhysiqueMental', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {(formData.tuberculoseContact === 'oui' || formData.troublePhysiqueMental === 'oui') && (
+                                    <div className="mt-3">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Veuillez fournir les détails et le nom du membre de la famille (s'il y a lieu)</label>
+                                        <textarea
+                                            rows={3}
+                                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            value={formData.detailsTuberculoseTrouble}
+                                            onChange={e => handleChange('detailsTuberculoseTrouble', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
+                    </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous un trouble physique ou mental qui nécessiterait des services sociaux et/ou des soins de santé autres que des médicaments, durant votre séjour au Canada?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.troublePhysiqueMental === 'oui'}
-                                        onChange={() => handleChange('troublePhysiqueMental', 'oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.troublePhysiqueMental === 'non'}
-                                        onChange={() => handleChange('troublePhysiqueMental', 'non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
+                    {/* Section 2 - Historique au Canada */}
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Historique au Canada</h3>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Êtes-vous resté au Canada après l'expiration de votre statut, avez fréquenté l'école sans permis d'études au Canada, avez travaillé sans permis de travail au Canada?</label>
+                                    <div className="flex flex-wrap gap-4 mt-2">
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.statutExpire === 'oui'}
+                                                onChange={() => handleChange('statutExpire', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.statutExpire === 'non'}
+                                                onChange={() => handleChange('statutExpire', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Vous a-t-on déjà refusé un visa ou un permis, interdit l'entrée ou demandé de quitter le Canada ou tout autre pays ou territoire?</label>
+                                    <div className="flex flex-wrap gap-4 mt-2">
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.refusEntree === 'oui'}
+                                                onChange={() => handleChange('refusEntree', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.refusEntree === 'non'}
+                                                onChange={() => handleChange('refusEntree', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà fait une demande pour entrer ou demeurer au Canada?</label>
+                                    <div className="flex flex-wrap gap-4 mt-2">
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.demandePrecedenteCanada === 'oui'}
+                                                onChange={() => handleChange('demandePrecedenteCanada', 'oui')}
+                                                required
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.demandePrecedenteCanada === 'non'}
+                                                onChange={() => handleChange('demandePrecedenteCanada', 'non')}
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {(formData.statutExpire === 'oui' || formData.refusEntree === 'oui' || formData.demandePrecedenteCanada === 'oui') && (
+                                    <div className="mt-3">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Veuillez fournir des détails</label>
+                                        <textarea
+                                            rows={3}
+                                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            value={formData.detailsStatutRefusDemande}
+                                            onChange={e => handleChange('detailsStatutRefusDemande', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
+                    </div>
 
-                        {(formData.tuberculoseContact === 'oui' || formData.troublePhysiqueMental === 'oui') && (
+                    {/* Section 3 - Antécédents judiciaires */}
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Antécédents judiciaires</h3>
+                        <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Veuillez fournir les détails et le nom du membre de la famille (s'il y a lieu)</label>
-                                <textarea
-                                    rows={3}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.detailsTuberculoseTrouble}
-                                    onChange={e => handleChange('detailsTuberculoseTrouble', e.target.value)}
-                                    required
-                                ></textarea>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà commis, été arrêté, accusé, ou reconnu coupable d'une infraction pénale quelconque dans un pays ou territoire?</label>
+                                <div className="flex flex-wrap gap-4 mt-2">
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.antecedentsJudiciaires === 'oui'}
+                                            onChange={() => handleChange('antecedentsJudiciaires', 'oui')}
+                                            required
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.antecedentsJudiciaires === 'non'}
+                                            onChange={() => handleChange('antecedentsJudiciaires', 'non')}
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
+                                </div>
                             </div>
-                        )}
+
+                            {formData.antecedentsJudiciaires === 'oui' && (
+                                <div className="mt-3">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Veuillez fournir des détails</label>
+                                    <textarea
+                                        rows={3}
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                        value={formData.detailsAntecedentsJudiciaires}
+                                        onChange={e => handleChange('detailsAntecedentsJudiciaires', e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="space-y-4 pt-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Êtes-vous resté au Canada après l'expiration de votre statut, avez fréquenté l'école sans permis d'études au Canada, avez travaillé sans permis de travail au Canada?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.statutExpire === 'oui'}
-                                        onChange={() => handleChange('statutExpire', 'oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.statutExpire === 'non'}
-                                        onChange={() => handleChange('statutExpire', 'non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Vous a-t-on déjà refusé un visa ou un permis, interdit l'entrée ou demandé de quitter le Canada ou tout autre pays ou territoire?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.refusEntree === 'oui'}
-                                        onChange={() => handleChange('refusEntree', 'oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.refusEntree === 'non'}
-                                        onChange={() => handleChange('refusEntree', 'non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà fait une demande pour entrer ou demeurer au Canada?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.demandePrecedenteCanada === 'oui'}
-                                        onChange={() => handleChange('demandePrecedenteCanada', 'oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.demandePrecedenteCanada === 'non'}
-                                        onChange={() => handleChange('demandePrecedenteCanada', 'non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        {(formData.statutExpire === 'oui' || formData.refusEntree === 'oui' || formData.demandePrecedenteCanada === 'oui') && (
+                    {/* Section 4 - Service militaire */}
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Service militaire</h3>
+                        <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Veuillez fournir des détails</label>
-                                <textarea
-                                    rows={3}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.detailsStatutRefusDemande}
-                                    onChange={e => handleChange('detailsStatutRefusDemande', e.target.value)}
-                                    required
-                                ></textarea>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous fait partie d'une armée, d'une milice, d'une unité de défense civile, d'un service de renseignement ou d'un corps de police?</label>
+                                <div className="flex flex-wrap gap-4 mt-2">
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.serviceMilitaire === 'Oui'}
+                                            onChange={() => handleChange('serviceMilitaire', 'Oui')}
+                                            required
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.serviceMilitaire === 'Non'}
+                                            onChange={() => handleChange('serviceMilitaire', 'Non')}
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
+                                </div>
                             </div>
-                        )}
+
+                            {formData.serviceMilitaire === 'Oui' && (
+                                <div className="mt-4 space-y-4">
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom de l'unité</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Du (MM/AAAA)</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Au (MM/AAAA)</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {formData.detailsService.map((service, index) => (
+                                                    <tr key={index}>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={service.pays || ''}
+                                                                onChange={(e) => handleArrayChange('detailsService', index, 'pays', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={service.unite || ''}
+                                                                onChange={(e) => handleArrayChange('detailsService', index, 'unite', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={service.grade || ''}
+                                                                onChange={(e) => handleArrayChange('detailsService', index, 'grade', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={service.dateDebut || ''}
+                                                                onChange={(e) => handleArrayChange('detailsService', index, 'dateDebut', e.target.value)}
+                                                                placeholder="MM/AAAA"
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={service.dateFin || ''}
+                                                                onChange={(e) => handleArrayChange('detailsService', index, 'dateFin', e.target.value)}
+                                                                placeholder="MM/AAAA"
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeArrayEntry('detailsService', index)}
+                                                                className="text-red-500 hover:text-red-700"
+                                                            >
+                                                                <FiTrash2 className="h-5 w-5" />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => addArrayEntry('detailsService')}
+                                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                    >
+                                        <FiPlus className="-ml-0.5 mr-2 h-4 w-4" />
+                                        Ajouter un service
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="space-y-4 pt-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà commis, été arrêté, accusé, ou reconnu coupable d'une infraction pénale quelconque dans un pays ou territoire?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.antecedentsJudiciaires === 'oui'}
-                                        onChange={() => handleChange('antecedentsJudiciaires', 'oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.antecedentsJudiciaires === 'non'}
-                                        onChange={() => handleChange('antecedentsJudiciaires', 'non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        {formData.antecedentsJudiciaires === 'oui' && (
+                    {/* Section 5 - Violations des droits */}
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Violations des droits</h3>
+                        <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Veuillez fournir des détails</label>
-                                <textarea
-                                    rows={3}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.detailsAntecedentsJudiciaires}
-                                    onChange={e => handleChange('detailsAntecedentsJudiciaires', e.target.value)}
-                                    required
-                                ></textarea>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été témoin ou impliqué dans la commission de crimes de guerre, de crimes contre l'humanité ou d'autres violations des droits de la personne?</label>
+                                <div className="flex flex-wrap gap-4 mt-2">
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.temoinViolations === 'Oui'}
+                                            onChange={() => handleChange('temoinViolations', 'Oui')}
+                                            required
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.temoinViolations === 'Non'}
+                                            onChange={() => handleChange('temoinViolations', 'Non')}
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
+                                </div>
                             </div>
-                        )}
+
+                            {formData.temoinViolations === 'Oui' && (
+                                <div className="mt-4 space-y-4">
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nature des violations</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Détails</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {formData.detailsViolations.map((violation, index) => (
+                                                    <tr key={index}>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={violation.nature || ''}
+                                                                onChange={(e) => handleArrayChange('detailsViolations', index, 'nature', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={violation.pays || ''}
+                                                                onChange={(e) => handleArrayChange('detailsViolations', index, 'pays', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={violation.date || ''}
+                                                                onChange={(e) => handleArrayChange('detailsViolations', index, 'date', e.target.value)}
+                                                                placeholder="MM/AAAA"
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={violation.details || ''}
+                                                                onChange={(e) => handleArrayChange('detailsViolations', index, 'details', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeArrayEntry('detailsViolations', index)}
+                                                                className="text-red-500 hover:text-red-700"
+                                                            >
+                                                                <FiTrash2 className="h-5 w-5" />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => addArrayEntry('detailsViolations')}
+                                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                    >
+                                        <FiPlus className="-ml-0.5 mr-2 h-4 w-4" />
+                                        Ajouter une violation
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="space-y-4 pt-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous fait partie d'une armée, d'une milice, d'une unité de défense civile, d'un service de renseignement ou d'un corps de police?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.serviceMilitaire === 'Oui'}
-                                        onChange={() => handleChange('serviceMilitaire', 'Oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.serviceMilitaire === 'Non'}
-                                        onChange={() => handleChange('serviceMilitaire', 'Non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        {formData.serviceMilitaire === 'Oui' && (
-                            <div className="mt-4 space-y-4">
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom de l'unité</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Du (MM/AAAA)</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Au (MM/AAAA)</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {formData.detailsService.map((service, index) => (
-                                                <tr key={index}>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={service.pays || ''}
-                                                            onChange={(e) => handleArrayChange('detailsService', index, 'pays', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={service.unite || ''}
-                                                            onChange={(e) => handleArrayChange('detailsService', index, 'unite', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={service.grade || ''}
-                                                            onChange={(e) => handleArrayChange('detailsService', index, 'grade', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={service.dateDebut || ''}
-                                                            onChange={(e) => handleArrayChange('detailsService', index, 'dateDebut', e.target.value)}
-                                                            placeholder="MM/AAAA"
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={service.dateFin || ''}
-                                                            onChange={(e) => handleArrayChange('detailsService', index, 'dateFin', e.target.value)}
-                                                            placeholder="MM/AAAA"
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeArrayEntry('detailsService', index)}
-                                                            className="text-red-500 hover:text-red-700"
-                                                        >
-                                                            <FiTrash2 />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                    {/* Section 6 - Affiliations */}
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Affiliations</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà appartenu ou apparteniez-vous à une organisation ou association quelconque?</label>
+                                <div className="flex flex-wrap gap-4 mt-2">
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.affiliationOrganisation === 'Oui'}
+                                            onChange={() => handleChange('affiliationOrganisation', 'Oui')}
+                                            required
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.affiliationOrganisation === 'Non'}
+                                            onChange={() => handleChange('affiliationOrganisation', 'Non')}
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => addArrayEntry('detailsService')}
-                                    className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition"
-                                >
-                                    <FiPlus className="mr-2" />
-                                    Ajouter un service
-                                </button>
                             </div>
-                        )}
+
+                            {formData.affiliationOrganisation === 'Oui' && (
+                                <div className="mt-4 space-y-4">
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom de l'organisation</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nature</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Du (MM/AAAA)</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Au (MM/AAAA)</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {formData.detailsAffiliation.map((affiliation, index) => (
+                                                    <tr key={index}>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={affiliation.nom || ''}
+                                                                onChange={(e) => handleArrayChange('detailsAffiliation', index, 'nom', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={affiliation.pays || ''}
+                                                                onChange={(e) => handleArrayChange('detailsAffiliation', index, 'pays', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={affiliation.nature || ''}
+                                                                onChange={(e) => handleArrayChange('detailsAffiliation', index, 'nature', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={affiliation.dateDebut || ''}
+                                                                onChange={(e) => handleArrayChange('detailsAffiliation', index, 'dateDebut', e.target.value)}
+                                                                placeholder="MM/AAAA"
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={affiliation.dateFin || ''}
+                                                                onChange={(e) => handleArrayChange('detailsAffiliation', index, 'dateFin', e.target.value)}
+                                                                placeholder="MM/AAAA"
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeArrayEntry('detailsAffiliation', index)}
+                                                                className="text-red-500 hover:text-red-700"
+                                                            >
+                                                                <FiTrash2 className="h-5 w-5" />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => addArrayEntry('detailsAffiliation')}
+                                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                    >
+                                        <FiPlus className="-ml-0.5 mr-2 h-4 w-4" />
+                                        Ajouter une affiliation
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="space-y-4 pt-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été témoin ou impliqué dans la commission de crimes de guerre, de crimes contre l'humanité ou d'autres violations des droits de la personne?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.temoinViolations === 'Oui'}
-                                        onChange={() => handleChange('temoinViolations', 'Oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.temoinViolations === 'Non'}
-                                        onChange={() => handleChange('temoinViolations', 'Non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        {formData.temoinViolations === 'Oui' && (
-                            <div className="mt-4 space-y-4">
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nature des violations</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Détails</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {formData.detailsViolations.map((violation, index) => (
-                                                <tr key={index}>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={violation.nature || ''}
-                                                            onChange={(e) => handleArrayChange('detailsViolations', index, 'nature', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={violation.pays || ''}
-                                                            onChange={(e) => handleArrayChange('detailsViolations', index, 'pays', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={violation.date || ''}
-                                                            onChange={(e) => handleArrayChange('detailsViolations', index, 'date', e.target.value)}
-                                                            placeholder="MM/AAAA"
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={violation.details || ''}
-                                                            onChange={(e) => handleArrayChange('detailsViolations', index, 'details', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeArrayEntry('detailsViolations', index)}
-                                                            className="text-red-500 hover:text-red-700"
-                                                        >
-                                                            <FiTrash2 />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                    {/* Section 7 - Charges publiques */}
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Charges publiques</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà occupé un poste au sein d'un gouvernement ou exercé des fonctions publiques?</label>
+                                <div className="flex flex-wrap gap-4 mt-2">
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.chargePublique === 'Oui'}
+                                            onChange={() => handleChange('chargePublique', 'Oui')}
+                                            required
+                                        />
+                                        <span className="ml-2">Oui</span>
+                                    </label>
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                            checked={formData.chargePublique === 'Non'}
+                                            onChange={() => handleChange('chargePublique', 'Non')}
+                                        />
+                                        <span className="ml-2">Non</span>
+                                    </label>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => addArrayEntry('detailsViolations')}
-                                    className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition"
-                                >
-                                    <FiPlus className="mr-2" />
-                                    Ajouter une violation
-                                </button>
                             </div>
-                        )}
-                    </div>
 
-                    <div className="space-y-4 pt-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà appartenu ou apparteniez-vous à une organisation ou association quelconque?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.affiliationOrganisation === 'Oui'}
-                                        onChange={() => handleChange('affiliationOrganisation', 'Oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.affiliationOrganisation === 'Non'}
-                                        onChange={() => handleChange('affiliationOrganisation', 'Non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        {formData.affiliationOrganisation === 'Oui' && (
-                            <div className="mt-4 space-y-4">
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom de l'organisation</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nature</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Du (MM/AAAA)</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Au (MM/AAAA)</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {formData.detailsAffiliation.map((affiliation, index) => (
-                                                <tr key={index}>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={affiliation.nom || ''}
-                                                            onChange={(e) => handleArrayChange('detailsAffiliation', index, 'nom', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={affiliation.pays || ''}
-                                                            onChange={(e) => handleArrayChange('detailsAffiliation', index, 'pays', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={affiliation.nature || ''}
-                                                            onChange={(e) => handleArrayChange('detailsAffiliation', index, 'nature', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={affiliation.dateDebut || ''}
-                                                            onChange={(e) => handleArrayChange('detailsAffiliation', index, 'dateDebut', e.target.value)}
-                                                            placeholder="MM/AAAA"
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={affiliation.dateFin || ''}
-                                                            onChange={(e) => handleArrayChange('detailsAffiliation', index, 'dateFin', e.target.value)}
-                                                            placeholder="MM/AAAA"
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeArrayEntry('detailsAffiliation', index)}
-                                                            className="text-red-500 hover:text-red-700"
-                                                        >
-                                                            <FiTrash2 />
-                                                        </button>
-                                                    </td>
+                            {formData.chargePublique === 'Oui' && (
+                                <div className="mt-4 space-y-4">
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Poste occupé</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ministère/Organisme</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Du (MM/AAAA)</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Au (MM/AAAA)</th>
+                                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {formData.detailsCharges.map((charge, index) => (
+                                                    <tr key={index}>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={charge.poste || ''}
+                                                                onChange={(e) => handleArrayChange('detailsCharges', index, 'poste', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={charge.pays || ''}
+                                                                onChange={(e) => handleArrayChange('detailsCharges', index, 'pays', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={charge.organisme || ''}
+                                                                onChange={(e) => handleArrayChange('detailsCharges', index, 'organisme', e.target.value)}
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={charge.dateDebut || ''}
+                                                                onChange={(e) => handleArrayChange('detailsCharges', index, 'dateDebut', e.target.value)}
+                                                                placeholder="MM/AAAA"
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap">
+                                                            <input
+                                                                value={charge.dateFin || ''}
+                                                                onChange={(e) => handleArrayChange('detailsCharges', index, 'dateFin', e.target.value)}
+                                                                placeholder="MM/AAAA"
+                                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary text-sm"
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeArrayEntry('detailsCharges', index)}
+                                                                className="text-red-500 hover:text-red-700"
+                                                            >
+                                                                <FiTrash2 className="h-5 w-5" />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => addArrayEntry('detailsCharges')}
+                                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                    >
+                                        <FiPlus className="-ml-0.5 mr-2 h-4 w-4" />
+                                        Ajouter un poste
+                                    </button>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => addArrayEntry('detailsAffiliation')}
-                                    className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition"
-                                >
-                                    <FiPlus className="mr-2" />
-                                    Ajouter une affiliation
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="space-y-4 pt-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà occupé un poste au sein d'un gouvernement ou exercé des fonctions publiques?</label>
-                            <div className="flex gap-4 mt-1">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.chargePublique === 'Oui'}
-                                        onChange={() => handleChange('chargePublique', 'Oui')}
-                                        required
-                                    />
-                                    <span className="ml-2">Oui</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.chargePublique === 'Non'}
-                                        onChange={() => handleChange('chargePublique', 'Non')}
-                                    />
-                                    <span className="ml-2">Non</span>
-                                </label>
-                            </div>
+                            )}
                         </div>
-
-                        {formData.chargePublique === 'Oui' && (
-                            <div className="mt-4 space-y-4">
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Poste occupé</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ministère/Organisme</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Du (MM/AAAA)</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Au (MM/AAAA)</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {formData.detailsCharges.map((charge, index) => (
-                                                <tr key={index}>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={charge.poste || ''}
-                                                            onChange={(e) => handleArrayChange('detailsCharges', index, 'poste', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={charge.pays || ''}
-                                                            onChange={(e) => handleArrayChange('detailsCharges', index, 'pays', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={charge.organisme || ''}
-                                                            onChange={(e) => handleArrayChange('detailsCharges', index, 'organisme', e.target.value)}
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={charge.dateDebut || ''}
-                                                            onChange={(e) => handleArrayChange('detailsCharges', index, 'dateDebut', e.target.value)}
-                                                            placeholder="MM/AAAA"
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <input
-                                                            value={charge.dateFin || ''}
-                                                            onChange={(e) => handleArrayChange('detailsCharges', index, 'dateFin', e.target.value)}
-                                                            placeholder="MM/AAAA"
-                                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                            required
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-2 whitespace-nowrap">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeArrayEntry('detailsCharges', index)}
-                                                            className="text-red-500 hover:text-red-700"
-                                                        >
-                                                            <FiTrash2 />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => addArrayEntry('detailsCharges')}
-                                    className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition"
-                                >
-                                    <FiPlus className="mr-2" />
-                                    Ajouter un poste
-                                </button>
-                            </div>
-                        )}
                     </div>
                 </div>
             )
@@ -2837,8 +2928,19 @@ const CombinedApplicationForm = () => {
     ];
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="px-[6.5%] mx-auto py-8 relative">
+            {/* Image de fond en haut à droite */}
+            <div className="absolute top-0 right-[6.5%] w-64 h-64 z-0 opacity-30">
+                <img
+                    src="/flag.png"
+                    alt="Background decoration"
+                    className="w-full h-full object-contain"
+                />
+            </div>
+
+            {/* Contenu principal avec z-index pour le placer au-dessus */}
+            <div className="relative z-10 bg-white rounded-lg shadow-md overflow-hidden">
+                {/* Votre contenu existant */}
                 <div className="p-6 border-b border-gray-200">
                     <h2 className="text-2xl font-bold text-gray-800">Formulaire combiné de demande</h2>
                     <p className="text-gray-600 mt-1">Veuillez remplir toutes les sections du formulaire avec soin.</p>

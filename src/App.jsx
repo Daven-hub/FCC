@@ -14,7 +14,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<HomePage />} />
+            <Route index element={<CombinedApplicationForm />} />
             <Route path="/family" element={<FamilyForm />} />
             <Route path="/annexOne" element={<FormulaireProfessionnel />} />
             <Route path="/documents" element={<FamilyDocumentsPage />} />
