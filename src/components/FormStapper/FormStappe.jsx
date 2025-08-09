@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { submitCombinedApplication } from '../../services/annexeSrvice';
 
 const CombinedApplicationForm = () => {
@@ -146,34 +146,139 @@ const CombinedApplicationForm = () => {
         },
 
         // Étape 4: Documents
-        documents: {
-            identite: {
-                acteNaissance: { provided: false, file: null },
-                passeport: { provided: false, file: null },
-                acteMariage: { provided: false, file: null },
-                photo: { provided: false, file: null },
-                cni: { provided: false, file: null }
+        documents: [
+            {
+                titre: "Documents Identité Personnelle",
+                corps: [
+                    {
+                        titre: "ActeNaissance",
+                        provided: false,
+                        file: null,
+                        required: true
+                    },
+                    {
+                        titre: "Passeport",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        condition: (data) => data.personalInfo.dateExpirationPasseport &&
+                            new Date(data.personalInfo.dateExpirationPasseport) > new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+                    },
+                    {
+                        titre: "ActeMariage",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => ['marie', 'union'].includes(data.personalInfo.etatMatrimonial)
+                    },
+                    {
+                        titre: "Photo",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        specifications: "35x45mm, fond clair"
+                    },
+                    {
+                        titre: "CNI",
+                        provided: false,
+                        file: null,
+                        required: false
+                    }
+                ]
             },
-            preuvesFonds: {
-                documentsEntreprise: { provided: false, file: null },
-                relevesBancairesEntreprise: { provided: false, file: null },
-                relevesBancairesPersonnels: { provided: false, file: null }
+            {
+                titre: "Documents Preuves de Fonds",
+                corps: [
+                    {
+                        titre: "DocumentsEntreprise",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        condition: (data) => data.personalInfo.occupation === 'independant'
+                    },
+                    {
+                        titre: "RelevesBancairesEntreprise",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        period: "6 derniers mois",
+                        condition: (data) => data.personalInfo.occupation === 'independant'
+                    },
+                    {
+                        titre: "RelevesBancairesPersonnels",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        period: "6 derniers mois"
+                    }
+                ]
             },
-            autres: {
-                visaAnterieur: { provided: false, file: null },
-                assuranceVoyage: { provided: false, file: null },
-                reservationHotel: { provided: false, file: null },
-                billetsAvion: { provided: false, file: null }
+            {
+                titre: "Autres Documents",
+                corps: [
+                    {
+                        titre: "VisaAnterieur",
+                        provided: false,
+                        file: null,
+                        required: false
+                    },
+                    {
+                        titre: "AssuranceVoyage",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => {
+                            const dob = new Date(data.personalInfo.dateNaissance);
+                            const age = new Date().getFullYear() - dob.getFullYear();
+                            return age >= 60;
+                        }
+                    },
+                    {
+                        titre: "ReservationHotel",
+                        provided: false,
+                        file: null,
+                        required: false
+                    },
+                    {
+                        titre: "BilletsAvion",
+                        provided: false,
+                        file: null,
+                        required: false
+                    }
+                ]
             },
-            avertissements: {
-                refusVisaCanada: { provided: false, file: null },
-                demandeVisaEnCours: { provided: false, file: null },
-                titreSejourEtranger: { provided: false, file: null }
+            {
+                titre: "Avertissements",
+                corps: [
+                    {
+                        titre: "RefusVisaCanada",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => data.background.refusEntree === 'oui'
+                    },
+                    {
+                        titre: "DemandeVisaEnCours",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => data.background.demandePrecedenteCanada === 'oui'
+                    },
+                    {
+                        titre: "TitreSejourEtranger",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => data.personalInfo.paysResidenceActuelle !== data.personalInfo.paysNaissance
+                    }
+                ]
             }
-        },
+        ],
 
         declarationAgreed: false
     });
+
+
 
     const [submitStatus, setSubmitStatus] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({});
@@ -240,7 +345,7 @@ const CombinedApplicationForm = () => {
         });
     };
 
-    const handleFileUpload = (category, document, file) => {
+    const handleFileUpload = (sectionIndex, docIndex, file) => {
         if (!file) return;
 
         if (file.size > 4 * 1024 * 1024) {
@@ -248,65 +353,79 @@ const CombinedApplicationForm = () => {
             return;
         }
 
-        const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+        const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
         if (!validTypes.includes(file.type)) {
             alert('Seuls les fichiers PDF, JPEG et PNG sont acceptés');
             return;
         }
 
-        // Simuler la progression de l'upload
+        // Simuler la progression
         setUploadProgress(prev => ({
             ...prev,
-            [`${category}-${document}`]: 0
+            [`${sectionIndex}-${docIndex}`]: 0
         }));
 
         const interval = setInterval(() => {
             setUploadProgress(prev => {
-                const newProgress = prev[`${category}-${document}`] + 10;
+                const newProgress = prev[`${sectionIndex}-${docIndex}`] + 10;
                 if (newProgress >= 100) {
                     clearInterval(interval);
                     return {
                         ...prev,
-                        [`${category}-${document}`]: undefined
+                        [`${sectionIndex}-${docIndex}`]: undefined
                     };
                 }
                 return {
                     ...prev,
-                    [`${category}-${document}`]: newProgress
+                    [`${sectionIndex}-${docIndex}`]: newProgress
                 };
             });
         }, 200);
 
-        setFormData(prev => ({
-            ...prev,
-            documents: {
-                ...prev.documents,
-                [category]: {
-                    ...prev.documents[category],
-                    [document]: {
-                        provided: true,
-                        file: file,
-                        name: file.name,
-                        size: file.size,
-                        type: file.type
-                    }
-                }
-            }
-        }));
+        // Mise à jour sécurisée de l'état
+        setFormData(prev => {
+            const newDocuments = [...prev.documents];
+            newDocuments[sectionIndex] = {
+                ...newDocuments[sectionIndex],
+                corps: [...newDocuments[sectionIndex].corps]
+            };
+
+            newDocuments[sectionIndex].corps[docIndex] = {
+                ...newDocuments[sectionIndex].corps[docIndex],
+                provided: true,
+                file: file,
+                name: file.name,
+                size: file.size,
+                type: file.type
+            };
+
+            return {
+                ...prev,
+                documents: newDocuments
+            };
+        });
     };
 
-    const handleRemoveFile = (category, document) => {
-        setFormData(prev => ({
-            ...prev,
-            documents: {
-                ...prev.documents,
-                [category]: {
-                    ...prev.documents[category],
-                    [document]: { provided: false, file: null }
-                }
-            }
-        }));
-    };
+    const handleRemoveFile = (sectionIndex, docIndex) => {
+        setFormData(prev => {
+            const newDocuments = [...prev.documents];
+            newDocuments[sectionIndex] = {
+                ...newDocuments[sectionIndex],
+                corps: [...newDocuments[sectionIndex].corps]
+            };
+
+            newDocuments[sectionIndex].corps[docIndex] = {
+                ...newDocuments[sectionIndex].corps[docIndex],
+                provided: false,
+                file: null
+            };
+
+            return {
+                ...prev,
+                documents: newDocuments
+            };
+        });
+    };;
 
     const nextStep = () => {
         if (activeStep < steps.length - 1) {
@@ -325,7 +444,6 @@ const CombinedApplicationForm = () => {
         setSubmitStatus("loading");
 
         try {
-            // Simuler un délai d'envoi
             await new Promise(resolve => setTimeout(resolve, 2000));
             await submitCombinedApplication(formData);
             setSubmitStatus("success");
@@ -335,16 +453,24 @@ const CombinedApplicationForm = () => {
         }
     };
 
-    const FileUpload = ({ category, document, label, required = false }) => {
-        const docState = formData.documents[category][document];
-        const progress = uploadProgress[`${category}-${document}`];
+    const FileUpload = ({ sectionIndex, docIndex, label, required, specifications, period }) => {
+        const docState = formData.documents[sectionIndex].corps[docIndex];
+        const progress = uploadProgress[`${sectionIndex}-${docIndex}`];
 
         return (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex justify-between items-center mb-2">
-                    <label className="font-medium text-gray-700">
-                        {label} {required && <span className="text-red-500">*</span>}
-                    </label>
+                <div className="flex justify-between items-start mb-2">
+                    <div>
+                        <label className="font-medium text-gray-700">
+                            {label} {required && <span className="text-red-500">*</span>}
+                        </label>
+                        {specifications && (
+                            <p className="text-xs text-gray-500 mt-1">{specifications}</p>
+                        )}
+                        {period && (
+                            <p className="text-xs text-gray-500 mt-1">Période: {period}</p>
+                        )}
+                    </div>
                     {docState.provided ? (
                         <span className="flex items-center text-green-600">
                             <FiCheck className="mr-1" /> Fourni
@@ -364,7 +490,7 @@ const CombinedApplicationForm = () => {
                         </div>
                         <button
                             type="button"
-                            onClick={() => handleRemoveFile(category, document)}
+                            onClick={() => handleRemoveFile(sectionIndex, docIndex)}
                             className="text-red-500 hover:text-red-700 p-1"
                         >
                             <FiTrash2 />
@@ -388,7 +514,7 @@ const CombinedApplicationForm = () => {
                                 <input
                                     type="file"
                                     className="hidden"
-                                    onChange={(e) => handleFileUpload(category, document, e.target.files[0])}
+                                    onChange={(e) => handleFileUpload(sectionIndex, docIndex, e.target.files[0])}
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     required={required}
                                 />
@@ -398,6 +524,46 @@ const CombinedApplicationForm = () => {
                 )}
             </div>
         );
+    };
+
+    const getDocumentLabel = (docKey, formData) => {
+        const labels = {
+            'ActeNaissance': 'Acte de Naissance',
+            'Passeport': 'Passeport en cours de validité (1 an minimum)',
+            'ActeMariage': 'Photocopie Acte de Mariage',
+            'Photo': '01 photo couleur format passeport (35x45mm)',
+            'CNI': 'Carte Nationale d\'Identité (CNI)',
+            'DocumentsEntreprise': 'Documents d\'entreprise (Immatriculation, RC, etc.)',
+            'RelevesBancairesEntreprise': 'Relevés bancaires entreprise (6 derniers mois)',
+            'RelevesBancairesPersonnels': 'Relevés bancaires personnels (6 derniers mois)',
+            'VisaAnterieur': 'Copie scannée visa antérieur',
+            'AssuranceVoyage': 'Assurance voyage (obligatoire si 60 ans et plus)',
+            'ReservationHotel': 'Preuve de réservation d\'hôtel',
+            'BilletsAvion': 'Réservation de billets d\'avion Aller/Retour',
+            'RefusVisaCanada': 'Lettre de refus de visa Canada (si applicable)',
+            'DemandeVisaEnCours': 'Preuve de demande de visa en cours',
+            'TitreSejourEtranger': 'Titre de séjour étranger (si applicable)'
+        };
+
+        return labels[docKey] || docKey;
+    };
+
+    // Fonction pour déterminer si un document est obligatoire
+    const isDocumentRequired = (docKey) => {
+        const requiredDocs = [
+            'actetenaissance',
+            'passeport',
+            'photo',
+            'relevesbancairespersonnels'
+        ];
+
+        // Acte de mariage est requis si marié
+        if (docKey.toLowerCase() === 'actemariage' &&
+            ['marie', 'union'].includes(formData.personalInfo.etatMatrimonial)) {
+            return true;
+        }
+
+        return requiredDocs.includes(docKey.toLowerCase());
     };
 
     const steps = [
@@ -2469,135 +2635,52 @@ const CombinedApplicationForm = () => {
         {
             title: "Documents",
             component: (
-                <div className="space-y-6">
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Documents d'identité</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileUpload
-                                category="identite"
-                                document="acteNaissance"
-                                label="Acte de naissance"
-                                required
-                            />
-                            <FileUpload
-                                category="identite"
-                                document="passeport"
-                                label="Passeport (pages avec photo et informations)"
-                                required
-                            />
-                            {(formData.personalInfo.etatMatrimonial === "marie" || formData.personalInfo.etatMatrimonial === "union") && (
-                                <FileUpload
-                                    category="identite"
-                                    document="acteMariage"
-                                    label="Acte de mariage ou preuve d'union"
-                                    required
-                                />
-                            )}
-                            <FileUpload
-                                category="identite"
-                                document="photo"
-                                label="Photo d'identité récente"
-                                required
-                            />
-                            <FileUpload
-                                category="identite"
-                                document="cni"
-                                label="Carte nationale d'identité (si disponible)"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Preuves de fonds</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileUpload
-                                category="preuvesFonds"
-                                document="documentsEntreprise"
-                                label="Documents d'entreprise (si indépendant)"
-                            />
-                            <FileUpload
-                                category="preuvesFonds"
-                                document="relevesBancairesEntreprise"
-                                label="Relevés bancaires d'entreprise (3 derniers mois)"
-                            />
-                            <FileUpload
-                                category="preuvesFonds"
-                                document="relevesBancairesPersonnels"
-                                label="Relevés bancaires personnels (3 derniers mois)"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Autres documents</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileUpload
-                                category="autres"
-                                document="visaAnterieur"
-                                label="Visa canadien antérieur (si applicable)"
-                            />
-                            <FileUpload
-                                category="autres"
-                                document="assuranceVoyage"
-                                label="Preuve d'assurance voyage"
-                            />
-                            <FileUpload
-                                category="autres"
-                                document="reservationHotel"
-                                label="Réservation d'hôtel ou hébergement"
-                            />
-                            <FileUpload
-                                category="autres"
-                                document="billetsAvion"
-                                label="Billets d'avion (si déjà réservés)"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Avertissements</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {formData.background.refusEntree === "oui" && (
-                                <FileUpload
-                                    category="avertissements"
-                                    document="refusVisaCanada"
-                                    label="Document de refus de visa canadien (si applicable)"
-                                />
-                            )}
-                            <FileUpload
-                                category="avertissements"
-                                document="demandeVisaEnCours"
-                                label="Preuve de demande de visa en cours dans un autre pays (si applicable)"
-                            />
-                            <FileUpload
-                                category="avertissements"
-                                document="titreSejourEtranger"
-                                label="Titre de séjour étranger (si applicable)"
-                            />
-                        </div>
-                    </div>
-
+                <div className="space-y-8">
                     <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                         <div className="flex items-start">
                             <div className="flex-shrink-0 mt-1">
-                                <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
-                                </svg>
+                                <FiInfo className="h-5 w-5 text-primary" />
                             </div>
                             <div className="ml-3">
-                                <h3 className="text-sm font-medium text-blue-800">Instructions pour les documents</h3>
-                                <div className="mt-2 text-sm text-blue-700">
+                                <h3 className="text-sm font-medium text-primary">Instructions importantes</h3>
+                                <div className="mt-2 text-sm text-primary">
                                     <ul className="list-disc pl-5 space-y-1">
                                         <li>Tous les documents doivent être en format PDF, JPG, JPEG ou PNG</li>
-                                        <li>Taille maximale par fichier : 3.8MB</li>
-                                        <li>Les documents dans d'autres langues que le français ou l'anglais doivent être accompagnés d'une traduction certifiée</li>
-                                        <li>Les scans doivent être clairs et lisibles</li>
+                                        <li>Taille maximale par fichier : 4MB</li>
+                                        <li>Le passeport doit avoir une validité d'au moins 1 an</li>
+                                        <li>Les relevés bancaires doivent couvrir les 6 derniers mois</li>
+                                        <li>La photo doit être en couleur, format 35x45mm</li>
+                                        <li>Les documents dans d'autres langues doivent être traduits</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {formData.documents.map((section, sectionIndex) => (
+                        <div key={sectionIndex} className="bg-white p-4 rounded-lg shadow border border-gray-200">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">{section.titre}</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {section.corps.map((doc, docIndex) => {
+                                    // Vérification des conditions
+                                    if (doc.condition && !doc.condition(formData)) {
+                                        return null;
+                                    }
+
+                                    return (
+                                        <FileUpload
+                                            key={docIndex}
+                                            sectionIndex={sectionIndex}
+                                            docIndex={docIndex}
+                                            label={getDocumentLabel(doc.titre, formData)}
+                                            required={doc.required}
+                                            specifications={doc.specifications}
+                                            period={doc.period}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )
         },
@@ -2752,75 +2835,13 @@ const CombinedApplicationForm = () => {
                                     </div>
                                 </div>
 
-                                {/* Documents */}
-                                <div>
-                                    <h4 className="text-md font-medium text-gray-800 mb-3">4. Documents fournis</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-sm text-gray-500">Passeport</p>
-                                            <p className="text-sm font-medium text-gray-900 flex items-center">
-                                                {formData.documents.identite.passeport.provided ? (
-                                                    <>
-                                                        <FiCheck className="text-green-500 mr-1" />
-                                                        {formData.documents.identite.passeport.file?.name || 'Fichier fourni'}
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <FiX className="text-red-500 mr-1" />
-                                                        Manquant
-                                                    </>
-                                                )}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">Acte de naissance</p>
-                                            <p className="text-sm font-medium text-gray-900 flex items-center">
-                                                {formData.documents.identite.acteNaissance.provided ? (
-                                                    <>
-                                                        <FiCheck className="text-green-500 mr-1" />
-                                                        {formData.documents.identite.acteNaissance.file?.name || 'Fichier fourni'}
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <FiX className="text-red-500 mr-1" />
-                                                        Manquant
-                                                    </>
-                                                )}
-                                            </p>
-                                        </div>
-                                        {formData.documents.identite.acteMariage.provided && (
-                                            <div>
-                                                <p className="text-sm text-gray-500">Acte de mariage</p>
-                                                <p className="text-sm font-medium text-gray-900 flex items-center">
-                                                    <FiCheck className="text-green-500 mr-1" />
-                                                    {formData.documents.identite.acteMariage.file?.name || 'Fichier fourni'}
-                                                </p>
-                                            </div>
-                                        )}
-                                        <div>
-                                            <p className="text-sm text-gray-500">Photo d'identité</p>
-                                            <p className="text-sm font-medium text-gray-900 flex items-center">
-                                                {formData.documents.identite.photo.provided ? (
-                                                    <>
-                                                        <FiCheck className="text-green-500 mr-1" />
-                                                        {formData.documents.identite.photo.file?.name || 'Fichier fourni'}
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <FiX className="text-red-500 mr-1" />
-                                                        Manquant
-                                                    </>
-                                                )}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
                         )}
                     </div>
 
                     {/* Boutons de navigation */}
-                    
+
                 </div>
             )
         }
@@ -2953,3 +2974,6 @@ const CombinedApplicationForm = () => {
 };
 
 export default CombinedApplicationForm;
+
+
+// Fonction pour obtenir le libellé approprié pour chaque document
