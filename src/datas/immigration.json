@@ -1,0 +1,336 @@
+{
+    "nom": "Tobi pako",
+    "email": "lionelfotso4130@gmail.com",
+    "image": "/profile/prof.jpeg",
+    "type": "Travailleur",
+    "pages": [
+        {
+            "titre": "INFORMATION SUR LA FAMILLE",
+            "body": [
+                {
+                    "section": "SECTION A",
+                    "header": [
+                        {
+                            "title": "Nom",
+                            "sigle": "nom",
+                            "width": "30%"
+                        },
+                        {
+                            "title": "Lien de parenté VOIR NOTE 1",
+                            "sigle": "lien",
+                            "width": "15%"
+                        },
+                        {
+                            "title": "Date de naissance (AAAA-MM-JJ)",
+                            "sigle": "date",
+                            "width": "15%"
+                        },
+                        {
+                            "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+                            "sigle": "adresse",
+                            "width": "26%"
+                        },
+                        {
+                            "title": "Vous accompagnera au Canada? OUI / NON",
+                            "sigle": "vous",
+                            "width": "14%"
+                        }
+                    ],
+                    "corps": [
+                        {
+                            "role": "DEMANDEUR",
+                            "nom": "Dupont",
+                            "etat_civil": "Célibataire",
+                            "date": "2025-04-21",
+                            "adresse": "Douala",
+                            "pays_naissance": "France",
+                            "profession": "Ingénieur",
+                            "case_gauche": true,
+                            "case_droite": false
+                        },
+                        {
+                            "role": "ÉPOUX OU CONJOINT DE FAIT",
+                            "nom": "Martin",
+                            "etat_civil": "Marié",
+                            "date": "2025-04-21",
+                            "adresse": "Douala",
+                            "pays_naissance": "Canada",
+                            "profession": "Comptable",
+                            "case_gauche": true,
+                            "case_droite": false
+                        },
+                        {
+                            "role": "MÈRE",
+                            "nom": "Durand",
+                            "etat_civil": "Veuve",
+                            "date": "2025-04-21",
+                            "adresse": "Douala",
+                            "pays_naissance": "Belgique",
+                            "profession": "Retraitée",
+                            "case_gauche": false,
+                            "case_droite": true
+                        },
+                        {
+                            "role": "PÈRE",
+                            "nom": "Lemoine",
+                            "etat_civil": "Divorcé",
+                            "date": "2025-04-21",
+                            "adresse": "Douala",
+                            "pays_naissance": "Suisse",
+                            "profession": "Médecin",
+                            "case_gauche": false,
+                            "case_droite": true
+                        }
+                    ]
+                },
+                {
+                    "section": "SECTION B - ENFANT",
+                    "header": [
+                        {
+                            "title": "Nom",
+                            "sigle": "nom",
+                            "width": "30%"
+                        },
+                        {
+                            "title": "Lien de parenté VOIR NOTE 2",
+                            "sigle": "lien",
+                            "width": "15%"
+                        },
+                        {
+                            "title": "Date de naissance (AAAA-MM-JJ)",
+                            "sigle": "date",
+                            "width": "15%"
+                        },
+                        {
+                            "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+                            "sigle": "adresse",
+                            "width": "26%"
+                        },
+                        {
+                            "title": "Vous accompagnera au Canada? OUI / NON",
+                            "sigle": "vous",
+                            "width": "14%"
+                        }
+                    ],
+                    "corps": [
+                        {
+                            "role": "",
+                            "nom": "Dupont",
+                            "etat_civil": "Célibataire",
+                            "date": "2025-04-21",
+                            "adresse": "Douala",
+                            "pays_naissance": "France",
+                            "profession": "Ingénieur",
+                            "case_gauche": false,
+                            "case_droite": true
+                        },
+                        {
+                            "role": "",
+                            "nom": "Martin",
+                            "etat_civil": "Marié",
+                            "date": "2025-04-21",
+                            "adresse": "Douala",
+                            "pays_naissance": "Canada",
+                            "profession": "Comptable",
+                            "case_gauche": true,
+                            "case_droite": false
+                        }
+                    ]
+                },
+                {
+                    "section": "SECTION C - FRÈRES ET SOEURS",
+                    "header": [
+                        {
+                            "title": "Nom",
+                            "sigle": "nom",
+                            "width": "30%"
+                        },
+                        {
+                            "title": "Lien de parenté VOIR NOTE 2",
+                            "sigle": "lien",
+                            "width": "15%"
+                        },
+                        {
+                            "title": "Date de naissance (AAAA-MM-JJ)",
+                            "sigle": "date",
+                            "width": "15%"
+                        },
+                        {
+                            "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+                            "sigle": "adresse",
+                            "width": "26%"
+                        },
+                        {
+                            "title": "Vous accompagnera au Canada? OUI / NON",
+                            "sigle": "vous",
+                            "width": "14%"
+                        }
+                    ],
+                    "corps": [
+                        {
+                            "role": "",
+                            "nom": "Dupont",
+                            "etat_civil": "Célibataire",
+                            "date": "2025-04-21",
+                            "adresse": "Douala",
+                            "pays_naissance": "France",
+                            "profession": "Ingénieur",
+                            "case_gauche": false,
+                            "case_droite": true
+                        },
+                        {
+                            "role": "",
+                            "nom": "Martin",
+                            "etat_civil": "Marié",
+                            "date": "2025-04-21",
+                            "adresse": "Douala",
+                            "pays_naissance": "Canada",
+                            "profession": "Comptable",
+                            "case_gauche": true,
+                            "case_droite": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "titre": "Demande de statut de résident temporaire",
+            "body": [
+                {
+                    "section": "SECTION A",
+                    "demandeur": true,
+                    "conjoint": false,
+                    "IUC": "",
+                    "header": [
+                        {
+                            "title": "Nom",
+                            "sigle": "nom",
+                            "width": "30%"
+                        },
+                        {
+                            "title": "Lien de parenté VOIR NOTE 1",
+                            "sigle": "lien",
+                            "width": "15%"
+                        },
+                        {
+                            "title": "Date de naissance (AAAA-MM-JJ)",
+                            "sigle": "date",
+                            "width": "15%"
+                        },
+                        {
+                            "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+                            "sigle": "adresse",
+                            "width": "26%"
+                        },
+                        {
+                            "title": "Vous accompagnera au Canada? OUI / NON",
+                            "sigle": "vous",
+                            "width": "14%"
+                        }
+                    ],
+                    "military": {
+                        "isOk": true,
+                        "dev": [
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "endroit": "Célibataire",
+                                "province": "okay",
+                                "pays": "Douala"
+                            },
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "endroit": "Célibataire",
+                                "province": "okay",
+                                "pays": "Douala"
+                            }
+                        ]
+                    },
+                    "temoin": {
+                        "isOk": true,
+                        "dev": [
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "endroit": "Célibataire",
+                                "province": "okay",
+                                "pays": "Douala",
+                                "detail":"temoin1"
+                            },
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "endroit": "Célibataire",
+                                "province": "okay",
+                                "pays": "Douala",
+                                "detail":"temoin2"
+                            }
+                        ]
+                    },
+                    "affiliation": {
+                        "isOk": true,
+                        "dev": [
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "nom_org": "Célibataire",
+                                "activite": "okay",
+                                "province": "Douala",
+                                "pays":"temoin1"
+                            },
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "nom_org": "Célibataire",
+                                "activite": "okay",
+                                "province": "Douala",
+                                "pays":"temoin1"
+                            }
+                        ]
+                    },
+                    "charges": {
+                        "isOk": true,
+                        "dev": [
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "pays":"temoin1",
+                                "spere": "Célibataire",
+                                "ministere": "okay",
+                                "activite": "Douala"
+                            },
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "pays":"temoin1",
+                                "spere": "Célibataire",
+                                "ministere": "okay",
+                                "activite": "Douala"
+                            }
+                        ]
+                    },
+                    "voyages": {
+                        "isOk": true,
+                        "dev": [
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "pays":"temoin1",
+                                "endroit": "Célibataire",
+                                "but": "okay"
+                            },
+                            {
+                                "du": "1999-04-15",
+                                "au": "2001-04-01",
+                                "pays":"temoin1",
+                                "endroit": "Célibataire",
+                                "but": "okay"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
