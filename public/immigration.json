@@ -304,6 +304,153 @@
                     ]
                 }
             }
+        },
+        "visiteur": {
+            "titre": "Demande de visa de visiteur (visa de résident temporaire)",
+            "body": {
+                "demandeur": true,
+                "conjoint": false,
+                "nom": "fotso kanga",
+                "prenom": "lionel",
+                "dateNais": "2025-03-12",
+                "iuc": "dacok",
+                "military": {
+                    "isOk": true,
+                    "dev": [
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "endroit": "Célibataire",
+                            "province": "okay",
+                            "pays": "Douala"
+                        },
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "endroit": "Célibataire",
+                            "province": "okay",
+                            "pays": "Douala"
+                        }
+                    ]
+                },
+                "temoin": {
+                    "isOk": true,
+                    "dev": [
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "endroit": "Célibataire",
+                            "province": "okay",
+                            "pays": "Douala",
+                            "detail": "temoin1"
+                        },
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "endroit": "Célibataire",
+                            "province": "okay",
+                            "pays": "Douala",
+                            "detail": "temoin2"
+                        }
+                    ]
+                },
+                "affiliation": {
+                    "isOk": true,
+                    "dev": [
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "nom_org": "Célibataire",
+                            "activite": "okay",
+                            "province": "Douala",
+                            "pays": "temoin1"
+                        },
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "nom_org": "Célibataire",
+                            "activite": "okay",
+                            "province": "Douala",
+                            "pays": "temoin1"
+                        }
+                    ]
+                },
+                "charges": {
+                    "isOk": true,
+                    "dev": [
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "pays": "temoin1",
+                            "sphere": "Célibataire",
+                            "ministere": "okay",
+                            "activite": "Douala"
+                        },
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "pays": "temoin1",
+                            "sphere": "Célibataire",
+                            "ministere": "okay",
+                            "activite": "Douala"
+                        }
+                    ]
+                },
+                "voyages": {
+                    "isOk": true,
+                    "dev": [
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "pays": "temoin1",
+                            "endroit": "Célibataire",
+                            "but": "okay"
+                        },
+                        {
+                            "du": "1999-04-15",
+                            "au": "2001-04-01",
+                            "pays": "temoin1",
+                            "endroit": "Célibataire",
+                            "but": "okay"
+                        }
+                    ]
+                }
+            }
+        },
+        "documents": {
+            "titre": "Pieces jointes",
+            "body": [
+                {
+                    "titre": "Identité",
+                    "corps": [
+                        {
+                            "nom": "Carte Nationale d'identite",
+                            "provided": false,
+                            "file": "Célibataire"
+                        },
+                        {
+                            "nom": "Acte de Naissance",
+                            "provided": true,
+                            "file": "Célibataire"
+                        }
+                    ]
+                },
+                {
+                    "titre": "Passeport",
+                    "corps": [
+                        {
+                            "nom": "Carte Nationale d'identite",
+                            "provided": true,
+                            "file": "Célibataire"
+                        },
+                        {
+                            "nom": "Acte de Naissance",
+                            "provided": false,
+                            "file": "Célibataire"
+                        }
+                    ]
+                }
+            ]
         }
     }
 }

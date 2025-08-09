@@ -12,6 +12,7 @@ import {
 import moment from "moment";
 import logo from "/fcc.png";
 import MainForm from "./MainForm";
+import PieceJointe from "./PieceJointe";
 
 Font.register({
   family: "CourierPrime",
@@ -441,7 +442,6 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
 
 const MonPdfDocument = ({ datas }) => (
   <Document>
-    {/* {datas?.pages?.map((data, index) => ( */}
       <PageTemplate
         nom={datas?.nom}
         type={datas?.type}
@@ -458,7 +458,22 @@ const MonPdfDocument = ({ datas }) => (
         datas={datas?.pages?.resident}
         Custom={<MainForm datas={datas?.pages?.resident.body}/>}
       />
-    {/* ))} */}
+      <PageTemplate
+        nom={datas?.nom}
+        type={datas?.type}
+        email={datas?.email}
+        image={datas?.image}
+        datas={datas?.pages?.visiteur}
+        Custom={<MainForm datas={datas?.pages?.visiteur.body}/>}
+      />
+      <PageTemplate
+        nom={datas?.nom}
+        type={datas?.type}
+        email={datas?.email}
+        image={datas?.image}
+        datas={datas?.pages?.documents}
+        Custom={<PieceJointe datas={datas?.pages?.documents.body}/>}
+      />
   </Document>
 );
 
