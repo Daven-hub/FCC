@@ -3,6 +3,8 @@ import FamilyForm from "./components/Form/FamilyForm";
 import { Layout } from "./components/Layout";
 import HomePage from "./pages";
 import FormulaireProfessionnel from "./components/Form/AnnexeOne";
+import PdfPreviewer from "./pages/PreviewPdf";
+import MainPdf from "./pages/MainPdf";
 
 function App() {
 
@@ -15,6 +17,8 @@ function App() {
             <Route path="/family" element={<FamilyForm />} />
             <Route path="/annexOne" element={<FormulaireProfessionnel/>}/>
           </Route>
+          <Route path="/pdf" Component={PdfPreviewer} />
+          <Route path="/mainpdf" Component={MainPdf} />
         </Routes>
       </BrowserRouter>
     </>

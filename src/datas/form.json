@@ -1,0 +1,55 @@
+{
+    "applicant": {
+      "fullName": "Jean Dupont",
+      "role": "Demandeur principal"
+    },
+    "militaryService": [
+      {
+        "from": "2010-01",
+        "to": "2014-06",
+        "location": "Paris",
+        "province": "Île-de-France",
+        "country": "France"
+      }
+    ],
+    "witnessedAbuse": [
+      {
+        "from": "2011-01",
+        "to": "2011-06",
+        "location": "Kaboul",
+        "province": "Kaboul",
+        "country": "Afghanistan",
+        "details": "A été témoin de violences contre des civils"
+      }
+    ],
+    "organizationAffiliation": [
+      {
+        "from": "2015-03",
+        "to": "2018-10",
+        "organization": "XYZ Politique",
+        "position": "Membre actif",
+        "province": "Québec",
+        "country": "Canada"
+      }
+    ],
+    "publicPositions": [
+      {
+        "from": "2018-01",
+        "to": "2020-12",
+        "title": "Maire",
+        "department": "Ville de Laval",
+        "scope": "Municipale",
+        "country": "Canada"
+      }
+    ],
+    "travelHistory": [
+      {
+        "from": "2021-07",
+        "to": "2021-08",
+        "country": "Espagne",
+        "location": "Barcelone",
+        "purpose": "Tourisme"
+      }
+    ]
+  }
+  
