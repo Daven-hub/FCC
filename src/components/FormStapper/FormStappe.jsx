@@ -349,41 +349,20 @@ const CombinedApplicationForm = () => {
     const handleFileUpload = (sectionIndex, docIndex, file) => {
         if (!file) return;
 
+        // Validation de la taille
         if (file.size > 4 * 1024 * 1024) {
             alert('La taille maximale du fichier est de 4MB');
             return;
         }
 
+        // Validation du type
         const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
         if (!validTypes.includes(file.type)) {
             alert('Seuls les fichiers PDF, JPEG et PNG sont acceptés');
             return;
         }
 
-        // Simuler la progression
-        setUploadProgress(prev => ({
-            ...prev,
-            [`${sectionIndex}-${docIndex}`]: 0
-        }));
-
-        const interval = setInterval(() => {
-            setUploadProgress(prev => {
-                const newProgress = prev[`${sectionIndex}-${docIndex}`] + 10;
-                if (newProgress >= 100) {
-                    clearInterval(interval);
-                    return {
-                        ...prev,
-                        [`${sectionIndex}-${docIndex}`]: undefined
-                    };
-                }
-                return {
-                    ...prev,
-                    [`${sectionIndex}-${docIndex}`]: newProgress
-                };
-            });
-        }, 200);
-
-        // Mise à jour sécurisée de l'état
+        // Mise à jour de l'état avec toutes les métadonnées du fichier
         setFormData(prev => {
             const newDocuments = [...prev.documents];
             newDocuments[sectionIndex] = {
@@ -395,9 +374,6 @@ const CombinedApplicationForm = () => {
                 ...newDocuments[sectionIndex].corps[docIndex],
                 provided: true,
                 file: file,
-                name: file.name,
-                size: file.size,
-                type: file.type
             };
 
             return {
@@ -405,7 +381,7 @@ const CombinedApplicationForm = () => {
                 documents: newDocuments
             };
         });
-    };
+    };;
 
     const handleRemoveFile = (sectionIndex, docIndex) => {
         setFormData(prev => {
@@ -445,20 +421,40 @@ const CombinedApplicationForm = () => {
         setSubmitStatus("loading");
 
         try {
-            const formDataJson = {
+            const formDataToSend = new FormData();
+
+            // Créer l'objet de données à envoyer
+            const applicationData = {
                 personalInfo: formData.personalInfo,
                 background: formData.background,
                 familyInfo: formData.familyInfo,
-                documents: formData.documents,
                 declarationAgreed: formData.declarationAgreed
             };
 
-            setSubmittedData(formDataJson);
+            formDataToSend.append('applicationData', JSON.stringify(applicationData));
 
-            console.log("Données soumises:", JSON.stringify(formDataJson, null, 2));
+            // Ajouter les fichiers
+            formData.documents.forEach((section, sectionIndex) => {
+                section.corps.forEach((doc, docIndex) => {
+                    if (doc.provided && doc.file) {
+                        formDataToSend.append(`documents[${sectionIndex}][${docIndex}]`, doc.file);
+                        // Afficher les infos du fichier dans la console
+                        // console.log(`Fichier ${sectionIndex}-${docIndex}:`, {
+                        //     name: doc.file.name,
+                        //     size: doc.file.size,
+                        //     type: doc.file.type
+                        // });
+                    }
+                });
+            });
 
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            await submitCombinedApplication(formData);
+
+
+            console.log(formData)
+
+
+            // Envoyer les données
+            await submitCombinedApplication(formDataToSend);
             setSubmitStatus("success");
         } catch (error) {
             console.error("Erreur de soumission:", error);
@@ -468,7 +464,6 @@ const CombinedApplicationForm = () => {
 
     const FileUpload = ({ sectionIndex, docIndex, label, required, specifications, period }) => {
         const docState = formData.documents[sectionIndex].corps[docIndex];
-        const progress = uploadProgress[`${sectionIndex}-${docIndex}`];
 
         return (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -496,9 +491,12 @@ const CombinedApplicationForm = () => {
                 {docState.provided ? (
                     <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
                         <div>
-                            <p className="font-medium">{docState.file.name}</p>
+                            <p className="font-medium">{docState.name}</p>
                             <p className="text-sm text-gray-500">
-                                {(docState.file.size / 1024).toFixed(1)} KB - {docState.file.type}
+                                {(docState.size / 1024).toFixed(1)} KB - {docState.type}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                                Modifié le: {new Date(docState.lastModified).toLocaleDateString()}
                             </p>
                         </div>
                         <button
@@ -510,30 +508,19 @@ const CombinedApplicationForm = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="relative">
-                        {progress !== undefined ? (
-                            <div className="bg-gray-200 rounded-full h-2.5">
-                                <div
-                                    className="bg-blue-600 h-2.5 rounded-full"
-                                    style={{ width: `${progress}%` }}
-                                ></div>
-                            </div>
-                        ) : (
-                            <label className="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <FiUpload className="w-8 h-8 text-gray-400 mb-2" />
-                                <p className="text-sm text-gray-500">
-                                    <span className="font-medium text-blue-600">Cliquer pour uploader</span> ou glisser-déposer
-                                </p>
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    onChange={(e) => handleFileUpload(sectionIndex, docIndex, e.target.files[0])}
-                                    accept=".pdf,.jpg,.jpeg,.png"
-                                    required={required}
-                                />
-                            </label>
-                        )}
-                    </div>
+                    <label className="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                        <FiUpload className="w-8 h-8 text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-500">
+                            <span className="font-medium text-blue-600">Cliquer pour uploader</span> ou glisser-déposer
+                        </p>
+                        <input
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => handleFileUpload(sectionIndex, docIndex, e.target.files[0])}
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required={required}
+                        />
+                    </label>
                 )}
             </div>
         );
@@ -1620,6 +1607,7 @@ const CombinedApplicationForm = () => {
             title: "Antécédents et historique",
             component: (
                 <div className="space-y-6">
+                    {/* Premier antécédent (tuberculose) - reste inchangé */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous été en contact étroit avec une personne atteinte de tuberculose ou avez-vous un trouble physique ou mental qui pourrait constituer un danger pour la santé ou la sécurité publiques ?</label>
                         <div className="flex gap-4 mt-1">
@@ -1657,6 +1645,7 @@ const CombinedApplicationForm = () => {
                         )}
                     </div>
 
+                    {/* Deuxième antécédent (statut expiré) */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà eu un statut d'immigration ou de résidence temporaire au Canada qui a expiré et vous avez continué à rester au Canada ?</label>
                         <div className="flex gap-4 mt-1">
@@ -1680,8 +1669,21 @@ const CombinedApplicationForm = () => {
                                 <span className="ml-2">Oui</span>
                             </label>
                         </div>
+                        {formData.background.statutExpire === "oui" && (
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails du statut expiré</label>
+                                <textarea
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    rows={3}
+                                    value={formData.background.detailsStatutExpire}
+                                    onChange={e => handleChange('background', 'detailsStatutExpire', e.target.value)}
+                                    required
+                                />
+                            </div>
+                        )}
                     </div>
 
+                    {/* Troisième antécédent (refus d'entrée) */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été refusé l'entrée au Canada ou fait l'objet d'une ordonnance de renvoi ?</label>
                         <div className="flex gap-4 mt-1">
@@ -1705,8 +1707,21 @@ const CombinedApplicationForm = () => {
                                 <span className="ml-2">Oui</span>
                             </label>
                         </div>
+                        {formData.background.refusEntree === "oui" && (
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails du refus d'entrée ou ordonnance de renvoi</label>
+                                <textarea
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    rows={3}
+                                    value={formData.background.detailsRefusEntree}
+                                    onChange={e => handleChange('background', 'detailsRefusEntree', e.target.value)}
+                                    required
+                                />
+                            </div>
+                        )}
                     </div>
 
+                    {/* Quatrième antécédent (demande précédente) */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà fait une demande de visa, permis ou statut de résidence permanent pour le Canada ?</label>
                         <div className="flex gap-4 mt-1">
@@ -1730,20 +1745,19 @@ const CombinedApplicationForm = () => {
                                 <span className="ml-2">Oui</span>
                             </label>
                         </div>
+                        {formData.background.demandePrecedenteCanada === "oui" && (
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails de la demande précédente</label>
+                                <textarea
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    rows={3}
+                                    value={formData.background.detailsDemandePrecedente}
+                                    onChange={e => handleChange('background', 'detailsDemandePrecedente', e.target.value)}
+                                    required
+                                />
+                            </div>
+                        )}
                     </div>
-
-                    {(formData.background.statutExpire === "oui" || formData.background.refusEntree === "oui" || formData.background.demandePrecedenteCanada === "oui") && (
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
-                            <textarea
-                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                rows={3}
-                                value={formData.background.detailsStatutRefusDemande}
-                                onChange={e => handleChange('background', 'detailsStatutRefusDemande', e.target.value)}
-                                required
-                            />
-                        </div>
-                    )}
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous des antécédents judiciaires dans n'importe quel pays, y compris des condamnations, des accusations en cours ou des enquêtes criminelles ?</label>
