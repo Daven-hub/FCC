@@ -362,7 +362,19 @@ const CombinedApplicationForm = () => {
             return;
         }
 
-        // Mise à jour de l'état avec toutes les métadonnées du fichier
+        // Créer un objet avec toutes les métadonnées du fichier
+        const fileDetails = {
+            fileObject: file,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            lastModified: file.lastModified,
+            lastModifiedDate: new Date(file.lastModified).toLocaleDateString(),
+            uploadDate: new Date().toISOString(),
+            status: 'uploaded'
+        };
+
+        // Mise à jour de l'état avec toutes les métadonnées
         setFormData(prev => {
             const newDocuments = [...prev.documents];
             newDocuments[sectionIndex] = {
@@ -373,7 +385,7 @@ const CombinedApplicationForm = () => {
             newDocuments[sectionIndex].corps[docIndex] = {
                 ...newDocuments[sectionIndex].corps[docIndex],
                 provided: true,
-                file: file,
+                ...fileDetails
             };
 
             return {
@@ -381,7 +393,34 @@ const CombinedApplicationForm = () => {
                 documents: newDocuments
             };
         });
-    };;
+
+        // Mise à jour de la progression de l'upload
+        setUploadProgress(prev => ({
+            ...prev,
+            [`${sectionIndex}-${docIndex}`]: {
+                progress: 0,
+                fileName: file.name
+            }
+        }));
+
+        // Simulation de la progression de l'upload (à remplacer par votre véritable logique d'upload)
+        const interval = setInterval(() => {
+            setUploadProgress(prev => {
+                const currentProgress = prev[`${sectionIndex}-${docIndex}`]?.progress || 0;
+                if (currentProgress >= 100) {
+                    clearInterval(interval);
+                    return prev;
+                }
+                return {
+                    ...prev,
+                    [`${sectionIndex}-${docIndex}`]: {
+                        ...prev[`${sectionIndex}-${docIndex}`],
+                        progress: currentProgress + 10
+                    }
+                };
+            });
+        }, 200);
+    };
 
     const handleRemoveFile = (sectionIndex, docIndex) => {
         setFormData(prev => {
@@ -464,6 +503,7 @@ const CombinedApplicationForm = () => {
 
     const FileUpload = ({ sectionIndex, docIndex, label, required, specifications, period }) => {
         const docState = formData.documents[sectionIndex].corps[docIndex];
+        const uploadState = uploadProgress[`${sectionIndex}-${docIndex}`];
 
         return (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -489,23 +529,37 @@ const CombinedApplicationForm = () => {
                 </div>
 
                 {docState.provided ? (
-                    <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
-                        <div>
-                            <p className="font-medium">{docState.name}</p>
-                            <p className="text-sm text-gray-500">
-                                {(docState.size / 1024).toFixed(1)} KB - {docState.type}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                                Modifié le: {new Date(docState.lastModified).toLocaleDateString()}
-                            </p>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
+                            <div>
+                                <p className="font-medium">{docState.name}</p>
+                                <p className="text-sm text-gray-500">
+                                    {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1].toUpperCase()}
+                                </p>
+                                <p className="text-xs text-gray-400">
+                                    Téléversé le: {new Date(docState.uploadDate).toLocaleString()}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => handleRemoveFile(sectionIndex, docIndex)}
+                                className="text-red-500 hover:text-red-700 p-1"
+                            >
+                                <FiTrash2 />
+                            </button>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => handleRemoveFile(sectionIndex, docIndex)}
-                            className="text-red-500 hover:text-red-700 p-1"
-                        >
-                            <FiTrash2 />
-                        </button>
+
+                        {uploadState?.progress > 0 && uploadState.progress < 100 && (
+                            <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                <div
+                                    className="bg-blue-600 h-2.5 rounded-full"
+                                    style={{ width: `${uploadState.progress}%` }}
+                                ></div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Téléversement: {uploadState.progress}% - {uploadState.fileName}
+                                </p>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <label className="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
@@ -513,6 +567,7 @@ const CombinedApplicationForm = () => {
                         <p className="text-sm text-gray-500">
                             <span className="font-medium text-blue-600">Cliquer pour uploader</span> ou glisser-déposer
                         </p>
+                        <p className="text-xs text-gray-400 mt-1">Formats acceptés: PDF, JPG, PNG (max 4MB)</p>
                         <input
                             type="file"
                             className="hidden"
@@ -525,6 +580,39 @@ const CombinedApplicationForm = () => {
             </div>
         );
     };
+
+    const renderStepTitle = () => {
+        const titles = [
+            "Informations personnelles",
+            "Antécédents et historique",
+            "Informations familiales",
+            "Documents requis",
+            "Déclaration et soumission"
+        ];
+
+        return (
+            <div className="mb-6 border-b pb-4">
+                <h2 className="text-xl font-bold text-gray-800">
+                    Étape {activeStep + 1} : {titles[activeStep]}
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                    {getStepDescription(activeStep)}
+                </p>
+            </div>
+        );
+    };
+
+    const getStepDescription = (step) => {
+        const descriptions = [
+            "Remplissez vos informations personnelles. Tous les champs sont obligatoires.",
+            "Fournissez vos antécédents complets. Soyez précis et honnête.",
+            "Ajoutez les informations sur votre famille immédiate.",
+            "Téléchargez tous les documents requis. Formats acceptés : PDF, JPG, PNG.",
+            "Lisez attentivement et acceptez la déclaration avant de soumettre."
+        ];
+        return descriptions[step];
+    };
+
 
     const getDocumentLabel = (docKey, formData) => {
         const labels = {
@@ -2884,6 +2972,9 @@ const CombinedApplicationForm = () => {
                 </p>
             </div>
 
+            {renderStepTitle()}
+
+
             {/* Stepper responsive */}
             <div className="mb-8 md:mb-12 overflow-x-auto">
                 <nav className="flex items-center justify-start sm:justify-center min-w-max">
@@ -2942,6 +3033,7 @@ const CombinedApplicationForm = () => {
             {/* Contenu du formulaire */}
             <form onSubmit={handleSubmit} className="bg-white shadow-md sm:shadow-xl rounded-lg sm:rounded-xl p-4 sm:p-6 md:p-8">
                 {steps[activeStep].component}
+
 
                 {/* Boutons de navigation responsive */}
                 {!showPreview && (
