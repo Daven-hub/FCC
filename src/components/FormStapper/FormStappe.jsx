@@ -282,6 +282,7 @@ const CombinedApplicationForm = () => {
 
     const [submitStatus, setSubmitStatus] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({});
+    const [submittedData, setSubmittedData] = useState(null);
 
     const handleChange = (section, field, value) => {
         setFormData(prev => ({
@@ -444,11 +445,23 @@ const CombinedApplicationForm = () => {
         setSubmitStatus("loading");
 
         try {
+            const formDataJson = {
+                personalInfo: formData.personalInfo,
+                background: formData.background,
+                familyInfo: formData.familyInfo,
+                documents: formData.documents,
+                declarationAgreed: formData.declarationAgreed
+            };
+
+            setSubmittedData(formDataJson);
+
+            console.log("Données soumises:", JSON.stringify(formDataJson, null, 2));
+
             await new Promise(resolve => setTimeout(resolve, 2000));
             await submitCombinedApplication(formData);
             setSubmitStatus("success");
         } catch (error) {
-            console.error("Submission error:", error);
+            console.error("Erreur de soumission:", error);
             setSubmitStatus("error");
         }
     };
