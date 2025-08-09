@@ -4,6 +4,7 @@ import { submitCombinedApplication } from '../../services/annexeSrvice';
 
 const CombinedApplicationForm = () => {
     const [activeStep, setActiveStep] = useState(0);
+    const [showPreview, setShowPreview] = useState(false);
 
     const [formData, setFormData] = useState({
         // Étape 1: Informations personnelles
@@ -253,6 +254,29 @@ const CombinedApplicationForm = () => {
             return;
         }
 
+        // Simuler la progression de l'upload
+        setUploadProgress(prev => ({
+            ...prev,
+            [`${category}-${document}`]: 0
+        }));
+
+        const interval = setInterval(() => {
+            setUploadProgress(prev => {
+                const newProgress = prev[`${category}-${document}`] + 10;
+                if (newProgress >= 100) {
+                    clearInterval(interval);
+                    return {
+                        ...prev,
+                        [`${category}-${document}`]: undefined
+                    };
+                }
+                return {
+                    ...prev,
+                    [`${category}-${document}`]: newProgress
+                };
+            });
+        }, 200);
+
         setFormData(prev => ({
             ...prev,
             documents: {
@@ -301,6 +325,8 @@ const CombinedApplicationForm = () => {
         setSubmitStatus("loading");
 
         try {
+            // Simuler un délai d'envoi
+            await new Promise(resolve => setTimeout(resolve, 2000));
             await submitCombinedApplication(formData);
             setSubmitStatus("success");
         } catch (error) {
@@ -2614,35 +2640,187 @@ const CombinedApplicationForm = () => {
                         </div>
                     </div>
 
-                    {submitStatus === "success" ? (
-                        <div className="rounded-md bg-green-50 p-4">
-                            <div className="flex">
-                                <div className="flex-shrink-0">
-                                    <FiCheck className="h-5 w-5 text-green-400" />
+                    {/* Section Aperçu */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-medium text-gray-900">Aperçu de votre demande</h3>
+                            <button
+                                type="button"
+                                onClick={() => setShowPreview(!showPreview)}
+                                className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                            >
+                                {showPreview ? (
+                                    <>
+                                        <FiX className="mr-1" /> Masquer
+                                    </>
+                                ) : (
+                                    <>
+                                        <FiPlus className="mr-1" /> Afficher
+                                    </>
+                                )}
+                            </button>
+                        </div>
+
+                        {showPreview && (
+                            <div className="mt-4 space-y-6">
+                                {/* Informations personnelles */}
+                                <div className="border-b border-gray-200 pb-4">
+                                    <h4 className="text-md font-medium text-gray-800 mb-3">1. Informations personnelles</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-500">Nom complet</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.nomFamille} {formData.personalInfo.prenoms}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Date de naissance</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.dateNaissance}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Email</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.email}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Téléphone</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.numeroTelephone}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Adresse</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.adressePostale}, {formData.personalInfo.villePostale}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-green-800">Demande soumise avec succès</h3>
-                                    <div className="mt-2 text-sm text-green-700">
-                                        <p>Votre demande a été envoyée avec succès. Vous recevrez un accusé de réception par email.</p>
+
+                                {/* Antécédents */}
+                                <div className="border-b border-gray-200 pb-4">
+                                    <h4 className="text-md font-medium text-gray-800 mb-3">2. Antécédents et historique</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-500">Demande précédente au Canada</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.background.demandePrecedenteCanada === 'oui' ? 'Oui' : 'Non'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Antécédents judiciaires</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.background.antecedentsJudiciaires === 'oui' ? 'Oui' : 'Non'}
+                                            </p>
+                                        </div>
+                                        {formData.background.serviceMilitaire === 'Oui' && (
+                                            <div className="col-span-2">
+                                                <p className="text-sm text-gray-500">Service militaire</p>
+                                                <div className="mt-1 space-y-2">
+                                                    {formData.background.detailsService.map((service, index) => (
+                                                        <div key={index} className="text-sm font-medium text-gray-900">
+                                                            {service.organisation} ({service.pays}) - {service.de} à {service.a}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Informations familiales */}
+                                <div className="border-b border-gray-200 pb-4">
+                                    <h4 className="text-md font-medium text-gray-800 mb-3">3. Informations familiales</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-500">État matrimonial</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.familyInfo.applicant.maritalStatus}
+                                            </p>
+                                        </div>
+                                        {formData.familyInfo.children.length > 0 && (
+                                            <div>
+                                                <p className="text-sm text-gray-500">Nombre d'enfants</p>
+                                                <p className="text-sm font-medium text-gray-900">
+                                                    {formData.familyInfo.children.length}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Documents */}
+                                <div>
+                                    <h4 className="text-md font-medium text-gray-800 mb-3">4. Documents fournis</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-500">Passeport</p>
+                                            <p className="text-sm font-medium text-gray-900 flex items-center">
+                                                {formData.documents.identite.passeport.provided ? (
+                                                    <>
+                                                        <FiCheck className="text-green-500 mr-1" />
+                                                        {formData.documents.identite.passeport.file?.name || 'Fichier fourni'}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FiX className="text-red-500 mr-1" />
+                                                        Manquant
+                                                    </>
+                                                )}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Acte de naissance</p>
+                                            <p className="text-sm font-medium text-gray-900 flex items-center">
+                                                {formData.documents.identite.acteNaissance.provided ? (
+                                                    <>
+                                                        <FiCheck className="text-green-500 mr-1" />
+                                                        {formData.documents.identite.acteNaissance.file?.name || 'Fichier fourni'}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FiX className="text-red-500 mr-1" />
+                                                        Manquant
+                                                    </>
+                                                )}
+                                            </p>
+                                        </div>
+                                        {formData.documents.identite.acteMariage.provided && (
+                                            <div>
+                                                <p className="text-sm text-gray-500">Acte de mariage</p>
+                                                <p className="text-sm font-medium text-gray-900 flex items-center">
+                                                    <FiCheck className="text-green-500 mr-1" />
+                                                    {formData.documents.identite.acteMariage.file?.name || 'Fichier fourni'}
+                                                </p>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <p className="text-sm text-gray-500">Photo d'identité</p>
+                                            <p className="text-sm font-medium text-gray-900 flex items-center">
+                                                {formData.documents.identite.photo.provided ? (
+                                                    <>
+                                                        <FiCheck className="text-green-500 mr-1" />
+                                                        {formData.documents.identite.photo.file?.name || 'Fichier fourni'}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FiX className="text-red-500 mr-1" />
+                                                        Manquant
+                                                    </>
+                                                )}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ) : submitStatus === "error" ? (
-                        <div className="rounded-md bg-red-50 p-4">
-                            <div className="flex">
-                                <div className="flex-shrink-0">
-                                    <FiX className="h-5 w-5 text-red-400" />
-                                </div>
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-red-800">Erreur lors de la soumission</h3>
-                                    <div className="mt-2 text-sm text-red-700">
-                                        <p>Une erreur est survenue lors de l'envoi de votre demande. Veuillez réessayer ou contacter le support technique.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ) : null}
+                        )}
+                    </div>
+
+                    {/* Boutons de navigation */}
+                    
                 </div>
             )
         }
@@ -2671,16 +2849,16 @@ const CombinedApplicationForm = () => {
                             >
                                 {/* Cercle de l'étape */}
                                 <span className={`
-              flex items-center justify-center 
-              w-8 h-8 sm:w-10 sm:h-10 rounded-full 
-              ${index === activeStep
+                                    flex items-center justify-center 
+                                    w-8 h-8 sm:w-10 sm:h-10 rounded-full 
+                                    ${index === activeStep
                                         ? 'bg-primary text-white border-2 border-primary shadow-md'
                                         : index < activeStep
                                             ? 'bg-primary-100 text-primary border-2 border-primary'
                                             : 'bg-gray-50 border-2 border-gray-300'
                                     }
-              transition-all duration-300
-            `}>
+                                    transition-all duration-300
+                                `}>
                                     {index < activeStep ? (
                                         <FiCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                                     ) : (
@@ -2690,11 +2868,11 @@ const CombinedApplicationForm = () => {
 
                                 {/* Titre de l'étape - masqué sur mobile si trop long */}
                                 <span className={`
-              mt-2 sm:mt-3 text-xs sm:text-sm font-medium 
-              ${index === activeStep ? 'text-primary font-semibold' : 'text-gray-500'}
-              transition-all duration-300
-              ${steps.length > 4 ? 'hidden xs:block' : ''}
-            `}>
+                                    mt-2 sm:mt-3 text-xs sm:text-sm font-medium 
+                                    ${index === activeStep ? 'text-primary font-semibold' : 'text-gray-500'}
+                                    transition-all duration-300
+                                    ${steps.length > 4 ? 'hidden xs:block' : ''}
+                                `}>
                                     {step.title.split(' ')[0]} {steps.length <= 4 && step.title.split(' ').slice(1).join(' ')}
                                 </span>
                             </button>
@@ -2702,11 +2880,11 @@ const CombinedApplicationForm = () => {
                             {/* Ligne de séparation entre les étapes - masquée sur mobile si trop d'étapes */}
                             {index < steps.length - 1 && (
                                 <div className={`
-              w-8 sm:w-16 h-1 mx-1 sm:mx-2
-              ${index < activeStep ? 'bg-primary' : 'bg-gray-200'}
-              transition-all duration-500
-              ${steps.length > 4 ? 'hidden sm:block' : ''}
-            `}></div>
+                                    w-8 sm:w-16 h-1 mx-1 sm:mx-2
+                                    ${index < activeStep ? 'bg-primary' : 'bg-gray-200'}
+                                    transition-all duration-500
+                                    ${steps.length > 4 ? 'hidden sm:block' : ''}
+                                `}></div>
                             )}
                         </div>
                     ))}
@@ -2718,53 +2896,57 @@ const CombinedApplicationForm = () => {
                 {steps[activeStep].component}
 
                 {/* Boutons de navigation responsive */}
-                <div className="mt-6 sm:mt-10 flex justify-between border-t pt-4 sm:pt-6">
-                    {activeStep > 0 ? (
-                        <button
-                            type="button"
-                            onClick={prevStep}
-                            className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-gray-300 shadow-sm text-sm sm:text-base font-medium rounded-md sm:rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
-                        >
-                            <FiChevronLeft className="mr-1 sm:mr-2" />
-                            <span className="hidden xs:inline">Précédent</span>
-                        </button>
-                    ) : (
-                        <div></div>
-                    )}
+                {!showPreview && (
+                    <div className="mt-6 sm:mt-10 flex justify-between border-t pt-4 sm:pt-6">
+                        {activeStep > 0 ? (
+                            <button
+                                type="button"
+                                onClick={prevStep}
+                                className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-gray-300 shadow-sm text-sm sm:text-base font-medium rounded-md sm:rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
+                            >
+                                <FiChevronLeft className="mr-1 sm:mr-2" />
+                                <span className="hidden xs:inline">Précédent</span>
+                            </button>
+                        ) : (
+                            <div></div>
+                        )}
 
-                    {activeStep < steps.length - 1 ? (
-                        <button
-                            type="button"
-                            onClick={nextStep}
-                            className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
-                        >
-                            <span className="hidden xs:inline">Suivant</span>
-                            <FiChevronRight className="ml-1 sm:ml-2" />
-                        </button>
-                    ) : (
-                        <button
-                            type="submit"
-                            disabled={submitStatus === "loading" || !formData.declarationAgreed}
-                            className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
-                        >
-                            {submitStatus === "loading" ? (
-                                <>
-                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    <span className="hidden sm:inline">Envoi en cours...</span>
-                                    <span className="sm:hidden">Envoi...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="hidden sm:inline">Soumettre la demande</span>
-                                    <span className="sm:hidden">Soumettre</span>
-                                </>
-                            )}
-                        </button>
-                    )}
-                </div>
+                        {activeStep < steps.length - 1 ? (
+                            <button
+                                type="button"
+                                onClick={nextStep}
+                                className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
+                            >
+                                <span className="hidden xs:inline">Suivant</span>
+                                <FiChevronRight className="ml-1 sm:ml-2" />
+                            </button>
+                        ) : (
+                            <button
+                                type="submit"
+                                disabled={submitStatus === "loading" || !formData.declarationAgreed}
+                                className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                            >
+                                {submitStatus === "loading" ? (
+                                    <>
+                                        <div className="flex items-center">
+                                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span className="hidden sm:inline">Envoi en cours...</span>
+                                            <span className="sm:hidden">Envoi...</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="hidden sm:inline">Soumettre la demande</span>
+                                        <span className="sm:hidden">Soumettre</span>
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
+                )}
             </form>
         </div>
     );

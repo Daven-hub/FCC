@@ -1,3 +1,4 @@
+import { showErrorToast } from "../components/Toast/Toast";
 import api from "./api";
 
 export const submitCanadianForm = async (formData) => {
@@ -63,7 +64,7 @@ export const submitCombinedApplication = async (formData) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error submitting application:', error);
+    showErrorToast('')
     throw error;
   }
 };
