@@ -39,10 +39,10 @@ const styles = StyleSheet.create({
 
 export const HeaderT=()=>(
   <View style={[styles.row,{backgroundColor:"#80808065"}]}>
-      <View style={[styles.col,{width:"70%",paddingVertical:15,alignItems:"center",justifyContent:"center",borderRight:1}]}>
+      <View style={[styles.col,{width:"70%",paddingVertical:10,alignItems:"center",justifyContent:"center",borderRight:1}]}>
         <Text style={[styles.form2_titre,{fontWeight:"bold"}]}>Titre du document</Text>
       </View>
-      <View style={[styles.col,{width:"30%",paddingVertical:15,alignItems:"center",justifyContent:"center"}]}>
+      <View style={[styles.col,{width:"30%",paddingVertical:10,alignItems:"center",justifyContent:"center"}]}>
         <Text style={[styles.form2_titre,{fontWeight:"bold"}]}>Télèversez?</Text>
       </View>
   </View>
@@ -54,19 +54,16 @@ export const BodyT=({item})=>(
         <Text style={[styles.form2_titre,{lineHeight:1.4,fontWeight:"bold"}]}>{item?.nom}</Text>
       </View>
       <View style={[styles.row,{width:"30%", padding:3,alignItems:"center",justifyContent:"center"}]}>
-        {/* <Text style={[styles.form2_text]}>{item?.province}</Text> */}
-        {/* <View style={[styles.row,{ paddingVertical: 6,paddingHorizontal: 12, width: "100%", flexDirection: "column", gap: 6 }]}> */}
             <View style={[[styles.row,{gap:15,alignItems:"center"}]]}>
                 <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-                <View style={{borderWidth:1,borderColor:"black", width:8, height:8,backgroundColor:item.provided?"black":"white"}}></View>
-                <Text style={styles.form2_text}>* OUI</Text>
+                    <View style={{borderWidth:1,borderColor:"black", width:8, height:8,backgroundColor:item.provided?"black":"white"}}></View>
+                    <Text style={styles.form2_text}>OUI</Text>
                 </View>
                 <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-                <View style={{borderWidth:1,borderColor:"black", width:8, height:8,backgroundColor:!item.provided?"black":"white"}}></View>
-                <Text style={styles.form2_text}>* NON</Text>
+                    <View style={{borderWidth:1,borderColor:"black", width:8, height:8,backgroundColor:!item.provided?"black":"white"}}></View>
+                    <Text style={styles.form2_text}>NON</Text>
                 </View>
             </View>
-        {/* </View> */}
       </View>
   </View>
 )

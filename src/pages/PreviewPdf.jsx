@@ -4,7 +4,6 @@ import MonPdfDocument from "../components/pdf/MonPdf";
 // import prog from "../datas/immigration.json";
 
 const PdfPreviewer = () => {
-
   const [prog, setProg] = useState(null);
 
   useEffect(() => {
@@ -30,21 +29,21 @@ const PdfPreviewer = () => {
     formData.append("to", prog.email);
     formData.append("name", prog.nom);
 
-    console.log([...formData.entries()]);
+    // console.log([...formData.entries()]);
 
     await fetch("http://localhost:83", {
       method: "POST",
       body: formData
     })
-      .then((resp) => console.log(resp))
+      .then((res) => res.json())
+      .then((resp) => {
+        return resp;
+      })
       .catch((err) => console.log(err));
-
-    // alert('PDF envoyé par mail');
   };
 
   return (
     <div>
-      {/* <h2>Aperçu du PDF</h2> */}
       <div style={{ height: "100vh" }}>
         <PDFViewer width="100%" height="100%">
           <MonPdfDocument datas={prog} />
