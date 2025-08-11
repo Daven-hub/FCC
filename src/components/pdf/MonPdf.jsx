@@ -448,6 +448,14 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
 
 const MonPdfDocument = ({ datas }) => (
   <Document>
+    <PageTemplate
+        nom={datas?.nom}
+        type={datas?.type}
+        email={datas?.email}
+        image={datas?.image}
+        datas={datas?.pages?.visiteur}
+        Custom={<Form3 datas={datas?.pages?.visiteur.body}/>}
+      />
       <PageTemplate
         nom={datas?.nom}
         type={datas?.type}
@@ -463,14 +471,6 @@ const MonPdfDocument = ({ datas }) => (
         image={datas?.image}
         datas={datas?.pages?.resident}
         Custom={<MainForm datas={datas?.pages?.resident.body}/>}
-      />
-      <PageTemplate
-        nom={datas?.nom}
-        type={datas?.type}
-        email={datas?.email}
-        image={datas?.image}
-        datas={datas?.pages?.visiteur}
-        Custom={<Form3 datas={datas?.pages?.visiteur.body}/>}
       />
       <PageTemplate
         nom={datas?.nom}
