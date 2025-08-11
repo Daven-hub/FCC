@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { submitCombinedApplication } from '../../services/annexeSrvice';
+import { showErrorToast } from '../Toast/Toast';
 
 const CombinedApplicationForm = () => {
     const [activeStep, setActiveStep] = useState(0);
+    const [showPreview, setShowPreview] = useState(false);
 
     const [formData, setFormData] = useState({
         // Étape 1: Informations personnelles
@@ -145,37 +147,141 @@ const CombinedApplicationForm = () => {
         },
 
         // Étape 4: Documents
-        documents: {
-            identite: {
-                acteNaissance: { provided: false, file: null },
-                passeport: { provided: false, file: null },
-                acteMariage: { provided: false, file: null },
-                photo: { provided: false, file: null },
-                cni: { provided: false, file: null }
+        documents: [
+            {
+                titre: "Documents Identité Personnelle",
+                corps: [
+                    {
+                        titre: "ActeNaissance",
+                        provided: false,
+                        file: null,
+                        required: true
+                    },
+                    {
+                        titre: "Passeport",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        condition: (data) => data.personalInfo.dateExpirationPasseport &&
+                            new Date(data.personalInfo.dateExpirationPasseport) > new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+                    },
+                    {
+                        titre: "ActeMariage",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => ['marie', 'union'].includes(data.personalInfo.etatMatrimonial)
+                    },
+                    {
+                        titre: "Photo",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        specifications: "35x45mm, fond clair"
+                    },
+                    {
+                        titre: "CNI",
+                        provided: false,
+                        file: null,
+                        required: false
+                    }
+                ]
             },
-            preuvesFonds: {
-                documentsEntreprise: { provided: false, file: null },
-                relevesBancairesEntreprise: { provided: false, file: null },
-                relevesBancairesPersonnels: { provided: false, file: null }
+            {
+                titre: "Documents Preuves de Fonds",
+                corps: [
+                    {
+                        titre: "DocumentsEntreprise",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        condition: (data) => data.personalInfo.occupation === 'independant'
+                    },
+                    {
+                        titre: "RelevesBancairesEntreprise",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        period: "6 derniers mois",
+                        condition: (data) => data.personalInfo.occupation === 'independant'
+                    },
+                    {
+                        titre: "RelevesBancairesPersonnels",
+                        provided: false,
+                        file: null,
+                        required: true,
+                        period: "6 derniers mois"
+                    }
+                ]
             },
-            autres: {
-                visaAnterieur: { provided: false, file: null },
-                assuranceVoyage: { provided: false, file: null },
-                reservationHotel: { provided: false, file: null },
-                billetsAvion: { provided: false, file: null }
+            {
+                titre: "Autres Documents",
+                corps: [
+                    {
+                        titre: "VisaAnterieur",
+                        provided: false,
+                        file: null,
+                        required: false
+                    },
+                    {
+                        titre: "AssuranceVoyage",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => {
+                            const dob = new Date(data.personalInfo.dateNaissance);
+                            const age = new Date().getFullYear() - dob.getFullYear();
+                            return age >= 60;
+                        }
+                    },
+                    {
+                        titre: "ReservationHotel",
+                        provided: false,
+                        file: null,
+                        required: false
+                    },
+                    {
+                        titre: "BilletsAvion",
+                        provided: false,
+                        file: null,
+                        required: false
+                    }
+                ]
             },
-            avertissements: {
-                refusVisaCanada: { provided: false, file: null },
-                demandeVisaEnCours: { provided: false, file: null },
-                titreSejourEtranger: { provided: false, file: null }
+            {
+                titre: "Avertissements",
+                corps: [
+                    {
+                        titre: "RefusVisaCanada",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => data.background.refusEntree === 'oui'
+                    },
+                    {
+                        titre: "DemandeVisaEnCours",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => data.background.demandePrecedenteCanada === 'oui'
+                    },
+                    {
+                        titre: "TitreSejourEtranger",
+                        provided: false,
+                        file: null,
+                        required: false,
+                        condition: (data) => data.personalInfo.paysResidenceActuelle !== data.personalInfo.paysNaissance
+                    }
+                ]
             }
-        },
+        ],
 
         declarationAgreed: false
     });
 
     const [submitStatus, setSubmitStatus] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({});
+    const [submittedData, setSubmittedData] = useState(null);
 
     const handleChange = (section, field, value) => {
         setFormData(prev => ({
@@ -239,52 +345,188 @@ const CombinedApplicationForm = () => {
         });
     };
 
-    const handleFileUpload = (category, document, file) => {
+    const handleFileUpload = (sectionIndex, docIndex, file) => {
         if (!file) return;
 
+        // Validation de la taille
         if (file.size > 4 * 1024 * 1024) {
             alert('La taille maximale du fichier est de 4MB');
             return;
         }
 
-        const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+        // Validation du type
+        const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
         if (!validTypes.includes(file.type)) {
             alert('Seuls les fichiers PDF, JPEG et PNG sont acceptés');
             return;
         }
 
-        setFormData(prev => ({
+        // Créer un objet avec toutes les métadonnées du fichier
+        const fileDetails = {
+            file: file,
+            fileObject: file,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            lastModified: file.lastModified,
+            lastModifiedDate: new Date(file.lastModified).toLocaleDateString(),
+            uploadDate: new Date().toISOString(),
+            status: 'uploaded'
+        };
+
+        // Mise à jour de l'état avec toutes les métadonnées
+        setFormData(prev => {
+            const newDocuments = [...prev.documents];
+            newDocuments[sectionIndex] = {
+                ...newDocuments[sectionIndex],
+                corps: [...newDocuments[sectionIndex].corps]
+            };
+
+            newDocuments[sectionIndex].corps[docIndex] = {
+                ...newDocuments[sectionIndex].corps[docIndex],
+                provided: true,
+                ...fileDetails
+            };
+
+            return {
+                ...prev,
+                documents: newDocuments
+            };
+        });
+
+        // Mise à jour de la progression de l'upload
+        setUploadProgress(prev => ({
             ...prev,
-            documents: {
-                ...prev.documents,
-                [category]: {
-                    ...prev.documents[category],
-                    [document]: {
-                        provided: true,
-                        file: file,
-                        name: file.name,
-                        size: file.size,
-                        type: file.type
-                    }
-                }
+            [`${sectionIndex}-${docIndex}`]: {
+                progress: 0,
+                fileName: file.name
             }
         }));
+
+        // Simulation de la progression de l'upload
+        const interval = setInterval(() => {
+            setUploadProgress(prev => {
+                const currentProgress = prev[`${sectionIndex}-${docIndex}`]?.progress || 0;
+                if (currentProgress >= 100) {
+                    clearInterval(interval);
+                    return prev;
+                }
+                return {
+                    ...prev,
+                    [`${sectionIndex}-${docIndex}`]: {
+                        ...prev[`${sectionIndex}-${docIndex}`],
+                        progress: currentProgress + 10
+                    }
+                };
+            });
+        }, 200);
     };
 
-    const handleRemoveFile = (category, document) => {
-        setFormData(prev => ({
-            ...prev,
-            documents: {
-                ...prev.documents,
-                [category]: {
-                    ...prev.documents[category],
-                    [document]: { provided: false, file: null }
-                }
-            }
-        }));
+    const handleRemoveFile = (sectionIndex, docIndex) => {
+        setFormData(prev => {
+            const newDocuments = [...prev.documents];
+            newDocuments[sectionIndex] = {
+                ...newDocuments[sectionIndex],
+                corps: [...newDocuments[sectionIndex].corps]
+            };
+
+            newDocuments[sectionIndex].corps[docIndex] = {
+                ...newDocuments[sectionIndex].corps[docIndex],
+                provided: false,
+                file: null
+            };
+
+            return {
+                ...prev,
+                documents: newDocuments
+            };
+        });
+    };
+
+    const validateCurrentStep = (stepIndex) => {
+        switch (stepIndex) {
+            case 0: // Informations personnelles
+                return (
+                    formData.personalInfo.nomFamille &&
+                    formData.personalInfo.prenoms &&
+                    formData.personalInfo.dateNaissance &&
+                    formData.personalInfo.sexe &&
+                    formData.personalInfo.email &&
+                    formData.personalInfo.villeNaissance &&
+                    formData.personalInfo.paysNaissance &&
+                    formData.personalInfo.citoyennete &&
+                    formData.personalInfo.langueMaternelle &&
+                    formData.personalInfo.langueAise &&
+                    formData.personalInfo.communicationDeuxLangues &&
+                    formData.personalInfo.evaluationLangue &&
+                    formData.personalInfo.numeroPasseport &&
+                    formData.personalInfo.paysDelivrancePasseport &&
+                    formData.personalInfo.dateDelivrancePasseport &&
+                    formData.personalInfo.dateExpirationPasseport &&
+                    formData.personalInfo.passeportTaiwan &&
+                    formData.personalInfo.passeportIsrael &&
+                    formData.personalInfo.adressePostale &&
+                    formData.personalInfo.villePostale &&
+                    formData.personalInfo.paysPostal &&
+                    formData.personalInfo.numeroTelephone
+                );
+
+            case 1: // Antécédents et historique
+                return (
+                    formData.background.tuberculoseContact &&
+                    formData.background.statutExpire &&
+                    formData.background.refusEntree &&
+                    formData.background.demandePrecedenteCanada &&
+                    formData.background.antecedentsJudiciaires &&
+                    formData.background.serviceMilitaire &&
+                    formData.background.temoinViolations &&
+                    formData.background.affiliationOrganisation &&
+                    formData.background.chargePublique
+                );
+
+            case 2: // Informations familiales
+                return (
+                    formData.familyInfo.applicant.name &&
+                    formData.familyInfo.applicant.dob &&
+                    formData.familyInfo.applicant.country &&
+                    formData.familyInfo.applicant.occupation &&
+                    formData.familyInfo.applicant.maritalStatus &&
+                    formData.familyInfo.applicant.address &&
+                    formData.familyInfo.father.name &&
+                    formData.familyInfo.father.dob &&
+                    formData.familyInfo.father.country &&
+                    formData.familyInfo.father.occupation &&
+                    formData.familyInfo.father.address &&
+                    formData.familyInfo.mother.name &&
+                    formData.familyInfo.mother.dob &&
+                    formData.familyInfo.mother.country &&
+                    formData.familyInfo.mother.occupation &&
+                    formData.familyInfo.mother.address
+                );
+
+            case 3: // Documents
+                // Vérifie que tous les documents obligatoires sont fournis
+                return formData.documents.every(section =>
+                    section.corps.every(doc =>
+                        !doc.required ||
+                        (doc.condition && !doc.condition(formData)) ||
+                        doc.provided
+                    ));
+
+            case 4: // Déclaration
+                return formData.declarationAgreed;
+
+            default:
+                return false;
+        }
     };
 
     const nextStep = () => {
+        if (!validateCurrentStep(activeStep)) {
+            showErrorToast("Veuillez remplir tous les champs obligatoires avant de passer à l'étape suivante.")
+            return;
+        }
+
         if (activeStep < steps.length - 1) {
             setActiveStep(activeStep + 1);
         }
@@ -301,24 +543,57 @@ const CombinedApplicationForm = () => {
         setSubmitStatus("loading");
 
         try {
-            await submitCombinedApplication(formData);
+            const formDataToSend = new FormData();
+
+            // Créer l'objet de données à envoyer
+            const applicationData = {
+                personalInfo: formData.personalInfo,
+                background: formData.background,
+                familyInfo: formData.familyInfo,
+                declarationAgreed: formData.declarationAgreed
+            };
+
+            formDataToSend.append('applicationData', JSON.stringify(applicationData));
+
+            // Ajouter les fichiers
+            formData.documents.forEach((section, sectionIndex) => {
+                section.corps.forEach((doc, docIndex) => {
+                    if (doc.provided && doc.file) {
+                        formDataToSend.append(`documents[${sectionIndex}][${docIndex}]`, doc.file);
+                    }
+                });
+            });
+            console.log(formData);
+
+
+
+
+            await submitCombinedApplication(formDataToSend);
             setSubmitStatus("success");
         } catch (error) {
-            console.error("Submission error:", error);
+            console.error("Erreur de soumission:", error);
             setSubmitStatus("error");
         }
     };
 
-    const FileUpload = ({ category, document, label, required = false }) => {
-        const docState = formData.documents[category][document];
-        const progress = uploadProgress[`${category}-${document}`];
+    const FileUpload = ({ sectionIndex, docIndex, label, required, specifications, period }) => {
+        const docState = formData.documents[sectionIndex].corps[docIndex];
+        const uploadState = uploadProgress[`${sectionIndex}-${docIndex}`];
 
         return (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex justify-between items-center mb-2">
-                    <label className="font-medium text-gray-700">
-                        {label} {required && <span className="text-red-500">*</span>}
-                    </label>
+                <div className="flex justify-between items-start mb-2">
+                    <div>
+                        <label className="font-medium text-gray-700">
+                            {label} {required && <span className="text-red-500">*</span>}
+                        </label>
+                        {specifications && (
+                            <p className="text-xs text-gray-500 mt-1">{specifications}</p>
+                        )}
+                        {period && (
+                            <p className="text-xs text-gray-500 mt-1">Période: {period}</p>
+                        )}
+                    </div>
                     {docState.provided ? (
                         <span className="flex items-center text-green-600">
                             <FiCheck className="mr-1" /> Fourni
@@ -329,49 +604,128 @@ const CombinedApplicationForm = () => {
                 </div>
 
                 {docState.provided ? (
-                    <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
-                        <div>
-                            <p className="font-medium">{docState.file.name}</p>
-                            <p className="text-sm text-gray-500">
-                                {(docState.file.size / 1024).toFixed(1)} KB - {docState.file.type}
-                            </p>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
+                            <div>
+                                <p className="font-medium">{docState.name}</p>
+                                <p className="text-sm text-gray-500">
+                                    {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1].toUpperCase()}
+                                </p>
+                                <p className="text-xs text-gray-400">
+                                    Téléversé le: {new Date(docState.uploadDate).toLocaleString()}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => handleRemoveFile(sectionIndex, docIndex)}
+                                className="text-red-500 hover:text-red-700 p-1"
+                            >
+                                <FiTrash2 />
+                            </button>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => handleRemoveFile(category, document)}
-                            className="text-red-500 hover:text-red-700 p-1"
-                        >
-                            <FiTrash2 />
-                        </button>
-                    </div>
-                ) : (
-                    <div className="relative">
-                        {progress !== undefined ? (
-                            <div className="bg-gray-200 rounded-full h-2.5">
+
+                        {uploadState?.progress > 0 && uploadState.progress < 100 && (
+                            <div className="w-full bg-gray-200 rounded-full h-2.5">
                                 <div
                                     className="bg-blue-600 h-2.5 rounded-full"
-                                    style={{ width: `${progress}%` }}
+                                    style={{ width: `${uploadState.progress}%` }}
                                 ></div>
-                            </div>
-                        ) : (
-                            <label className="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <FiUpload className="w-8 h-8 text-gray-400 mb-2" />
-                                <p className="text-sm text-gray-500">
-                                    <span className="font-medium text-blue-600">Cliquer pour uploader</span> ou glisser-déposer
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Téléversement: {uploadState.progress}% - {uploadState.fileName}
                                 </p>
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    onChange={(e) => handleFileUpload(category, document, e.target.files[0])}
-                                    accept=".pdf,.jpg,.jpeg,.png"
-                                    required={required}
-                                />
-                            </label>
+                            </div>
                         )}
                     </div>
+                ) : (
+                    <label className="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                        <FiUpload className="w-8 h-8 text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-500">
+                            <span className="font-medium text-blue-600">Cliquer pour uploader</span> ou glisser-déposer
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">Formats acceptés: PDF, JPG, PNG (max 4MB)</p>
+                        <input
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => handleFileUpload(sectionIndex, docIndex, e.target.files[0])}
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required={required}
+                        />
+                    </label>
                 )}
             </div>
         );
+    };
+
+    const renderStepTitle = () => {
+        const titles = [
+            "Informations personnelles",
+            "Antécédents et historique",
+            "Informations familiales",
+            "Documents requis",
+            "Déclaration et soumission"
+        ];
+
+        return (
+            <div className="mb-6 border-b pb-4">
+                <h2 className="text-xl font-bold text-gray-800">
+                    Étape {activeStep + 1} : {titles[activeStep]}
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                    {getStepDescription(activeStep)}
+                </p>
+            </div>
+        );
+    };
+
+    const getStepDescription = (step) => {
+        const descriptions = [
+            "Remplissez vos informations personnelles. Tous les champs sont obligatoires.",
+            "Fournissez vos antécédents complets. Soyez précis et honnête.",
+            "Ajoutez les informations sur votre famille immédiate.",
+            "Téléchargez tous les documents requis. Formats acceptés : PDF, JPG, PNG.",
+            "Lisez attentivement et acceptez la déclaration avant de soumettre."
+        ];
+        return descriptions[step];
+    };
+
+    const getDocumentLabel = (docKey, formData) => {
+        const labels = {
+            'ActeNaissance': 'Acte de Naissance',
+            'Passeport': 'Passeport en cours de validité (1 an minimum)',
+            'ActeMariage': 'Photocopie Acte de Mariage',
+            'Photo': '01 photo couleur format passeport (35x45mm)',
+            'CNI': 'Carte Nationale d\'Identité (CNI)',
+            'DocumentsEntreprise': 'Documents d\'entreprise (Immatriculation, RC, etc.)',
+            'RelevesBancairesEntreprise': 'Relevés bancaires entreprise (6 derniers mois)',
+            'RelevesBancairesPersonnels': 'Relevés bancaires personnels (6 derniers mois)',
+            'VisaAnterieur': 'Copie scannée visa antérieur',
+            'AssuranceVoyage': 'Assurance voyage (obligatoire si 60 ans et plus)',
+            'ReservationHotel': 'Preuve de réservation d\'hôtel',
+            'BilletsAvion': 'Réservation de billets d\'avion Aller/Retour',
+            'RefusVisaCanada': 'Lettre de refus de visa Canada (si applicable)',
+            'DemandeVisaEnCours': 'Preuve de demande de visa en cours',
+            'TitreSejourEtranger': 'Titre de séjour étranger (si applicable)'
+        };
+
+        return labels[docKey] || docKey;
+    };
+
+    // Fonction pour déterminer si un document est obligatoire
+    const isDocumentRequired = (docKey) => {
+        const requiredDocs = [
+            'actetenaissance',
+            'passeport',
+            'photo',
+            'relevesbancairespersonnels'
+        ];
+
+        // Acte de mariage est requis si marié
+        if (docKey.toLowerCase() === 'actemariage' &&
+            ['marie', 'union'].includes(formData.personalInfo.etatMatrimonial)) {
+            return true;
+        }
+
+        return requiredDocs.includes(docKey.toLowerCase());
     };
 
     const steps = [
@@ -1415,6 +1769,7 @@ const CombinedApplicationForm = () => {
             title: "Antécédents et historique",
             component: (
                 <div className="space-y-6">
+                    {/* Premier antécédent (tuberculose) - reste inchangé */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous été en contact étroit avec une personne atteinte de tuberculose ou avez-vous un trouble physique ou mental qui pourrait constituer un danger pour la santé ou la sécurité publiques ?</label>
                         <div className="flex gap-4 mt-1">
@@ -1452,6 +1807,7 @@ const CombinedApplicationForm = () => {
                         )}
                     </div>
 
+                    {/* Deuxième antécédent (statut expiré) */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà eu un statut d'immigration ou de résidence temporaire au Canada qui a expiré et vous avez continué à rester au Canada ?</label>
                         <div className="flex gap-4 mt-1">
@@ -1475,8 +1831,21 @@ const CombinedApplicationForm = () => {
                                 <span className="ml-2">Oui</span>
                             </label>
                         </div>
+                        {formData.background.statutExpire === "oui" && (
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails du statut expiré</label>
+                                <textarea
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    rows={3}
+                                    value={formData.background.detailsStatutExpire}
+                                    onChange={e => handleChange('background', 'detailsStatutExpire', e.target.value)}
+                                    required
+                                />
+                            </div>
+                        )}
                     </div>
 
+                    {/* Troisième antécédent (refus d'entrée) */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été refusé l'entrée au Canada ou fait l'objet d'une ordonnance de renvoi ?</label>
                         <div className="flex gap-4 mt-1">
@@ -1500,8 +1869,21 @@ const CombinedApplicationForm = () => {
                                 <span className="ml-2">Oui</span>
                             </label>
                         </div>
+                        {formData.background.refusEntree === "oui" && (
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails du refus d'entrée ou ordonnance de renvoi</label>
+                                <textarea
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    rows={3}
+                                    value={formData.background.detailsRefusEntree}
+                                    onChange={e => handleChange('background', 'detailsRefusEntree', e.target.value)}
+                                    required
+                                />
+                            </div>
+                        )}
                     </div>
 
+                    {/* Quatrième antécédent (demande précédente) */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà fait une demande de visa, permis ou statut de résidence permanent pour le Canada ?</label>
                         <div className="flex gap-4 mt-1">
@@ -1525,20 +1907,19 @@ const CombinedApplicationForm = () => {
                                 <span className="ml-2">Oui</span>
                             </label>
                         </div>
+                        {formData.background.demandePrecedenteCanada === "oui" && (
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails de la demande précédente</label>
+                                <textarea
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    rows={3}
+                                    value={formData.background.detailsDemandePrecedente}
+                                    onChange={e => handleChange('background', 'detailsDemandePrecedente', e.target.value)}
+                                    required
+                                />
+                            </div>
+                        )}
                     </div>
-
-                    {(formData.background.statutExpire === "oui" || formData.background.refusEntree === "oui" || formData.background.demandePrecedenteCanada === "oui") && (
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
-                            <textarea
-                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                rows={3}
-                                value={formData.background.detailsStatutRefusDemande}
-                                onChange={e => handleChange('background', 'detailsStatutRefusDemande', e.target.value)}
-                                required
-                            />
-                        </div>
-                    )}
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous des antécédents judiciaires dans n'importe quel pays, y compris des condamnations, des accusations en cours ou des enquêtes criminelles ?</label>
@@ -2270,7 +2651,7 @@ const CombinedApplicationForm = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayEntry('familyInfo', 'children')}
-                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 <FiPlus className="mr-1" /> Ajouter un enfant
                             </button>
@@ -2357,7 +2738,7 @@ const CombinedApplicationForm = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayEntry('familyInfo', 'siblings')}
-                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 <FiPlus className="mr-1" /> Ajouter un frère/sœur
                             </button>
@@ -2443,135 +2824,52 @@ const CombinedApplicationForm = () => {
         {
             title: "Documents",
             component: (
-                <div className="space-y-6">
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Documents d'identité</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileUpload
-                                category="identite"
-                                document="acteNaissance"
-                                label="Acte de naissance"
-                                required
-                            />
-                            <FileUpload
-                                category="identite"
-                                document="passeport"
-                                label="Passeport (pages avec photo et informations)"
-                                required
-                            />
-                            {(formData.personalInfo.etatMatrimonial === "marie" || formData.personalInfo.etatMatrimonial === "union") && (
-                                <FileUpload
-                                    category="identite"
-                                    document="acteMariage"
-                                    label="Acte de mariage ou preuve d'union"
-                                    required
-                                />
-                            )}
-                            <FileUpload
-                                category="identite"
-                                document="photo"
-                                label="Photo d'identité récente"
-                                required
-                            />
-                            <FileUpload
-                                category="identite"
-                                document="cni"
-                                label="Carte nationale d'identité (si disponible)"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Preuves de fonds</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileUpload
-                                category="preuvesFonds"
-                                document="documentsEntreprise"
-                                label="Documents d'entreprise (si indépendant)"
-                            />
-                            <FileUpload
-                                category="preuvesFonds"
-                                document="relevesBancairesEntreprise"
-                                label="Relevés bancaires d'entreprise (3 derniers mois)"
-                            />
-                            <FileUpload
-                                category="preuvesFonds"
-                                document="relevesBancairesPersonnels"
-                                label="Relevés bancaires personnels (3 derniers mois)"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Autres documents</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileUpload
-                                category="autres"
-                                document="visaAnterieur"
-                                label="Visa canadien antérieur (si applicable)"
-                            />
-                            <FileUpload
-                                category="autres"
-                                document="assuranceVoyage"
-                                label="Preuve d'assurance voyage"
-                            />
-                            <FileUpload
-                                category="autres"
-                                document="reservationHotel"
-                                label="Réservation d'hôtel ou hébergement"
-                            />
-                            <FileUpload
-                                category="autres"
-                                document="billetsAvion"
-                                label="Billets d'avion (si déjà réservés)"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Avertissements</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {formData.background.refusEntree === "oui" && (
-                                <FileUpload
-                                    category="avertissements"
-                                    document="refusVisaCanada"
-                                    label="Document de refus de visa canadien (si applicable)"
-                                />
-                            )}
-                            <FileUpload
-                                category="avertissements"
-                                document="demandeVisaEnCours"
-                                label="Preuve de demande de visa en cours dans un autre pays (si applicable)"
-                            />
-                            <FileUpload
-                                category="avertissements"
-                                document="titreSejourEtranger"
-                                label="Titre de séjour étranger (si applicable)"
-                            />
-                        </div>
-                    </div>
-
+                <div className="space-y-8">
                     <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                         <div className="flex items-start">
                             <div className="flex-shrink-0 mt-1">
-                                <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
-                                </svg>
+                                <FiInfo className="h-5 w-5 text-primary" />
                             </div>
                             <div className="ml-3">
-                                <h3 className="text-sm font-medium text-blue-800">Instructions pour les documents</h3>
-                                <div className="mt-2 text-sm text-blue-700">
+                                <h3 className="text-sm font-medium text-primary">Instructions importantes</h3>
+                                <div className="mt-2 text-sm text-primary">
                                     <ul className="list-disc pl-5 space-y-1">
-                                        <li>Tous les documents doivent être en format PDF, JPEG ou PNG</li>
-                                        <li>Taille maximale par fichier : 4MB</li>
-                                        <li>Les documents dans d'autres langues que le français ou l'anglais doivent être accompagnés d'une traduction certifiée</li>
-                                        <li>Les scans doivent être clairs et lisibles</li>
+                                        <li>Tous les documents doivent être en format PDF, JPG, JPEG ou PNG</li>
+                                        <li>Taille maximale par fichier : 3.8MB</li>
+                                        <li>Le passeport doit avoir une validité d'au moins 1 an</li>
+                                        <li>Les relevés bancaires doivent couvrir les 6 derniers mois</li>
+                                        <li>La photo doit être en couleur, format 35x45mm</li>
+                                        <li>Les documents dans d'autres langues doivent être traduits</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {formData.documents.map((section, sectionIndex) => (
+                        <div key={sectionIndex} className="bg-white p-4 rounded-lg shadow border border-gray-200">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">{section.titre}</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {section.corps.map((doc, docIndex) => {
+                                    // Vérification des conditions
+                                    if (doc.condition && !doc.condition(formData)) {
+                                        return null;
+                                    }
+
+                                    return (
+                                        <FileUpload
+                                            key={docIndex}
+                                            sectionIndex={sectionIndex}
+                                            docIndex={docIndex}
+                                            label={getDocumentLabel(doc.titre, formData)}
+                                            required={doc.required}
+                                            specifications={doc.specifications}
+                                            period={doc.period}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )
         },
@@ -2614,116 +2912,607 @@ const CombinedApplicationForm = () => {
                         </div>
                     </div>
 
-                    {submitStatus === "success" ? (
-                        <div className="rounded-md bg-green-50 p-4">
-                            <div className="flex">
-                                <div className="flex-shrink-0">
-                                    <FiCheck className="h-5 w-5 text-green-400" />
-                                </div>
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-green-800">Demande soumise avec succès</h3>
-                                    <div className="mt-2 text-sm text-green-700">
-                                        <p>Votre demande a été envoyée avec succès. Vous recevrez un accusé de réception par email.</p>
+                    {/* Section Aperçu */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-medium text-gray-900">Aperçu de votre demande</h3>
+                            <button
+                                type="button"
+                                onClick={() => setShowPreview(!showPreview)}
+                                className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                            >
+                                {showPreview ? (
+                                    <>
+                                        <FiX className="mr-1" /> Masquer
+                                    </>
+                                ) : (
+                                    <>
+                                        <FiPlus className="mr-1" /> Afficher
+                                    </>
+                                )}
+                            </button>
+                        </div>
+
+                        {showPreview && (
+                            <div className="mt-4 space-y-6">
+                                {/* Informations personnelles */}
+                                <div className="border-b border-gray-200 pb-4">
+                                    <h4 className="text-md font-medium text-gray-800 mb-3">1. Informations personnelles</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-500">Nom complet</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.nomFamille} {formData.personalInfo.prenoms}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Date de naissance</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.dateNaissance}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Email</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.email}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Téléphone</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.numeroTelephone}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Adresse</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.personalInfo.adressePostale}, {formData.personalInfo.villePostale}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    ) : submitStatus === "error" ? (
-                        <div className="rounded-md bg-red-50 p-4">
-                            <div className="flex">
-                                <div className="flex-shrink-0">
-                                    <FiX className="h-5 w-5 text-red-400" />
-                                </div>
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-red-800">Erreur lors de la soumission</h3>
-                                    <div className="mt-2 text-sm text-red-700">
-                                        <p>Une erreur est survenue lors de l'envoi de votre demande. Veuillez réessayer ou contacter le support technique.</p>
+
+                                {/* Antécédents */}
+                                <div className="border-b border-gray-200 pb-4">
+                                    <h4 className="text-md font-medium text-gray-800 mb-3">2. Antécédents et historique</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-500">Demande précédente au Canada</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.background.demandePrecedenteCanada === 'oui' ? 'Oui' : 'Non'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Antécédents judiciaires</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.background.antecedentsJudiciaires === 'oui' ? 'Oui' : 'Non'}
+                                            </p>
+                                        </div>
+                                        {formData.background.serviceMilitaire === 'Oui' && (
+                                            <div className="col-span-2">
+                                                <p className="text-sm text-gray-500">Service militaire</p>
+                                                <div className="mt-1 space-y-2">
+                                                    {formData.background.detailsService.map((service, index) => (
+                                                        <div key={index} className="text-sm font-medium text-gray-900">
+                                                            {service.organisation} ({service.pays}) - {service.de} à {service.a}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
+
+                                {/* Informations familiales */}
+                                <div className="border-b border-gray-200 pb-4">
+                                    <h4 className="text-md font-medium text-gray-800 mb-3">3. Informations familiales</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-500">État matrimonial</p>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {formData.familyInfo.applicant.maritalStatus}
+                                            </p>
+                                        </div>
+                                        {formData.familyInfo.children.length > 0 && (
+                                            <div>
+                                                <p className="text-sm text-gray-500">Nombre d'enfants</p>
+                                                <p className="text-sm font-medium text-gray-900">
+                                                    {formData.familyInfo.children.length}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+
                             </div>
-                        </div>
-                    ) : null}
+                        )}
+                    </div>
+
+                    {/* Boutons de navigation */}
+
                 </div>
             )
         }
     ];
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900">Formulaire de demande combinée</h1>
-                <p className="mt-2 text-sm text-gray-600">Remplissez soigneusement toutes les sections du formulaire. Les champs marqués d'un astérisque (*) sont obligatoires.</p>
-            </div>
-
-            <div className="mb-8">
-                <nav className="flex items-center">
-                    {steps.map((step, index) => (
-                        <div key={index} className="flex items-center">
-                            <button
-                                type="button"
-                                onClick={() => setActiveStep(index)}
-                                className={`flex flex-col items-center ${index <= activeStep ? 'text-blue-600' : 'text-gray-500'}`}
-                            >
-                                <span className={`flex items-center justify-center w-8 h-8 rounded-full ${index === activeStep ? 'bg-blue-100 border border-blue-300' : index < activeStep ? 'bg-green-100 border border-green-300' : 'bg-gray-100 border border-gray-300'}`}>
-                                    {index < activeStep ? <FiCheck className="w-4 h-4 text-green-600" /> : index + 1}
-                                </span>
-                                <span className={`mt-2 text-xs font-medium ${index === activeStep ? 'text-blue-600' : ''}`}>{step.title}</span>
-                            </button>
-                            {index < steps.length - 1 && (
-                                <div className="w-16 h-0.5 bg-gray-300 mx-2"></div>
-                            )}
-                        </div>
-                    ))}
-                </nav>
-            </div>
-
-            <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6">
-                {steps[activeStep].component}
-
-                <div className="mt-8 flex justify-between">
-                    {activeStep > 0 ? (
-                        <button
-                            type="button"
-                            onClick={prevStep}
-                            className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                            <FiChevronLeft className="mr-2" /> Précédent
-                        </button>
-                    ) : (
-                        <div></div>
-                    )}
-
-                    {activeStep < steps.length - 1 ? (
-                        <button
-                            type="button"
-                            onClick={nextStep}
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                            Suivant <FiChevronRight className="ml-2" />
-                        </button>
-                    ) : (
-                        <button
-                            type="submit"
-                            disabled={submitStatus === "loading" || !formData.declarationAgreed}
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {submitStatus === "loading" ? (
-                                <>
-                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Envoi en cours...
-                                </>
-                            ) : (
-                                "Soumettre la demande"
-                            )}
-                        </button>
-                    )}
+        <div className="min-h-screen bg-gray-50 relative overflow-hidden">
+            {/* Arrière-plan avec éléments décoratifs */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 right-0 w-1/3 md:w-1/4 opacity-5">
+                    <img
+                        src="/flag.png"
+                        alt="Décor"
+                        className="w-full h-auto object-contain"
+                    />
                 </div>
-            </form>
+                <div className="absolute bottom-0 left-0 w-1/3 md:w-1/4 opacity-5 rotate-180">
+                    <img
+                        src="/flag.png"
+                        alt="Décor"
+                        className="w-full h-auto object-contain"
+                    />
+                </div>
+            </div>
+
+            {/* Conteneur principal */}
+            <div className="relative px-[6.5%] mx-auto  ">
+                {/* En-tête */}
+                <header className="text-center mb-10 md:mb-14">
+                    <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary-100 rounded-full mb-4">
+                        <svg className="w-8 h-8 md:w-10 md:h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
+                        Formulaire de demande combinée
+                    </h1>
+                    {/* <p className="mt-3 max-w-3xl mx-auto text-lg md:text-xl text-gray-600">
+                        Remplissez soigneusement toutes les sections du formulaire.
+                        <br className="hidden sm:block" />
+                        Les champs marqués d'un <span className="text-red-500">*</span> sont obligatoires.
+                    </p> */}
+                </header>
+
+                {/* Stepper amélioré */}
+                <div className="mb-10 md:mb-14">
+                    <nav className="flex items-center justify-center">
+                        <ol className="flex items-center space-x-4 md:space-x-8">
+                            {steps.map((step, index) => (
+                                <li key={index} className="flex items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => validateCurrentStep(activeStep) && setActiveStep(index)}
+                                        className={`group relative flex flex-col items-center transition-all ${index <= activeStep ? "cursor-pointer" : "cursor-not-allowed"}`}
+                                        disabled={!validateCurrentStep(activeStep)}
+                                    >
+                                        <span
+                                            className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 ${index === activeStep
+                                                ? "bg-primary border-primary text-white shadow-lg scale-110"
+                                                : index < activeStep
+                                                    ? "bg-green-100 border-green-500 text-green-700"
+                                                    : "bg-white border-gray-300 text-gray-400 group-hover:border-gray-400"
+                                                }`}
+                                        >
+                                            {index < activeStep ? (
+                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                            ) : (
+                                                <span className="font-medium">{index + 1}</span>
+                                            )}
+                                        </span>
+                                        <span
+                                            className={`absolute top-full mt-2 w-32 text-center text-sm font-medium ${index === activeStep
+                                                ? "text-primary font-semibold"
+                                                : index < activeStep
+                                                    ? "text-gray-600"
+                                                    : "text-gray-400"
+                                                }`}
+                                        >
+                                            {step.title}
+                                        </span>
+                                    </button>
+
+                                    {index < steps.length - 1 && (
+                                        <div
+                                            className={`hidden md:block h-0.5 w-16 mx-2 transition-all duration-500 ${index < activeStep ? "bg-green-500" : "bg-gray-200"
+                                                }`}
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ol>
+                    </nav>
+                </div>
+
+                {/* Carte du formulaire */}
+                <div className="bg-white shadow-xl rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+                    {/* Barre de progression */}
+                    <div className="h-2 bg-gray-100">
+                        <div
+                            className="h-full bg-primary transition-all duration-500 ease-out"
+                            style={{ width: `${((activeStep + 1) / steps.length) * 100}%` }}
+                        />
+                    </div>
+
+                    {/* En-tête de l'étape */}
+                    <div className="px-6 py-5 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-lg md:text-xl font-bold text-gray-900">
+                                    Étape {activeStep + 1} : {steps[activeStep].title}
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                    {getStepDescription(activeStep)}
+                                </p>
+                            </div>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary">
+                                {activeStep + 1}/{steps.length}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Contenu du formulaire */}
+                    <form onSubmit={handleSubmit} className="divide-y divide-gray-200">
+                        <div className="px-6 py-5 sm:p-8">
+                            {steps[activeStep].component}
+                        </div>
+
+                        {/* Navigation */}
+                        <div className="px-6 py-5 bg-gray-50 sm:px-8">
+                            <div className="flex items-center justify-between">
+                                {activeStep > 0 ? (
+                                    <button
+                                        type="button"
+                                        onClick={prevStep}
+                                        className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
+                                    >
+                                        <FiChevronLeft className="mr-2" />
+                                        Précédent
+                                    </button>
+                                ) : (
+                                    <div></div>
+                                )}
+
+                                {activeStep < steps.length - 1 ? (
+                                    <button
+                                        type="button"
+                                        onClick={nextStep}
+                                        disabled={!validateCurrentStep(activeStep)}
+                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all ${validateCurrentStep(activeStep)
+                                            ? "bg-primary hover:bg-primary-600"
+                                            : "bg-gray-400 cursor-not-allowed"
+                                            }`}
+                                    >
+                                        Suivant
+                                        <FiChevronRight className="ml-2" />
+                                    </button>
+                                ) : (
+                                    <button
+                                        type="submit"
+                                        disabled={submitStatus === "loading" || !formData.declarationAgreed}
+                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${submitStatus === "loading" || !formData.declarationAgreed
+                                            ? "bg-gray-400 cursor-not-allowed"
+                                            : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+                                            }`}
+                                    >
+                                        {submitStatus === "loading" ? (
+                                            <>
+                                                <svg
+                                                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    ></circle>
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                    ></path>
+                                                </svg>
+                                                Envoi en cours...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FiCheck className="mr-2" />
+                                                Soumettre la demande
+                                            </>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                {/* Aide et informations */}
+                <div className="mt-8 text-center">
+                    <p className="text-sm text-gray-500">
+                        Besoin d'aide ? <a href="#" className="font-medium text-primary hover:text-primary-700">Contactez notre support</a>
+                    </p>
+                    <p className="mt-1 text-xs text-gray-400">
+                        Vos informations sont sécurisées et ne seront pas partagées.
+                    </p>
+                </div>
+            </div>
         </div>
     );
 };
 
 export default CombinedApplicationForm;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* <div className="min-h-screen bg-gray-50 relative overflow-hidden">
+            
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 right-0 w-1/3 md:w-1/4 opacity-5">
+                    <img
+                        src="/flag.png"
+                        alt="Décor"
+                        className="w-full h-auto object-contain"
+                    />
+                </div>
+                <div className="absolute bottom-0 left-0 w-1/3 md:w-1/4 opacity-5 rotate-180">
+                    <img
+                        src="/flag.png"
+                        alt="Décor"
+                        className="w-full h-auto object-contain"
+                    />
+                </div>
+            </div>
+
+           
+            <div className="relative px-[6.5%] mx-auto  ">
+               
+                <header className="text-center mb-10 md:mb-14">
+                    <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary-100 rounded-full mb-4">
+                        <svg className="w-8 h-8 md:w-10 md:h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
+                        Formulaire de demande combinée
+                    </h1>
+                    
+                </header>
+
+                
+                <div className="mb-10 md:mb-14">
+                    <nav className="flex items-center justify-center">
+                        <ol className="flex items-center space-x-4 md:space-x-8">
+                            {steps.map((step, index) => (
+                                <li key={index} className="flex items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => validateCurrentStep(activeStep) && setActiveStep(index)}
+                                        className={`group relative flex flex-col items-center transition-all ${index <= activeStep ? "cursor-pointer" : "cursor-not-allowed"}`}
+                                        disabled={!validateCurrentStep(activeStep)}
+                                    >
+                                        <span
+                                            className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 ${index === activeStep
+                                                ? "bg-primary border-primary text-white shadow-lg scale-110"
+                                                : index < activeStep
+                                                    ? "bg-green-100 border-green-500 text-green-700"
+                                                    : "bg-white border-gray-300 text-gray-400 group-hover:border-gray-400"
+                                                }`}
+                                        >
+                                            {index < activeStep ? (
+                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                            ) : (
+                                                <span className="font-medium">{index + 1}</span>
+                                            )}
+                                        </span>
+                                        <span
+                                            className={`absolute top-full mt-2 w-32 text-center text-sm font-medium ${index === activeStep
+                                                ? "text-primary font-semibold"
+                                                : index < activeStep
+                                                    ? "text-gray-600"
+                                                    : "text-gray-400"
+                                                }`}
+                                        >
+                                            {step.title}
+                                        </span>
+                                    </button>
+
+                                    {index < steps.length - 1 && (
+                                        <div
+                                            className={`hidden md:block h-0.5 w-16 mx-2 transition-all duration-500 ${index < activeStep ? "bg-green-500" : "bg-gray-200"
+                                                }`}
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ol>
+                    </nav>
+                </div>
+
+                
+                <div className="bg-white shadow-xl rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+                    
+                    <div className="h-2 bg-gray-100">
+                        <div
+                            className="h-full bg-primary transition-all duration-500 ease-out"
+                            style={{ width: `${((activeStep + 1) / steps.length) * 100}%` }}
+                        />
+                    </div>
+
+                    
+                    <div className="px-6 py-5 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-lg md:text-xl font-bold text-gray-900">
+                                    Étape {activeStep + 1} : {steps[activeStep].title}
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                    {getStepDescription(activeStep)}
+                                </p>
+                            </div>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary">
+                                {activeStep + 1}/{steps.length}
+                            </span>
+                        </div>
+                    </div>
+
+                   
+                    <form onSubmit={handleSubmit} className="divide-y divide-gray-200">
+                        <div className="px-6 py-5 sm:p-8">
+                            {steps[activeStep].component}
+                        </div>
+
+                       
+                        <div className="px-6 py-5 bg-gray-50 sm:px-8">
+                            <div className="flex items-center justify-between">
+                                {activeStep > 0 ? (
+                                    <button
+                                        type="button"
+                                        onClick={prevStep}
+                                        className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
+                                    >
+                                        <FiChevronLeft className="mr-2" />
+                                        Précédent
+                                    </button>
+                                ) : (
+                                    <div></div>
+                                )}
+
+                                {activeStep < steps.length - 1 ? (
+                                    <button
+                                        type="button"
+                                        onClick={nextStep}
+                                        disabled={!validateCurrentStep(activeStep)}
+                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all ${validateCurrentStep(activeStep)
+                                            ? "bg-primary hover:bg-primary-600"
+                                            : "bg-gray-400 cursor-not-allowed"
+                                            }`}
+                                    >
+                                        Suivant
+                                        <FiChevronRight className="ml-2" />
+                                    </button>
+                                ) : (
+                                    <button
+                                        type="submit"
+                                        disabled={submitStatus === "loading" || !formData.declarationAgreed}
+                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${submitStatus === "loading" || !formData.declarationAgreed
+                                            ? "bg-gray-400 cursor-not-allowed"
+                                            : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+                                            }`}
+                                    >
+                                        {submitStatus === "loading" ? (
+                                            <>
+                                                <svg
+                                                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    ></circle>
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                    ></path>
+                                                </svg>
+                                                Envoi en cours...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FiCheck className="mr-2" />
+                                                Soumettre la demande
+                                            </>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+              
+                <div className="mt-8 text-center">
+                    <p className="text-sm text-gray-500">
+                        Besoin d'aide ? <a href="#" className="font-medium text-primary hover:text-primary-700">Contactez notre support</a>
+                    </p>
+                    <p className="mt-1 text-xs text-gray-400">
+                        Vos informations sont sécurisées et ne seront pas partagées.
+                    </p>
+                </div>
+            </div>
+        </div> */}

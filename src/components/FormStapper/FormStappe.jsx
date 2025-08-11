@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { submitCombinedApplication } from '../../services/annexeSrvice';
-import { showErrorToast } from '../Toast/Toast';
 
 const CombinedApplicationForm = () => {
     const [activeStep, setActiveStep] = useState(0);
@@ -279,6 +278,8 @@ const CombinedApplicationForm = () => {
         declarationAgreed: false
     });
 
+
+
     const [submitStatus, setSubmitStatus] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({});
     const [submittedData, setSubmittedData] = useState(null);
@@ -402,7 +403,7 @@ const CombinedApplicationForm = () => {
             }
         }));
 
-        // Simulation de la progression de l'upload
+        // Simulation de la progression de l'upload (à remplacer par votre véritable logique d'upload)
         const interval = setInterval(() => {
             setUploadProgress(prev => {
                 const currentProgress = prev[`${sectionIndex}-${docIndex}`]?.progress || 0;
@@ -440,92 +441,9 @@ const CombinedApplicationForm = () => {
                 documents: newDocuments
             };
         });
-    };
-
-    const validateCurrentStep = (stepIndex) => {
-        switch (stepIndex) {
-            case 0: // Informations personnelles
-                return (
-                    formData.personalInfo.nomFamille &&
-                    formData.personalInfo.prenoms &&
-                    formData.personalInfo.dateNaissance &&
-                    formData.personalInfo.sexe &&
-                    formData.personalInfo.email &&
-                    formData.personalInfo.villeNaissance &&
-                    formData.personalInfo.paysNaissance &&
-                    formData.personalInfo.citoyennete &&
-                    formData.personalInfo.langueMaternelle &&
-                    formData.personalInfo.langueAise &&
-                    formData.personalInfo.communicationDeuxLangues &&
-                    formData.personalInfo.evaluationLangue &&
-                    formData.personalInfo.numeroPasseport &&
-                    formData.personalInfo.paysDelivrancePasseport &&
-                    formData.personalInfo.dateDelivrancePasseport &&
-                    formData.personalInfo.dateExpirationPasseport &&
-                    formData.personalInfo.passeportTaiwan &&
-                    formData.personalInfo.passeportIsrael &&
-                    formData.personalInfo.adressePostale &&
-                    formData.personalInfo.villePostale &&
-                    formData.personalInfo.paysPostal &&
-                    formData.personalInfo.numeroTelephone
-                );
-
-            case 1: // Antécédents et historique
-                return (
-                    formData.background.tuberculoseContact &&
-                    formData.background.statutExpire &&
-                    formData.background.refusEntree &&
-                    formData.background.demandePrecedenteCanada &&
-                    formData.background.antecedentsJudiciaires &&
-                    formData.background.serviceMilitaire &&
-                    formData.background.temoinViolations &&
-                    formData.background.affiliationOrganisation &&
-                    formData.background.chargePublique
-                );
-
-            case 2: // Informations familiales
-                return (
-                    formData.familyInfo.applicant.name &&
-                    formData.familyInfo.applicant.dob &&
-                    formData.familyInfo.applicant.country &&
-                    formData.familyInfo.applicant.occupation &&
-                    formData.familyInfo.applicant.maritalStatus &&
-                    formData.familyInfo.applicant.address &&
-                    formData.familyInfo.father.name &&
-                    formData.familyInfo.father.dob &&
-                    formData.familyInfo.father.country &&
-                    formData.familyInfo.father.occupation &&
-                    formData.familyInfo.father.address &&
-                    formData.familyInfo.mother.name &&
-                    formData.familyInfo.mother.dob &&
-                    formData.familyInfo.mother.country &&
-                    formData.familyInfo.mother.occupation &&
-                    formData.familyInfo.mother.address
-                );
-
-            case 3: // Documents
-                // Vérifie que tous les documents obligatoires sont fournis
-                return formData.documents.every(section =>
-                    section.corps.every(doc =>
-                        !doc.required ||
-                        (doc.condition && !doc.condition(formData)) ||
-                        doc.provided
-                    ));
-
-            case 4: // Déclaration
-                return formData.declarationAgreed;
-
-            default:
-                return false;
-        }
-    };
+    };;
 
     const nextStep = () => {
-        if (!validateCurrentStep(activeStep)) {
-            showErrorToast("Veuillez remplir tous les champs obligatoires avant de passer à l'étape suivante.")
-            return;
-        }
-
         if (activeStep < steps.length - 1) {
             setActiveStep(activeStep + 1);
         }
@@ -559,11 +477,20 @@ const CombinedApplicationForm = () => {
                 section.corps.forEach((doc, docIndex) => {
                     if (doc.provided && doc.file) {
                         formDataToSend.append(`documents[${sectionIndex}][${docIndex}]`, doc.file);
+                        // Afficher les infos du fichier dans la console
+                        // console.log(`Fichier ${sectionIndex}-${docIndex}:`, {
+                        //     name: doc.file.name,
+                        //     size: doc.file.size,
+                        //     type: doc.file.type
+                        // });
                     }
                 });
             });
 
+
+
             console.log(formData)
+
 
             // Envoyer les données
             await submitCombinedApplication(formDataToSend);
@@ -685,6 +612,7 @@ const CombinedApplicationForm = () => {
         ];
         return descriptions[step];
     };
+
 
     const getDocumentLabel = (docKey, formData) => {
         const labels = {
@@ -2833,7 +2761,7 @@ const CombinedApplicationForm = () => {
                                 <div className="mt-2 text-sm text-primary">
                                     <ul className="list-disc pl-5 space-y-1">
                                         <li>Tous les documents doivent être en format PDF, JPG, JPEG ou PNG</li>
-                                        <li>Taille maximale par fichier : 3.8MB</li>
+                                        <li>Taille maximale par fichier : 4MB</li>
                                         <li>Le passeport doit avoir une validité d'au moins 1 an</li>
                                         <li>Les relevés bancaires doivent couvrir les 6 derniers mois</li>
                                         <li>La photo doit être en couleur, format 35x45mm</li>
@@ -3035,214 +2963,180 @@ const CombinedApplicationForm = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 relative overflow-hidden">
-            {/* Arrière-plan avec éléments décoratifs */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-0 w-1/3 md:w-1/4 opacity-5">
-                    <img
-                        src="/flag.png"
-                        alt="Décor"
-                        className="w-full h-auto object-contain"
-                    />
-                </div>
-                <div className="absolute bottom-0 left-0 w-1/3 md:w-1/4 opacity-5 rotate-180">
-                    <img
-                        src="/flag.png"
-                        alt="Décor"
-                        className="w-full h-auto object-contain"
-                    />
-                </div>
+        <div className="relative px-4 sm:px-[6.5%] mx-auto py-6 md:py-8">
+            {/* Image de fond décorative */}
+            <div className="absolute top-0 right-0 w-1/3 md:w-1/4 opacity-10 pointer-events-none select-none">
+                <img
+                    src="/flag.png"
+                    alt="Décor"
+                    className="w-full h-auto object-contain"
+                />
             </div>
 
-            {/* Conteneur principal */}
-            <div className="relative px-[6.5%] mx-auto  ">
-                {/* En-tête */}
-                <header className="text-center mb-10 md:mb-14">
-                    <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary-100 rounded-full mb-4">
-                        <svg className="w-8 h-8 md:w-10 md:h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
-                        Formulaire de demande combinée
-                    </h1>
-                    {/* <p className="mt-3 max-w-3xl mx-auto text-lg md:text-xl text-gray-600">
-                        Remplissez soigneusement toutes les sections du formulaire.
-                        <br className="hidden sm:block" />
-                        Les champs marqués d'un <span className="text-red-500">*</span> sont obligatoires.
-                    </p> */}
-                </header>
+            {/* En-tête */}
+            <div className="mb-6 md:mb-10 text-center relative z-10">
+                <h1 className="text-2xl sm:text-3xl font-bold text-primary leading-snug">
+                    Formulaire de demande combinée
+                </h1>
+                <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
+                    Remplissez soigneusement toutes les sections du formulaire.
+                    <br className="hidden sm:block" />
+                    Les champs marqués d’un astérisque (*) sont obligatoires.
+                </p>
+            </div>
 
-                {/* Stepper amélioré */}
-                <div className="mb-10 md:mb-14">
-                    <nav className="flex items-center justify-center">
-                        <ol className="flex items-center space-x-4 md:space-x-8">
-                            {steps.map((step, index) => (
-                                <li key={index} className="flex items-center">
-                                    <button
-                                        type="button"
-                                        onClick={() => validateCurrentStep(activeStep) && setActiveStep(index)}
-                                        className={`group relative flex flex-col items-center transition-all ${index <= activeStep ? "cursor-pointer" : "cursor-not-allowed"}`}
-                                        disabled={!validateCurrentStep(activeStep)}
-                                    >
-                                        <span
-                                            className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 ${index === activeStep
-                                                ? "bg-primary border-primary text-white shadow-lg scale-110"
-                                                : index < activeStep
-                                                    ? "bg-green-100 border-green-500 text-green-700"
-                                                    : "bg-white border-gray-300 text-gray-400 group-hover:border-gray-400"
-                                                }`}
-                                        >
-                                            {index < activeStep ? (
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                </svg>
-                                            ) : (
-                                                <span className="font-medium">{index + 1}</span>
-                                            )}
-                                        </span>
-                                        <span
-                                            className={`absolute top-full mt-2 w-32 text-center text-sm font-medium ${index === activeStep
-                                                ? "text-primary font-semibold"
-                                                : index < activeStep
-                                                    ? "text-gray-600"
-                                                    : "text-gray-400"
-                                                }`}
-                                        >
-                                            {step.title}
-                                        </span>
-                                    </button>
+            {renderStepTitle()}
 
-                                    {index < steps.length - 1 && (
-                                        <div
-                                            className={`hidden md:block h-0.5 w-16 mx-2 transition-all duration-500 ${index < activeStep ? "bg-green-500" : "bg-gray-200"
-                                                }`}
-                                        />
+            {/* Stepper */}
+            <div className="mb-8 md:mb-12 overflow-x-auto">
+                <nav className="flex items-center justify-start sm:justify-center min-w-max">
+                    {steps.map((step, index) => (
+                        <div key={index} className="flex items-center">
+                            {/* Étape */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveStep(index)}
+                                className={`relative flex flex-col items-center transition-all duration-300 ${index <= activeStep ? "text-primary" : "text-gray-400"
+                                    }`}
+                            >
+                                {/* Cercle */}
+                                <span
+                                    className={`
+                    flex items-center justify-center
+                    w-9 h-9 sm:w-11 sm:h-11 rounded-full shadow-md
+                    transition-all duration-300
+                    ${index === activeStep
+                                            ? "bg-primary text-white border-2 border-primary scale-105"
+                                            : index < activeStep
+                                                ? "bg-primary-100 text-primary border-2 border-primary"
+                                                : "bg-gray-50 border-2 border-gray-300"
+                                        }
+                  `}
+                                >
+                                    {index < activeStep ? (
+                                        <FiCheck className="w-5 h-5" />
+                                    ) : (
+                                        <span className="font-medium text-sm sm:text-base">
+                                            {index + 1}
+                                        </span>
                                     )}
-                                </li>
-                            ))}
-                        </ol>
-                    </nav>
-                </div>
+                                </span>
 
-                {/* Carte du formulaire */}
-                <div className="bg-white shadow-xl rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-                    {/* Barre de progression */}
-                    <div className="h-2 bg-gray-100">
-                        <div
-                            className="h-full bg-primary transition-all duration-500 ease-out"
-                            style={{ width: `${((activeStep + 1) / steps.length) * 100}%` }}
-                        />
-                    </div>
+                                {/* Titre */}
+                                <span
+                                    className={`
+                    mt-2 sm:mt-3 text-xs sm:text-sm font-medium
+                    ${index === activeStep
+                                            ? "text-primary font-semibold"
+                                            : "text-gray-500"
+                                        }
+                    transition-all duration-300
+                    ${steps.length > 4 ? "hidden xs:block" : ""}
+                  `}
+                                >
+                                    {step.title.split(" ")[0]}{" "}
+                                    {steps.length <= 4 &&
+                                        step.title.split(" ").slice(1).join(" ")}
+                                </span>
+                            </button>
 
-                    {/* En-tête de l'étape */}
-                    <div className="px-6 py-5 border-b border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h2 className="text-lg md:text-xl font-bold text-gray-900">
-                                    Étape {activeStep + 1} : {steps[activeStep].title}
-                                </h2>
-                                <p className="mt-1 text-sm text-gray-500">
-                                    {getStepDescription(activeStep)}
-                                </p>
-                            </div>
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary">
-                                {activeStep + 1}/{steps.length}
-                            </span>
+                            {/* Ligne */}
+                            {index < steps.length - 1 && (
+                                <div
+                                    className={`
+                    w-8 sm:w-16 h-1 mx-1 sm:mx-2 rounded-full
+                    transition-all duration-500
+                    ${index < activeStep ? "bg-primary" : "bg-gray-200"}
+                    ${steps.length > 4 ? "hidden sm:block" : ""}
+                  `}
+                                ></div>
+                            )}
                         </div>
-                    </div>
-
-                    {/* Contenu du formulaire */}
-                    <form onSubmit={handleSubmit} className="divide-y divide-gray-200">
-                        <div className="px-6 py-5 sm:p-8">
-                            {steps[activeStep].component}
-                        </div>
-
-                        {/* Navigation */}
-                        <div className="px-6 py-5 bg-gray-50 sm:px-8">
-                            <div className="flex items-center justify-between">
-                                {activeStep > 0 ? (
-                                    <button
-                                        type="button"
-                                        onClick={prevStep}
-                                        className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
-                                    >
-                                        <FiChevronLeft className="mr-2" />
-                                        Précédent
-                                    </button>
-                                ) : (
-                                    <div></div>
-                                )}
-
-                                {activeStep < steps.length - 1 ? (
-                                    <button
-                                        type="button"
-                                        onClick={nextStep}
-                                        disabled={!validateCurrentStep(activeStep)}
-                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all ${validateCurrentStep(activeStep)
-                                            ? "bg-primary hover:bg-primary-600"
-                                            : "bg-gray-400 cursor-not-allowed"
-                                            }`}
-                                    >
-                                        Suivant
-                                        <FiChevronRight className="ml-2" />
-                                    </button>
-                                ) : (
-                                    <button
-                                        type="submit"
-                                        disabled={submitStatus === "loading" || !formData.declarationAgreed}
-                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${submitStatus === "loading" || !formData.declarationAgreed
-                                            ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
-                                            }`}
-                                    >
-                                        {submitStatus === "loading" ? (
-                                            <>
-                                                <svg
-                                                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <circle
-                                                        className="opacity-25"
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    ></circle>
-                                                    <path
-                                                        className="opacity-75"
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                    ></path>
-                                                </svg>
-                                                Envoi en cours...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FiCheck className="mr-2" />
-                                                Soumettre la demande
-                                            </>
-                                        )}
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                {/* Aide et informations */}
-                <div className="mt-8 text-center">
-                    <p className="text-sm text-gray-500">
-                        Besoin d'aide ? <a href="#" className="font-medium text-primary hover:text-primary-700">Contactez notre support</a>
-                    </p>
-                    <p className="mt-1 text-xs text-gray-400">
-                        Vos informations sont sécurisées et ne seront pas partagées.
-                    </p>
-                </div>
+                    ))}
+                </nav>
             </div>
+
+            {/* Contenu formulaire */}
+            <form
+                onSubmit={handleSubmit}
+                className="bg-white shadow-md sm:shadow-xl rounded-lg sm:rounded-xl p-4 sm:p-6 md:p-8 relative z-10"
+            >
+                {steps[activeStep].component}
+
+                {/* Navigation */}
+                {!showPreview && (
+                    <div className="mt-6 sm:mt-10 flex justify-between border-t pt-4 sm:pt-6">
+                        {activeStep > 0 ? (
+                            <button
+                                type="button"
+                                onClick={prevStep}
+                                className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-gray-300 shadow-sm text-sm sm:text-base font-medium rounded-md sm:rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
+                            >
+                                <FiChevronLeft className="mr-1 sm:mr-2" />
+                                <span className="hidden xs:inline">Précédent</span>
+                            </button>
+                        ) : (
+                            <div></div>
+                        )}
+
+                        {activeStep < steps.length - 1 ? (
+                            <button
+                                type="button"
+                                onClick={nextStep}
+                                className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
+                            >
+                                <span className="hidden xs:inline">Suivant</span>
+                                <FiChevronRight className="ml-1 sm:ml-2" />
+                            </button>
+                        ) : (
+                            <button
+                                type="submit"
+                                disabled={
+                                    submitStatus === "loading" || !formData.declarationAgreed
+                                }
+                                className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                            >
+                                {submitStatus === "loading" ? (
+                                    <div className="flex items-center">
+                                        <svg
+                                            className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 
+                           0 5.373 0 12h4zm2 5.291A7.962 
+                           7.962 0 014 12H0c0 3.042 
+                           1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                        <span className="hidden sm:inline">Envoi en cours...</span>
+                                        <span className="sm:hidden">Envoi...</span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <span className="hidden sm:inline">
+                                            Soumettre la demande
+                                        </span>
+                                        <span className="sm:hidden">Soumettre</span>
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
+                )}
+            </form>
         </div>
     );
 };
