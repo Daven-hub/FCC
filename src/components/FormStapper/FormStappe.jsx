@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { submitCombinedApplication } from '../../services/annexeSrvice';
+import { showErrorToast } from '../Toast/Toast';
 
 const CombinedApplicationForm = () => {
     const [activeStep, setActiveStep] = useState(0);
@@ -278,8 +279,6 @@ const CombinedApplicationForm = () => {
         declarationAgreed: false
     });
 
-
-
     const [submitStatus, setSubmitStatus] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({});
     const [submittedData, setSubmittedData] = useState(null);
@@ -403,7 +402,7 @@ const CombinedApplicationForm = () => {
             }
         }));
 
-        // Simulation de la progression de l'upload (à remplacer par votre véritable logique d'upload)
+        // Simulation de la progression de l'upload
         const interval = setInterval(() => {
             setUploadProgress(prev => {
                 const currentProgress = prev[`${sectionIndex}-${docIndex}`]?.progress || 0;
@@ -441,9 +440,92 @@ const CombinedApplicationForm = () => {
                 documents: newDocuments
             };
         });
-    };;
+    };
+
+    const validateCurrentStep = (stepIndex) => {
+        switch (stepIndex) {
+            case 0: // Informations personnelles
+                return (
+                    formData.personalInfo.nomFamille &&
+                    formData.personalInfo.prenoms &&
+                    formData.personalInfo.dateNaissance &&
+                    formData.personalInfo.sexe &&
+                    formData.personalInfo.email &&
+                    formData.personalInfo.villeNaissance &&
+                    formData.personalInfo.paysNaissance &&
+                    formData.personalInfo.citoyennete &&
+                    formData.personalInfo.langueMaternelle &&
+                    formData.personalInfo.langueAise &&
+                    formData.personalInfo.communicationDeuxLangues &&
+                    formData.personalInfo.evaluationLangue &&
+                    formData.personalInfo.numeroPasseport &&
+                    formData.personalInfo.paysDelivrancePasseport &&
+                    formData.personalInfo.dateDelivrancePasseport &&
+                    formData.personalInfo.dateExpirationPasseport &&
+                    formData.personalInfo.passeportTaiwan &&
+                    formData.personalInfo.passeportIsrael &&
+                    formData.personalInfo.adressePostale &&
+                    formData.personalInfo.villePostale &&
+                    formData.personalInfo.paysPostal &&
+                    formData.personalInfo.numeroTelephone
+                );
+
+            case 1: // Antécédents et historique
+                return (
+                    formData.background.tuberculoseContact &&
+                    formData.background.statutExpire &&
+                    formData.background.refusEntree &&
+                    formData.background.demandePrecedenteCanada &&
+                    formData.background.antecedentsJudiciaires &&
+                    formData.background.serviceMilitaire &&
+                    formData.background.temoinViolations &&
+                    formData.background.affiliationOrganisation &&
+                    formData.background.chargePublique
+                );
+
+            case 2: // Informations familiales
+                return (
+                    formData.familyInfo.applicant.name &&
+                    formData.familyInfo.applicant.dob &&
+                    formData.familyInfo.applicant.country &&
+                    formData.familyInfo.applicant.occupation &&
+                    formData.familyInfo.applicant.maritalStatus &&
+                    formData.familyInfo.applicant.address &&
+                    formData.familyInfo.father.name &&
+                    formData.familyInfo.father.dob &&
+                    formData.familyInfo.father.country &&
+                    formData.familyInfo.father.occupation &&
+                    formData.familyInfo.father.address &&
+                    formData.familyInfo.mother.name &&
+                    formData.familyInfo.mother.dob &&
+                    formData.familyInfo.mother.country &&
+                    formData.familyInfo.mother.occupation &&
+                    formData.familyInfo.mother.address
+                );
+
+            case 3: // Documents
+                // Vérifie que tous les documents obligatoires sont fournis
+                return formData.documents.every(section =>
+                    section.corps.every(doc =>
+                        !doc.required ||
+                        (doc.condition && !doc.condition(formData)) ||
+                        doc.provided
+                    ));
+
+            case 4: // Déclaration
+                return formData.declarationAgreed;
+
+            default:
+                return false;
+        }
+    };
 
     const nextStep = () => {
+        if (!validateCurrentStep(activeStep)) {
+            showErrorToast("Veuillez remplir tous les champs obligatoires avant de passer à l'étape suivante.")
+            return;
+        }
+
         if (activeStep < steps.length - 1) {
             setActiveStep(activeStep + 1);
         }
@@ -477,20 +559,11 @@ const CombinedApplicationForm = () => {
                 section.corps.forEach((doc, docIndex) => {
                     if (doc.provided && doc.file) {
                         formDataToSend.append(`documents[${sectionIndex}][${docIndex}]`, doc.file);
-                        // Afficher les infos du fichier dans la console
-                        // console.log(`Fichier ${sectionIndex}-${docIndex}:`, {
-                        //     name: doc.file.name,
-                        //     size: doc.file.size,
-                        //     type: doc.file.type
-                        // });
                     }
                 });
             });
 
-
-
             console.log(formData)
-
 
             // Envoyer les données
             await submitCombinedApplication(formDataToSend);
@@ -612,7 +685,6 @@ const CombinedApplicationForm = () => {
         ];
         return descriptions[step];
     };
-
 
     const getDocumentLabel = (docKey, formData) => {
         const labels = {
@@ -2981,7 +3053,7 @@ const CombinedApplicationForm = () => {
                 <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
                     Remplissez soigneusement toutes les sections du formulaire.
                     <br className="hidden sm:block" />
-                    Les champs marqués d’un astérisque (*) sont obligatoires.
+                    Les champs marqués d'un astérisque (*) sont obligatoires.
                 </p>
             </div>
 
@@ -2995,7 +3067,7 @@ const CombinedApplicationForm = () => {
                             {/* Étape */}
                             <button
                                 type="button"
-                                onClick={() => setActiveStep(index)}
+                                // onClick={() => setActiveStep(index)}
                                 className={`relative flex flex-col items-center transition-all duration-300 ${index <= activeStep ? "text-primary" : "text-gray-400"
                                     }`}
                             >
@@ -3144,4 +3216,3 @@ const CombinedApplicationForm = () => {
 export default CombinedApplicationForm;
 
 
-// Fonction pour obtenir le libellé approprié pour chaque document
