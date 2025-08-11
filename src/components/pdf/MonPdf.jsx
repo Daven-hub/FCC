@@ -13,6 +13,7 @@ import moment from "moment";
 import logo from "/fcc.png";
 import MainForm from "./MainForm";
 import PieceJointe from "./PieceJointe";
+import Form3 from "./Form3";
 
 Font.register({
   family: "CourierPrime",
@@ -22,7 +23,8 @@ Font.register({
 const styles = StyleSheet.create({
   page: {
     paddingTop: 15,
-    paddingBottom: 25,
+    // paddingBottom: 15,
+    paddingBottom:30,
     position: "relative",
     // paddingHorizontal: 20,
     flex: 1,
@@ -64,11 +66,13 @@ const styles = StyleSheet.create({
     flexShrink: 0
   },
   tinyText: {
-    fontSize: 6
+    fontSize: 6,
+    lineHeight:1.4
   },
   label: {
     fontWeight: "bold",
-    fontSize: 6.5
+    fontSize: 6.5,
+    lineHeight:1.4
   },
   signatureRow: {
     flexDirection: "row",
@@ -132,11 +136,14 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: "absolute",
-    bottom: 20,
-    fontSize: 10,
+    bottom: 0,
+    paddingVertical:6,
+    paddigTop:10,
+    zIndex:50,
     textAlign: "center",
     width: "100%",
-    color: "grey"
+    color: "grey",
+    backgroundColor:"red"
   }
 });
 
@@ -411,7 +418,7 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
       >
         {datas?.titre}
       </Text>
-      <View style={{ flex: 1, flexDirection: "column", gap: 20 }}>
+      <View style={{ flex: 1, flexDirection: "column", gap: 18 }}>
        {Custom}
       </View>
     </View>
@@ -429,12 +436,11 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
         objectFit: "contain"
       }}
     />
-    <View style={styles.footer}>
-      <Text
+    <View fixed style={styles.footer}>
+      <Text style={{fontSize: 8}}
         render={({ pageNumber, totalPages }) =>
           `Page ${pageNumber} / ${totalPages}`
         }
-        fixed
       />
     </View>
   </Page>
@@ -464,7 +470,7 @@ const MonPdfDocument = ({ datas }) => (
         email={datas?.email}
         image={datas?.image}
         datas={datas?.pages?.visiteur}
-        Custom={<MainForm datas={datas?.pages?.visiteur.body}/>}
+        Custom={<Form3 datas={datas?.pages?.visiteur.body}/>}
       />
       <PageTemplate
         nom={datas?.nom}
