@@ -1,4 +1,5 @@
 
+import axios from "axios";
 import { showErrorToast, showSuccessToast } from "../components/Toast/Toast";
 import api from "./api";
 
@@ -28,8 +29,8 @@ export const submitCombinedApplication = async (formData) => {
       },
     };
 
-    const response = await api.post(
-      '/formulaire.foc-cof.ca',
+    const response = await axios.post(
+      'http://formulaire.franchise-it-tech.com',
       formData,
       config
     );
