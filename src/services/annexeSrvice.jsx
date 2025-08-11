@@ -1,4 +1,5 @@
 
+import axios from "axios";
 import { showErrorToast, showSuccessToast } from "../components/Toast/Toast";
 import api from "./api";
 
@@ -22,24 +23,35 @@ export const submitCanadianForm = async (formData) => {
 
 export const submitCombinedApplication = async (formData) => {
   try {
+    // if (!(formData instanceof FormData)) {
+    //     throw new Error("Les données doivent être au format FormData");
+    // }
+
     const config = {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     };
 
-    const response = await api.post(
-      '/formulaire.foc-cof.ca',
+    const response = await axios.post(
+      'http://formulaire.franchise-it-tech.com',
       formData,
       config
     );
 
-    if (response.data.status === 'sucess') {
-      return showSuccessToast(response.data.message)
-    }
+    // if (!response.data) {
+    //     throw new Error("Pas de réponse du serveur");
+    // }
 
+    if (response.data.status === 'success') {
+      showSuccessToast("Soumission réussie");
+      return response.data;
+    } else {
+      showErrorToast("Erreur inconnue du serveur");
+    }
   } catch (error) {
-    showErrorToast("Erreur lors de la soumission")
+    console.error("Erreur API:", error);
+    showErrorToast(error.message || "Erreur lors de la soumission");
     throw error;
   }
 };
