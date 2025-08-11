@@ -5,7 +5,7 @@ import { Page, Text, View, Image } from "@react-pdf/renderer";
 function Passport({ datas }) {
   return (
     <View style={{ flexDirection: "column", gap: 2.5 }}>
-      <Text style={{ fontSize: 9, fontWeight: "bold" }}>PASSPORT</Text>
+      <Text style={{ fontSize: 9, fontWeight: "bold" }}>PASSEPORT</Text>
       <View style={{ flexDirection: "column" }}>
         <View style={[styles.row]}>
             <View
