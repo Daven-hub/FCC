@@ -364,7 +364,7 @@ const CombinedApplicationForm = () => {
 
         // Créer un objet avec toutes les métadonnées du fichier
         const fileDetails = {
-            fileObject: file,
+            file: file,
             name: file.name,
             size: file.size,
             type: file.type,
