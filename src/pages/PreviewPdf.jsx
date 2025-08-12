@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { PDFViewer, pdf } from "@react-pdf/renderer";
+import { BlobProvider, PDFViewer, pdf } from "@react-pdf/renderer";
 import MonPdfDocument from "../components/pdf/MonPdf";
 // import prog from "../datas/immigration.json";
 
 const PdfPreviewer = () => {
-
   const [prog, setProg] = useState(null);
 
   useEffect(() => {
@@ -30,26 +29,37 @@ const PdfPreviewer = () => {
     formData.append("to", prog.email);
     formData.append("name", prog.nom);
 
-    console.log([...formData.entries()]);
+    // console.log([...formData.entries()]);
 
     await fetch("http://localhost:83", {
       method: "POST",
       body: formData
     })
-      .then((resp) => console.log(resp))
+      .then((res) => res.json())
+      .then((resp) => {
+        return resp;
+      })
       .catch((err) => console.log(err));
-
-    // alert('PDF envoyé par mail');
   };
 
   return (
     <div>
-      {/* <h2>Aperçu du PDF</h2> */}
-      <div style={{ height: "100vh" }}>
+      {/* <div style={{ height: "100vh" }}>
         <PDFViewer width="100%" height="100%">
           <MonPdfDocument datas={prog} />
         </PDFViewer>
-      </div>
+      </div> */}
+
+      <BlobProvider document={<MonPdfDocument datas={prog} />}>
+      {({ url, loading }) =>
+        loading ? (
+          <button disabled>Chargement...</button>
+        ) : (
+          // <button onClick={() => window.open(url)}>Voir le PDF</button>
+          <iframe src={url} width="100%" height="600" title="Aperçu PDF" />
+        )
+      }
+    </BlobProvider>
 
       <button onClick={sendPdfByEmail}>Envoyer par email</button>
     </div>

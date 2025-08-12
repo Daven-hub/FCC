@@ -6,7 +6,7 @@ import AffiliationServiceSection from "./AffiliationServiceSection";
 import ChargesServiceSection from "./ChargesServviceSection";
 import VoyageServiceSection from "./VoyageServiceSection";
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   page: {
     padding: 20,
     fontSize: 10
@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     flexDirection:"row"
   },
   form2_grille:{
-    // flex:1,
     borderWidth:1,
     width:"100%",
     borderColor:"black",
@@ -23,22 +22,30 @@ const styles = StyleSheet.create({
     flexDirection:"row"
   },
   form2_text:{
-    fontSize:7
+    fontSize:7,
+    lineHeight:1.4
   },
   form2_titre:{
-    fontSize:8
+    fontSize:8,
+    lineHeight:1.4
   },
   form2_input:{
     padding:5,
     height:28,
     backgroundColor:"#ff000011"
+  },
+  form2_text2: {
+       fontSize: 4,
+    lineHeight:1.4
+  },
+  col:{
+    paddingVertical:3,
+    paddingHorizontal:5
   }
 
 });
 
 const MainForm = ({datas}) => {
-  
-  // console.log(datas)
   return (
       <>
         <View style={[styles.form2_grille,{justifyContent:"space-between"}]}>
@@ -57,6 +64,7 @@ const MainForm = ({datas}) => {
             </View>
           </View>
         </View>
+
         <View style={{borderWidth:1,borderColor:"black"}}>
           <View style={[styles.row,{borderBottom:1}]}>
             <View style={{paddingHorizontal:5,paddingVertical:2,borderRight:1}}><Text style={styles.form2_titre}>1</Text></View>
@@ -69,7 +77,7 @@ const MainForm = ({datas}) => {
             </View>
             <View style={{width:"50%",padding:3,flexDirection:"column",gap:2}}>
               <Text style={styles.form2_text}>* Prénom(s)</Text>
-              <Text style={styles.form2_input}>{datas?.prenom}</Text>
+              <Text style={styles.form2_input}>lione</Text>
             </View>
           </View>
         </View>

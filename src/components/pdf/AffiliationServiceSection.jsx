@@ -1,41 +1,40 @@
 // components/MilitaryServiceSection.js
 import { View, Text, StyleSheet} from "@react-pdf/renderer";
+import { styles } from "./MainForm";
 
-const styles = StyleSheet.create({
-  page: {
-    padding: 20,
-    fontSize: 10
-  },
-  row: {
-    flexDirection: "row"
-  },
-  form2_grille: {
-    // flex:1,
-    borderWidth: 1,
-    width: "100%",
-    borderColor: "black",
-    padding: 6,
-    flexDirection: "row"
-  },
-  form2_text: {
-    fontSize: 7,
-  },
-  form2_text2: {
-    fontSize: 4,
-  },
-  form2_titre: {
-    fontSize: 8
-  },
-  form2_input: {
-    padding: 5,
-    height: 28,
-    backgroundColor: "red"
-  },
-  col:{
-    paddingVertical:3,
-    paddingHorizontal:5
-  }
-});
+// const styles = StyleSheet.create({
+//   row: {
+//     flexDirection: "row"
+//   },
+//   form2_grille: {
+//     borderWidth: 1,
+//     width: "100%",
+//     borderColor: "black",
+//     padding: 6,
+//     flexDirection: "row"
+//   },
+//   form2_text: {
+//     fontSize: 7,
+//     lineHeight:1.4
+//   },
+//   form2_text2: {
+//     fontSize: 4,
+//     lineHeight:1.4
+//   },
+//   form2_titre: {
+//     fontSize: 8,
+//     lineHeight:1.4
+//   },
+//   form2_input: {
+//     padding: 5,
+//     height: 28,
+//     backgroundColor: "red"
+//   },
+//   col:{
+//     paddingVertical:3,
+//     paddingHorizontal:5
+//   }
+// });
 
 export const HeaderT=()=>(
   <View style={[styles.row,{backgroundColor:"#80808065"}]}>
