@@ -50,7 +50,6 @@ export const submitCombinedApplication = async (formData) => {
       showErrorToast("Erreur inconnue du serveur");
     }
   } catch (error) {
-    console.error("Erreur API:", error);
     showErrorToast(error.message || "Erreur lors de la soumission");
     throw error;
   }
