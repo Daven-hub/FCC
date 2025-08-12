@@ -539,26 +539,24 @@ const CombinedApplicationForm = () => {
         const docState = formData.documents[sectionIndex].corps[docIndex];
         const uploadState = uploadProgress[`${sectionIndex}-${docIndex}`];
 
-        // Déterminer les formats acceptés en fonction du type de document
+        // Détermine les formats acceptés en fonction du type de document
         const getAcceptedFormats = () => {
             switch (docState.type) {
                 case 'PDF':
                     return ".pdf";
                 case 'IMAGE':
-                    return ".jpg, .jpeg, .png";
+                    return "image/*";
                 default:
                     return ".pdf, .jpg, .jpeg, .png";
             }
         };
 
         // Texte descriptif des formats
-        const formatsText = {
-            'PDF': "Format PDF uniquement",
-            'IMAGE': "Formats image (JPG, JPEG, PNG)",
-            'default': "Formats PDF, JPG, JPEG ou PNG"
-        };
-
-        const formatDescription = formatsText[docState.type] || formatsText.default;
+        const formatDescription = docState.type === 'PDF'
+            ? "Format PDF uniquement"
+            : docState.type === 'IMAGE'
+                ? "Formats image (JPG, JPEG, PNG)"
+                : "Formats PDF, JPG, JPEG ou PNG";
 
         return (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -586,24 +584,54 @@ const CombinedApplicationForm = () => {
 
                 {docState.provided ? (
                     <div className="space-y-2">
-                        <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
-                            <div>
-                                <p className="font-medium">{docState.name}</p>
-                                <p className="text-sm text-gray-500">
-                                    {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1].toUpperCase()}
-                                </p>
-                                <p className="text-xs text-gray-400">
-                                    Téléversé le: {new Date(docState.uploadDate).toLocaleString()}
-                                </p>
+                        {docState.type === 'IMAGE' && docState.imageData ? (
+                            <div className="flex flex-col items-center bg-white p-3 rounded border border-green-100">
+                                <div className="relative mb-2">
+                                    <img
+                                        src={docState.imageData}
+                                        alt="Document visuel"
+                                        className="h-32 w-auto object-contain rounded-md border border-gray-200"
+                                    />
+                                    {docState.specifications && (
+                                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 text-center">
+                                            {docState.specifications}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="w-full text-center">
+                                    <p className="text-sm font-medium truncate">{docState.name}</p>
+                                    <p className="text-xs text-gray-500">
+                                        {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1]?.toUpperCase() || 'IMAGE'}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveFile(sectionIndex, docIndex)}
+                                    className="mt-2 text-red-500 hover:text-red-700 p-1"
+                                >
+                                    <FiTrash2 />
+                                </button>
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => handleRemoveFile(sectionIndex, docIndex)}
-                                className="text-red-500 hover:text-red-700 p-1"
-                            >
-                                <FiTrash2 />
-                            </button>
-                        </div>
+                        ) : (
+                            <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
+                                <div>
+                                    <p className="font-medium">{docState.name}</p>
+                                    <p className="text-sm text-gray-500">
+                                        {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1]?.toUpperCase() || 'PDF'}
+                                    </p>
+                                    <p className="text-xs text-gray-400">
+                                        Téléversé le: {new Date(docState.uploadDate).toLocaleString()}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveFile(sectionIndex, docIndex)}
+                                    className="text-red-500 hover:text-red-700 p-1"
+                                >
+                                    <FiTrash2 />
+                                </button>
+                            </div>
+                        )}
 
                         {uploadState?.progress > 0 && uploadState.progress < 100 && (
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -631,7 +659,7 @@ const CombinedApplicationForm = () => {
                             className="hidden"
                             onChange={(e) => handleFileUpload(sectionIndex, docIndex, e.target.files[0])}
                             accept={docState.type === 'PDF' ? '.pdf' : docState.type === 'IMAGE' ? 'image/*' : ''}
-                            required={required}
+                            required={required && !docState.provided}
                         />
                     </label>
                 )}
