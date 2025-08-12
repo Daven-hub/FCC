@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { submitCombinedApplication } from '../../services/annexeSrvice';
 import DeclarationSection from './DeclarationSection';
+import { showErrorToast } from '../Toast/Toast';
 
 const CombinedApplicationForm = () => {
     const [activeStep, setActiveStep] = useState(0);
@@ -180,7 +181,7 @@ const CombinedApplicationForm = () => {
                         provided: false,
                         file: null,
                         required: true,
-                        specifications: "35x45mm, fond clair",
+                        specifications: "4*4, fond clair",
                         type: 'IMAGE'
                     },
                     {
@@ -365,52 +366,72 @@ const CombinedApplicationForm = () => {
     const handleFileUpload = (sectionIndex, docIndex, file) => {
         if (!file) return;
 
-        // Validation de la taille
         if (file.size > 4 * 1024 * 1024) {
             alert('La taille maximale du fichier est de 4MB');
             return;
         }
 
-        // Validation du type
         const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
         if (!validTypes.includes(file.type)) {
-            alert('Seuls les fichiers PDF, JPEG et PNG sont acceptés');
+            showErrorToast('Seuls les fichiers PDF, JPEG et PNG sont acceptés');
             return;
         }
 
-        // Créer un objet avec toutes les métadonnées du fichier
-        const fileDetails = {
-            file: file,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            lastModified: file.lastModified,
-            lastModifiedDate: new Date(file.lastModified).toLocaleDateString(),
-            uploadDate: new Date().toISOString(),
-            status: 'uploaded'
-        };
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageData = e.target.result;
 
-        // Mise à jour de l'état avec toutes les métadonnées
-        setFormData(prev => {
-            const newDocuments = [...prev.documents];
-            newDocuments[sectionIndex] = {
-                ...newDocuments[sectionIndex],
-                corps: [...newDocuments[sectionIndex].corps]
+                setFormData(prev => {
+                    const newDocuments = [...prev.documents];
+                    newDocuments[sectionIndex] = {
+                        ...newDocuments[sectionIndex],
+                        corps: [...newDocuments[sectionIndex].corps]
+                    };
+
+                    newDocuments[sectionIndex].corps[docIndex] = {
+                        ...newDocuments[sectionIndex].corps[docIndex],
+                        provided: true,
+                        file: file,
+                        imageData: imageData,
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        uploadDate: new Date().toISOString()
+                    };
+
+                    return {
+                        ...prev,
+                        documents: newDocuments
+                    };
+                });
             };
+            reader.readAsDataURL(file);
+        } else {
+            setFormData(prev => {
+                const newDocuments = [...prev.documents];
+                newDocuments[sectionIndex] = {
+                    ...newDocuments[sectionIndex],
+                    corps: [...newDocuments[sectionIndex].corps]
+                };
 
-            newDocuments[sectionIndex].corps[docIndex] = {
-                ...newDocuments[sectionIndex].corps[docIndex],
-                provided: true,
-                ...fileDetails
-            };
+                newDocuments[sectionIndex].corps[docIndex] = {
+                    ...newDocuments[sectionIndex].corps[docIndex],
+                    provided: true,
+                    file: file,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    uploadDate: new Date().toISOString()
+                };
 
-            return {
-                ...prev,
-                documents: newDocuments
-            };
-        });
+                return {
+                    ...prev,
+                    documents: newDocuments
+                };
+            });
+        }
 
-        // Mise à jour de la progression de l'upload
         setUploadProgress(prev => ({
             ...prev,
             [`${sectionIndex}-${docIndex}`]: {
@@ -419,7 +440,6 @@ const CombinedApplicationForm = () => {
             }
         }));
 
-        // Simulation de la progression de l'upload (à remplacer par votre véritable logique d'upload)
         const interval = setInterval(() => {
             setUploadProgress(prev => {
                 const currentProgress = prev[`${sectionIndex}-${docIndex}`]?.progress || 0;
@@ -483,30 +503,28 @@ const CombinedApplicationForm = () => {
                 personalInfo: formData.personalInfo,
                 background: formData.background,
                 familyInfo: formData.familyInfo,
-                declarationAgreed: formData.declarationAgreed
+                declarationAgreed: formData.declarationAgreed,
+                documents: formData.documents.map(section => ({
+                    ...section,
+                    corps: section.corps.map(doc => ({
+                        titre: doc.titre,
+                        provided: doc.provided,
+                        imageData: doc.imageData || null
+                    }))
+                }))
             };
 
             formDataToSend.append('applicationData', JSON.stringify(applicationData));
 
-            // Ajouter les fichiers
             formData.documents.forEach((section, sectionIndex) => {
                 section.corps.forEach((doc, docIndex) => {
-                    if (doc.provided && doc.file) {
+                    if (doc.provided && doc.file && !doc.type.startsWith('image/')) {
                         formDataToSend.append(`documents[${sectionIndex}][${docIndex}]`, doc.file);
-                        // Afficher les infos du fichier dans la console
-                        // console.log(`Fichier ${sectionIndex}-${docIndex}:`, {
-                        //     name: doc.file.name,
-                        //     size: doc.file.size,
-                        //     type: doc.file.type
-                        // });
                     }
                 });
             });
 
-
-
-            console.log(formData)
-
+            console.log(formData);
 
             // Envoyer les données
             await submitCombinedApplication(formDataToSend);
@@ -521,26 +539,24 @@ const CombinedApplicationForm = () => {
         const docState = formData.documents[sectionIndex].corps[docIndex];
         const uploadState = uploadProgress[`${sectionIndex}-${docIndex}`];
 
-        // Déterminer les formats acceptés en fonction du type de document
+        // Détermine les formats acceptés en fonction du type de document
         const getAcceptedFormats = () => {
             switch (docState.type) {
                 case 'PDF':
                     return ".pdf";
                 case 'IMAGE':
-                    return ".jpg, .jpeg, .png";
+                    return "image/*";
                 default:
                     return ".pdf, .jpg, .jpeg, .png";
             }
         };
 
         // Texte descriptif des formats
-        const formatsText = {
-            'PDF': "Format PDF uniquement",
-            'IMAGE': "Formats image (JPG, JPEG, PNG)",
-            'default': "Formats PDF, JPG, JPEG ou PNG"
-        };
-
-        const formatDescription = formatsText[docState.type] || formatsText.default;
+        const formatDescription = docState.type === 'PDF'
+            ? "Format PDF uniquement"
+            : docState.type === 'IMAGE'
+                ? "Formats image (JPG, JPEG, PNG)"
+                : "Formats PDF, JPG, JPEG ou PNG";
 
         return (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -568,24 +584,54 @@ const CombinedApplicationForm = () => {
 
                 {docState.provided ? (
                     <div className="space-y-2">
-                        <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
-                            <div>
-                                <p className="font-medium">{docState.name}</p>
-                                <p className="text-sm text-gray-500">
-                                    {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1].toUpperCase()}
-                                </p>
-                                <p className="text-xs text-gray-400">
-                                    Téléversé le: {new Date(docState.uploadDate).toLocaleString()}
-                                </p>
+                        {docState.type === 'IMAGE' && docState.imageData ? (
+                            <div className="flex flex-col items-center bg-white p-3 rounded border border-green-100">
+                                <div className="relative mb-2">
+                                    <img
+                                        src={docState.imageData}
+                                        alt="Document visuel"
+                                        className="h-32 w-auto object-contain rounded-md border border-gray-200"
+                                    />
+                                    {docState.specifications && (
+                                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 text-center">
+                                            {docState.specifications}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="w-full text-center">
+                                    <p className="text-sm font-medium truncate">{docState.name}</p>
+                                    <p className="text-xs text-gray-500">
+                                        {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1]?.toUpperCase() || 'IMAGE'}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveFile(sectionIndex, docIndex)}
+                                    className="mt-2 text-red-500 hover:text-red-700 p-1"
+                                >
+                                    <FiTrash2 />
+                                </button>
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => handleRemoveFile(sectionIndex, docIndex)}
-                                className="text-red-500 hover:text-red-700 p-1"
-                            >
-                                <FiTrash2 />
-                            </button>
-                        </div>
+                        ) : (
+                            <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
+                                <div>
+                                    <p className="font-medium">{docState.name}</p>
+                                    <p className="text-sm text-gray-500">
+                                        {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1]?.toUpperCase() || 'PDF'}
+                                    </p>
+                                    <p className="text-xs text-gray-400">
+                                        Téléversé le: {new Date(docState.uploadDate).toLocaleString()}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveFile(sectionIndex, docIndex)}
+                                    className="text-red-500 hover:text-red-700 p-1"
+                                >
+                                    <FiTrash2 />
+                                </button>
+                            </div>
+                        )}
 
                         {uploadState?.progress > 0 && uploadState.progress < 100 && (
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -613,7 +659,7 @@ const CombinedApplicationForm = () => {
                             className="hidden"
                             onChange={(e) => handleFileUpload(sectionIndex, docIndex, e.target.files[0])}
                             accept={docState.type === 'PDF' ? '.pdf' : docState.type === 'IMAGE' ? 'image/*' : ''}
-                            required={required}
+                            required={required && !docState.provided}
                         />
                     </label>
                 )}
