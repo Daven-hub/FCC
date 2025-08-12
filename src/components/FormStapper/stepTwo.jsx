@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { submitCombinedApplication } from '../../services/annexeSrvice';
 import { showErrorToast } from '../Toast/Toast';
+import DeclarationSection from './DeclarationSection';
 
 const CombinedApplicationForm = () => {
     const [activeStep, setActiveStep] = useState(0);
@@ -155,7 +156,8 @@ const CombinedApplicationForm = () => {
                         titre: "ActeNaissance",
                         provided: false,
                         file: null,
-                        required: true
+                        required: true,
+                        type: 'PDF'
                     },
                     {
                         titre: "Passeport",
@@ -163,27 +165,31 @@ const CombinedApplicationForm = () => {
                         file: null,
                         required: true,
                         condition: (data) => data.personalInfo.dateExpirationPasseport &&
-                            new Date(data.personalInfo.dateExpirationPasseport) > new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+                            new Date(data.personalInfo.dateExpirationPasseport) > new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+                        type: 'PDF'
                     },
                     {
                         titre: "ActeMariage",
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => ['marie', 'union'].includes(data.personalInfo.etatMatrimonial)
+                        condition: (data) => ['marie', 'union'].includes(data.personalInfo.etatMatrimonial),
+                        type: 'PDF'
                     },
                     {
                         titre: "Photo",
                         provided: false,
                         file: null,
                         required: true,
-                        specifications: "35x45mm, fond clair"
+                        specifications: "35x45mm, fond clair",
+                        type: 'IMAGE'
                     },
                     {
                         titre: "CNI",
                         provided: false,
                         file: null,
-                        required: false
+                        required: true,
+                        type: 'PDF'
                     }
                 ]
             },
@@ -195,7 +201,8 @@ const CombinedApplicationForm = () => {
                         provided: false,
                         file: null,
                         required: true,
-                        condition: (data) => data.personalInfo.occupation === 'independant'
+                        condition: (data) => data.personalInfo.occupation === 'independant',
+                        type: 'PDF'
                     },
                     {
                         titre: "RelevesBancairesEntreprise",
@@ -203,14 +210,16 @@ const CombinedApplicationForm = () => {
                         file: null,
                         required: true,
                         period: "6 derniers mois",
-                        condition: (data) => data.personalInfo.occupation === 'independant'
+                        condition: (data) => data.personalInfo.occupation === 'independant',
+                        type: 'PDF'
                     },
                     {
                         titre: "RelevesBancairesPersonnels",
                         provided: false,
                         file: null,
                         required: true,
-                        period: "6 derniers mois"
+                        period: "6 derniers mois",
+                        type: 'PDF'
                     }
                 ]
             },
@@ -221,7 +230,8 @@ const CombinedApplicationForm = () => {
                         titre: "VisaAnterieur",
                         provided: false,
                         file: null,
-                        required: false
+                        required: false,
+                        type: 'PDF'
                     },
                     {
                         titre: "AssuranceVoyage",
@@ -232,19 +242,22 @@ const CombinedApplicationForm = () => {
                             const dob = new Date(data.personalInfo.dateNaissance);
                             const age = new Date().getFullYear() - dob.getFullYear();
                             return age >= 60;
-                        }
+                        },
+                        type: 'PDF'
                     },
                     {
                         titre: "ReservationHotel",
                         provided: false,
                         file: null,
-                        required: false
+                        required: false,
+                        type: 'PDF'
                     },
                     {
                         titre: "BilletsAvion",
                         provided: false,
                         file: null,
-                        required: false
+                        required: false,
+                        type: 'PDF'
                     }
                 ]
             },
@@ -256,21 +269,24 @@ const CombinedApplicationForm = () => {
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => data.background.refusEntree === 'oui'
+                        condition: (data) => data.background.refusEntree === 'oui',
+                        type: 'PDF'
                     },
                     {
                         titre: "DemandeVisaEnCours",
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => data.background.demandePrecedenteCanada === 'oui'
+                        condition: (data) => data.background.demandePrecedenteCanada === 'oui',
+                        type: 'PDF'
                     },
                     {
                         titre: "TitreSejourEtranger",
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => data.personalInfo.paysResidenceActuelle !== data.personalInfo.paysNaissance
+                        condition: (data) => data.personalInfo.paysResidenceActuelle !== data.personalInfo.paysNaissance,
+                        type: 'PDF'
                     }
                 ]
             }
@@ -563,6 +579,7 @@ const CombinedApplicationForm = () => {
                     }
                 });
             });
+
             console.log(formData);
 
 
@@ -580,6 +597,27 @@ const CombinedApplicationForm = () => {
         const docState = formData.documents[sectionIndex].corps[docIndex];
         const uploadState = uploadProgress[`${sectionIndex}-${docIndex}`];
 
+
+        const getAcceptedFormats = () => {
+            switch (docState.type) {
+                case 'PDF':
+                    return ".pdf";
+                case 'IMAGE':
+                    return ".jpg, .jpeg, .png";
+                default:
+                    return ".pdf, .jpg, .jpeg, .png";
+            }
+        };
+
+        // Texte descriptif des formats
+        const formatsText = {
+            'PDF': "Format PDF uniquement",
+            'IMAGE': "Formats image (JPG, JPEG, PNG)",
+            'default': "Formats PDF, JPG, JPEG ou PNG"
+        };
+
+        const formatDescription = formatsText[docState.type] || formatsText.default;
+
         return (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="flex justify-between items-start mb-2">
@@ -593,6 +631,7 @@ const CombinedApplicationForm = () => {
                         {period && (
                             <p className="text-xs text-gray-500 mt-1">Période: {period}</p>
                         )}
+                        <p className="text-xs text-text-primary mt-1">{formatDescription}</p>
                     </div>
                     {docState.provided ? (
                         <span className="flex items-center text-green-600">
@@ -627,7 +666,7 @@ const CombinedApplicationForm = () => {
                         {uploadState?.progress > 0 && uploadState.progress < 100 && (
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
                                 <div
-                                    className="bg-blue-600 h-2.5 rounded-full"
+                                    className="bg-text-primary h-2.5 rounded-full"
                                     style={{ width: `${uploadState.progress}%` }}
                                 ></div>
                                 <p className="text-xs text-gray-500 mt-1">
@@ -640,14 +679,16 @@ const CombinedApplicationForm = () => {
                     <label className="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
                         <FiUpload className="w-8 h-8 text-gray-400 mb-2" />
                         <p className="text-sm text-gray-500">
-                            <span className="font-medium text-blue-600">Cliquer pour uploader</span> ou glisser-déposer
+                            <span className="font-medium text-primary">Cliquer pour uploader</span> ou glisser-déposer
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">Formats acceptés: PDF, JPG, PNG (max 4MB)</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                            Formats acceptés: {getAcceptedFormats()} (max 3.8MB)
+                        </p>
                         <input
                             type="file"
                             className="hidden"
                             onChange={(e) => handleFileUpload(sectionIndex, docIndex, e.target.files[0])}
-                            accept=".pdf,.jpg,.jpeg,.png"
+                            accept={docState.type === 'PDF' ? '.pdf' : docState.type === 'IMAGE' ? 'image/*' : ''}
                             required={required}
                         />
                     </label>
@@ -2834,12 +2875,18 @@ const CombinedApplicationForm = () => {
                                 <h3 className="text-sm font-medium text-primary">Instructions importantes</h3>
                                 <div className="mt-2 text-sm text-primary">
                                     <ul className="list-disc pl-5 space-y-1">
-                                        <li>Tous les documents doivent être en format PDF, JPG, JPEG ou PNG</li>
+                                        <li>Formats de fichiers acceptés :
+                                            <ul className="list-disc pl-5 mt-1">
+                                                <li>Documents d'identité : PDF uniquement</li>
+                                                <li>Photos : JPG, JPEG ou PNG (35x45mm, fond clair)</li>
+                                                <li>Relevés bancaires : PDF uniquement</li>
+                                                <li>Autres documents : PDF ou images (JPG, JPEG, PNG)</li>
+                                            </ul>
+                                        </li>
                                         <li>Taille maximale par fichier : 3.8MB</li>
                                         <li>Le passeport doit avoir une validité d'au moins 1 an</li>
                                         <li>Les relevés bancaires doivent couvrir les 6 derniers mois</li>
-                                        <li>La photo doit être en couleur, format 35x45mm</li>
-                                        <li>Les documents dans d'autres langues doivent être traduits</li>
+                                        <li>Les documents dans d'autres langues doivent être traduits et certifiés</li>
                                     </ul>
                                 </div>
                             </div>
@@ -2876,162 +2923,13 @@ const CombinedApplicationForm = () => {
         {
             title: "Déclaration",
             component: (
-                <div className="space-y-6">
-                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Déclaration et consentement</h3>
-
-                        <div className="prose prose-sm text-gray-700 mb-6">
-                            <p>Je déclare par la présente que :</p>
-                            <ul className="list-disc pl-5 space-y-1">
-                                <li>Les renseignements fournis dans cette demande sont exacts et complets.</li>
-                                <li>J'ai lu et compris les questions et les instructions.</li>
-                                <li>Je comprends que le fait de faire une déclaration fausse ou trompeuse constitue une infraction en vertu de la Loi sur l'immigration et la protection des réfugiés.</li>
-                                <li>Je comprends que tous les renseignements fournis dans le cadre de cette demande peuvent être vérifiés.</li>
-                                <li>Je consens à ce que les renseignements fournis soient partagés avec les organismes gouvernementaux concernés à des fins de vérification.</li>
-                                <li>Je comprends que le traitement de ma demande peut être retardé si je ne fournis pas tous les documents requis.</li>
-                            </ul>
-                            <p className="mt-4">Je comprends également que des frais de traitement non remboursables s'appliquent et que le paiement de ces frais ne garantit pas l'approbation de ma demande.</p>
-                        </div>
-
-                        <div className="mt-6">
-                            <label className="flex items-start">
-                                <div className="flex items-center h-5">
-                                    <input
-                                        type="checkbox"
-                                        className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                                        checked={formData.declarationAgreed}
-                                        onChange={e => setFormData(prev => ({ ...prev, declarationAgreed: e.target.checked }))}
-                                        required
-                                    />
-                                </div>
-                                <div className="ml-3 text-sm">
-                                    <span className="font-medium text-gray-700">Je certifie que j'ai lu et compris la déclaration ci-dessus et que toutes les informations fournies sont exactes et complètes.</span>
-                                    <span className="text-red-500">*</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    {/* Section Aperçu */}
-                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-gray-900">Aperçu de votre demande</h3>
-                            <button
-                                type="button"
-                                onClick={() => setShowPreview(!showPreview)}
-                                className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                            >
-                                {showPreview ? (
-                                    <>
-                                        <FiX className="mr-1" /> Masquer
-                                    </>
-                                ) : (
-                                    <>
-                                        <FiPlus className="mr-1" /> Afficher
-                                    </>
-                                )}
-                            </button>
-                        </div>
-
-                        {showPreview && (
-                            <div className="mt-4 space-y-6">
-                                {/* Informations personnelles */}
-                                <div className="border-b border-gray-200 pb-4">
-                                    <h4 className="text-md font-medium text-gray-800 mb-3">1. Informations personnelles</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-sm text-gray-500">Nom complet</p>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {formData.personalInfo.nomFamille} {formData.personalInfo.prenoms}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">Date de naissance</p>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {formData.personalInfo.dateNaissance}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">Email</p>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {formData.personalInfo.email}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">Téléphone</p>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {formData.personalInfo.numeroTelephone}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">Adresse</p>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {formData.personalInfo.adressePostale}, {formData.personalInfo.villePostale}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Antécédents */}
-                                <div className="border-b border-gray-200 pb-4">
-                                    <h4 className="text-md font-medium text-gray-800 mb-3">2. Antécédents et historique</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-sm text-gray-500">Demande précédente au Canada</p>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {formData.background.demandePrecedenteCanada === 'oui' ? 'Oui' : 'Non'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">Antécédents judiciaires</p>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {formData.background.antecedentsJudiciaires === 'oui' ? 'Oui' : 'Non'}
-                                            </p>
-                                        </div>
-                                        {formData.background.serviceMilitaire === 'Oui' && (
-                                            <div className="col-span-2">
-                                                <p className="text-sm text-gray-500">Service militaire</p>
-                                                <div className="mt-1 space-y-2">
-                                                    {formData.background.detailsService.map((service, index) => (
-                                                        <div key={index} className="text-sm font-medium text-gray-900">
-                                                            {service.organisation} ({service.pays}) - {service.de} à {service.a}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Informations familiales */}
-                                <div className="border-b border-gray-200 pb-4">
-                                    <h4 className="text-md font-medium text-gray-800 mb-3">3. Informations familiales</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-sm text-gray-500">État matrimonial</p>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {formData.familyInfo.applicant.maritalStatus}
-                                            </p>
-                                        </div>
-                                        {formData.familyInfo.children.length > 0 && (
-                                            <div>
-                                                <p className="text-sm text-gray-500">Nombre d'enfants</p>
-                                                <p className="text-sm font-medium text-gray-900">
-                                                    {formData.familyInfo.children.length}
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Boutons de navigation */}
-
-                </div>
+                <DeclarationSection
+                    declarationAgreed={formData.declarationAgreed}
+                    onAgreementChange={(e) => setFormData(prev => ({ ...prev, declarationAgreed: e.target.checked }))}
+                    showPreview={showPreview}
+                    onTogglePreview={() => setShowPreview(!showPreview)}
+                    formData={formData}
+                />
             )
         }
     ];

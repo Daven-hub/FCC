@@ -155,7 +155,8 @@ const CombinedApplicationForm = () => {
                         titre: "ActeNaissance",
                         provided: false,
                         file: null,
-                        required: true
+                        required: true,
+                        type: 'PDF'
                     },
                     {
                         titre: "Passeport",
@@ -163,27 +164,31 @@ const CombinedApplicationForm = () => {
                         file: null,
                         required: true,
                         condition: (data) => data.personalInfo.dateExpirationPasseport &&
-                            new Date(data.personalInfo.dateExpirationPasseport) > new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+                            new Date(data.personalInfo.dateExpirationPasseport) > new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+                        type: 'PDF'
                     },
                     {
                         titre: "ActeMariage",
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => ['marie', 'union'].includes(data.personalInfo.etatMatrimonial)
+                        condition: (data) => ['marie', 'union'].includes(data.personalInfo.etatMatrimonial),
+                        type: 'PDF'
                     },
                     {
                         titre: "Photo",
                         provided: false,
                         file: null,
                         required: true,
-                        specifications: "35x45mm, fond clair"
+                        specifications: "35x45mm, fond clair",
+                        type: 'IMAGE'
                     },
                     {
                         titre: "CNI",
                         provided: false,
                         file: null,
-                        required: false
+                        required: true,
+                        type: 'PDF'
                     }
                 ]
             },
@@ -195,7 +200,8 @@ const CombinedApplicationForm = () => {
                         provided: false,
                         file: null,
                         required: true,
-                        condition: (data) => data.personalInfo.occupation === 'independant'
+                        condition: (data) => data.personalInfo.occupation === 'independant',
+                        type: 'PDF'
                     },
                     {
                         titre: "RelevesBancairesEntreprise",
@@ -203,14 +209,16 @@ const CombinedApplicationForm = () => {
                         file: null,
                         required: true,
                         period: "6 derniers mois",
-                        condition: (data) => data.personalInfo.occupation === 'independant'
+                        condition: (data) => data.personalInfo.occupation === 'independant',
+                        type: 'PDF'
                     },
                     {
                         titre: "RelevesBancairesPersonnels",
                         provided: false,
                         file: null,
                         required: true,
-                        period: "6 derniers mois"
+                        period: "6 derniers mois",
+                        type: 'PDF'
                     }
                 ]
             },
@@ -221,7 +229,8 @@ const CombinedApplicationForm = () => {
                         titre: "VisaAnterieur",
                         provided: false,
                         file: null,
-                        required: false
+                        required: false,
+                        type: 'PDF'
                     },
                     {
                         titre: "AssuranceVoyage",
@@ -232,19 +241,22 @@ const CombinedApplicationForm = () => {
                             const dob = new Date(data.personalInfo.dateNaissance);
                             const age = new Date().getFullYear() - dob.getFullYear();
                             return age >= 60;
-                        }
+                        },
+                        type: 'PDF'
                     },
                     {
                         titre: "ReservationHotel",
                         provided: false,
                         file: null,
-                        required: false
+                        required: false,
+                        type: 'PDF'
                     },
                     {
                         titre: "BilletsAvion",
                         provided: false,
                         file: null,
-                        required: false
+                        required: false,
+                        type: 'PDF'
                     }
                 ]
             },
@@ -256,21 +268,24 @@ const CombinedApplicationForm = () => {
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => data.background.refusEntree === 'oui'
+                        condition: (data) => data.background.refusEntree === 'oui',
+                        type: 'PDF'
                     },
                     {
                         titre: "DemandeVisaEnCours",
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => data.background.demandePrecedenteCanada === 'oui'
+                        condition: (data) => data.background.demandePrecedenteCanada === 'oui',
+                        type: 'PDF'
                     },
                     {
                         titre: "TitreSejourEtranger",
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => data.personalInfo.paysResidenceActuelle !== data.personalInfo.paysNaissance
+                        condition: (data) => data.personalInfo.paysResidenceActuelle !== data.personalInfo.paysNaissance,
+                        type: 'PDF'
                     }
                 ]
             }
@@ -506,6 +521,27 @@ const CombinedApplicationForm = () => {
         const docState = formData.documents[sectionIndex].corps[docIndex];
         const uploadState = uploadProgress[`${sectionIndex}-${docIndex}`];
 
+        // Déterminer les formats acceptés en fonction du type de document
+        const getAcceptedFormats = () => {
+            switch (docState.type) {
+                case 'PDF':
+                    return ".pdf";
+                case 'IMAGE':
+                    return ".jpg, .jpeg, .png";
+                default:
+                    return ".pdf, .jpg, .jpeg, .png";
+            }
+        };
+
+        // Texte descriptif des formats
+        const formatsText = {
+            'PDF': "Format PDF uniquement",
+            'IMAGE': "Formats image (JPG, JPEG, PNG)",
+            'default': "Formats PDF, JPG, JPEG ou PNG"
+        };
+
+        const formatDescription = formatsText[docState.type] || formatsText.default;
+
         return (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="flex justify-between items-start mb-2">
@@ -519,6 +555,7 @@ const CombinedApplicationForm = () => {
                         {period && (
                             <p className="text-xs text-gray-500 mt-1">Période: {period}</p>
                         )}
+                        <p className="text-xs text-primary mt-1">{formatDescription}</p>
                     </div>
                     {docState.provided ? (
                         <span className="flex items-center text-green-600">
@@ -553,7 +590,7 @@ const CombinedApplicationForm = () => {
                         {uploadState?.progress > 0 && uploadState.progress < 100 && (
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
                                 <div
-                                    className="bg-blue-600 h-2.5 rounded-full"
+                                    className="bg-primary h-2.5 rounded-full"
                                     style={{ width: `${uploadState.progress}%` }}
                                 ></div>
                                 <p className="text-xs text-gray-500 mt-1">
@@ -566,14 +603,16 @@ const CombinedApplicationForm = () => {
                     <label className="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
                         <FiUpload className="w-8 h-8 text-gray-400 mb-2" />
                         <p className="text-sm text-gray-500">
-                            <span className="font-medium text-blue-600">Cliquer pour uploader</span> ou glisser-déposer
+                            <span className="font-medium text-primary">Cliquer pour uploader</span> ou glisser-déposer
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">Formats acceptés: PDF, JPG, PNG (max 4MB)</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                            Formats acceptés: {getAcceptedFormats()} (max 3.8MB)
+                        </p>
                         <input
                             type="file"
                             className="hidden"
                             onChange={(e) => handleFileUpload(sectionIndex, docIndex, e.target.files[0])}
-                            accept=".pdf,.jpg,.jpeg,.png"
+                            accept={docState.type === 'PDF' ? '.pdf' : docState.type === 'IMAGE' ? 'image/*' : ''}
                             required={required}
                         />
                     </label>
@@ -2761,12 +2800,18 @@ const CombinedApplicationForm = () => {
                                 <h3 className="text-sm font-medium text-primary">Instructions importantes</h3>
                                 <div className="mt-2 text-sm text-primary">
                                     <ul className="list-disc pl-5 space-y-1">
-                                        <li>Tous les documents doivent être en format PDF, JPG, JPEG ou PNG</li>
-                                        <li>Taille maximale par fichier : 4MB</li>
+                                        <li>Formats de fichiers acceptés :
+                                            <ul className="list-disc pl-5 mt-1">
+                                                <li>Documents d'identité : PDF uniquement</li>
+                                                <li>Photos : JPG, JPEG ou PNG (35x45mm, fond clair)</li>
+                                                <li>Relevés bancaires : PDF uniquement</li>
+                                                <li>Autres documents : PDF ou images (JPG, JPEG, PNG)</li>
+                                            </ul>
+                                        </li>
+                                        <li>Taille maximale par fichier : 3.8MB</li>
                                         <li>Le passeport doit avoir une validité d'au moins 1 an</li>
                                         <li>Les relevés bancaires doivent couvrir les 6 derniers mois</li>
-                                        <li>La photo doit être en couleur, format 35x45mm</li>
-                                        <li>Les documents dans d'autres langues doivent être traduits</li>
+                                        <li>Les documents dans d'autres langues doivent être traduits et certifiés</li>
                                     </ul>
                                 </div>
                             </div>
