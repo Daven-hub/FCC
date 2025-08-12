@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from "react-icons/fi";
-import { submitCombinedApplication } from "../../services/annexeSrvice";
+import React, { useState } from 'react';
+import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
+import { submitCombinedApplication } from '../../services/annexeSrvice';
+import DeclarationSection from './DeclarationSection';
 
 const CombinedApplicationForm = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -2950,26 +2951,44 @@ const CombinedApplicationForm = () => {
                     )}
                   </div>
                 </div>
+            )
+        },
+        {
+            title: "Déclaration",
+            component: (
+                <DeclarationSection
+                    declarationAgreed={formData.declarationAgreed}
+                    onAgreementChange={(e) => setFormData(prev => ({ ...prev, declarationAgreed: e.target.checked }))}
+                    showPreview={showPreview}
+                    onTogglePreview={() => setShowPreview(!showPreview)}
+                    formData={formData}
+                />
+            )
+        }
+    ];
 
-                {/* Informations familiales */}
-                <div className="border-b border-gray-200 pb-4">
-                  <h4 className="text-md font-medium text-gray-800 mb-3">3. Informations familiales</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500">État matrimonial</p>
-                      <p className="text-sm font-medium text-gray-900">{formData.familyInfo.applicant.maritalStatus}</p>
-                    </div>
-                    {formData.familyInfo.children.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-500">Nombre d'enfants</p>
-                        <p className="text-sm font-medium text-gray-900">{formData.familyInfo.children.length}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+    return (
+        <div className="relative px-4 sm:px-[6.5%] mx-auto py-6 md:py-8">
+            {/* Image de fond décorative */}
+            <div className="absolute top-0 right-0 w-1/3 md:w-1/4 opacity-10 pointer-events-none select-none">
+                <img
+                    src="/flag.png"
+                    alt="Décor"
+                    className="w-full h-auto object-contain"
+                />
+            </div>
+
+            {/* En-tête */}
+            <div className="mb-6 md:mb-10 text-center relative z-10">
+                <h1 className="text-2xl sm:text-3xl font-bold text-primary leading-snug">
+                    Formulaire de demande combinée
+                </h1>
+                <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
+                    Remplissez soigneusement toutes les sections du formulaire.
+                    <br className="hidden sm:block" />
+                    Les champs marqués d’un astérisque (*) sont obligatoires.
+                </p>
+            </div>
 
           {/* Boutons de navigation */}
         </div>
