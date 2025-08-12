@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { submitCombinedApplication } from '../../services/annexeSrvice';
 import DeclarationSection from './DeclarationSection';
+import { showErrorToast } from '../Toast/Toast';
 
 const CombinedApplicationForm = () => {
     const [activeStep, setActiveStep] = useState(0);
@@ -180,7 +181,7 @@ const CombinedApplicationForm = () => {
                         provided: false,
                         file: null,
                         required: true,
-                        specifications: "35x45mm, fond clair",
+                        specifications: "4*4, fond clair",
                         type: 'IMAGE'
                     },
                     {
@@ -365,52 +366,72 @@ const CombinedApplicationForm = () => {
     const handleFileUpload = (sectionIndex, docIndex, file) => {
         if (!file) return;
 
-        // Validation de la taille
         if (file.size > 4 * 1024 * 1024) {
             alert('La taille maximale du fichier est de 4MB');
             return;
         }
 
-        // Validation du type
         const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
         if (!validTypes.includes(file.type)) {
-            alert('Seuls les fichiers PDF, JPEG et PNG sont acceptés');
+            showErrorToast('Seuls les fichiers PDF, JPEG et PNG sont acceptés');
             return;
         }
 
-        // Créer un objet avec toutes les métadonnées du fichier
-        const fileDetails = {
-            file: file,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            lastModified: file.lastModified,
-            lastModifiedDate: new Date(file.lastModified).toLocaleDateString(),
-            uploadDate: new Date().toISOString(),
-            status: 'uploaded'
-        };
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageData = e.target.result;
 
-        // Mise à jour de l'état avec toutes les métadonnées
-        setFormData(prev => {
-            const newDocuments = [...prev.documents];
-            newDocuments[sectionIndex] = {
-                ...newDocuments[sectionIndex],
-                corps: [...newDocuments[sectionIndex].corps]
+                setFormData(prev => {
+                    const newDocuments = [...prev.documents];
+                    newDocuments[sectionIndex] = {
+                        ...newDocuments[sectionIndex],
+                        corps: [...newDocuments[sectionIndex].corps]
+                    };
+
+                    newDocuments[sectionIndex].corps[docIndex] = {
+                        ...newDocuments[sectionIndex].corps[docIndex],
+                        provided: true,
+                        file: file,
+                        imageData: imageData,
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        uploadDate: new Date().toISOString()
+                    };
+
+                    return {
+                        ...prev,
+                        documents: newDocuments
+                    };
+                });
             };
+            reader.readAsDataURL(file);
+        } else {
+            setFormData(prev => {
+                const newDocuments = [...prev.documents];
+                newDocuments[sectionIndex] = {
+                    ...newDocuments[sectionIndex],
+                    corps: [...newDocuments[sectionIndex].corps]
+                };
 
-            newDocuments[sectionIndex].corps[docIndex] = {
-                ...newDocuments[sectionIndex].corps[docIndex],
-                provided: true,
-                ...fileDetails
-            };
+                newDocuments[sectionIndex].corps[docIndex] = {
+                    ...newDocuments[sectionIndex].corps[docIndex],
+                    provided: true,
+                    file: file,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    uploadDate: new Date().toISOString()
+                };
 
-            return {
-                ...prev,
-                documents: newDocuments
-            };
-        });
+                return {
+                    ...prev,
+                    documents: newDocuments
+                };
+            });
+        }
 
-        // Mise à jour de la progression de l'upload
         setUploadProgress(prev => ({
             ...prev,
             [`${sectionIndex}-${docIndex}`]: {
@@ -419,7 +440,6 @@ const CombinedApplicationForm = () => {
             }
         }));
 
-        // Simulation de la progression de l'upload (à remplacer par votre véritable logique d'upload)
         const interval = setInterval(() => {
             setUploadProgress(prev => {
                 const currentProgress = prev[`${sectionIndex}-${docIndex}`]?.progress || 0;
@@ -483,30 +503,28 @@ const CombinedApplicationForm = () => {
                 personalInfo: formData.personalInfo,
                 background: formData.background,
                 familyInfo: formData.familyInfo,
-                declarationAgreed: formData.declarationAgreed
+                declarationAgreed: formData.declarationAgreed,
+                documents: formData.documents.map(section => ({
+                    ...section,
+                    corps: section.corps.map(doc => ({
+                        titre: doc.titre,
+                        provided: doc.provided,
+                        imageData: doc.imageData || null
+                    }))
+                }))
             };
 
             formDataToSend.append('applicationData', JSON.stringify(applicationData));
 
-            // Ajouter les fichiers
             formData.documents.forEach((section, sectionIndex) => {
                 section.corps.forEach((doc, docIndex) => {
-                    if (doc.provided && doc.file) {
+                    if (doc.provided && doc.file && !doc.type.startsWith('image/')) {
                         formDataToSend.append(`documents[${sectionIndex}][${docIndex}]`, doc.file);
-                        // Afficher les infos du fichier dans la console
-                        // console.log(`Fichier ${sectionIndex}-${docIndex}:`, {
-                        //     name: doc.file.name,
-                        //     size: doc.file.size,
-                        //     type: doc.file.type
-                        // });
                     }
                 });
             });
 
-
-
-            console.log(formData)
-
+            console.log(formData);
 
             // Envoyer les données
             await submitCombinedApplication(formDataToSend);
