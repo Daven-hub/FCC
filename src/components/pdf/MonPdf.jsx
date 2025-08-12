@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   page: {
     paddingTop: 15,
     // paddingBottom: 15,
-    paddingBottom:30,
+    paddingBottom:29,
     position: "relative",
     // paddingHorizontal: 20,
     flex: 1,
@@ -137,8 +137,8 @@ const styles = StyleSheet.create({
   footer: {
     position: "absolute",
     bottom: 0,
-    paddingVertical:6,
-    paddigTop:10,
+    paddingVertical:9,
+    paddigTop:9,
     zIndex:50,
     textAlign: "center",
     width: "100%",
