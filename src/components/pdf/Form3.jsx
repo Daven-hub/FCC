@@ -1,11 +1,4 @@
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Image
-} from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import DonneePersonnelle from "./form3/DonneePersonnelle";
 import Langue from "./form3/Langue";
 import Passport from "./form3/Passport";
@@ -51,9 +44,7 @@ const Form3 = ({ datas }) => {
   return (
     <>
       <View style={[styles.row, { justifyContent: "space-between" }]}>
-        <View
-          style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}
-        >
+        <View style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}>
           <View style={[styles.row, {}]}>
             <View
               style={{
@@ -61,25 +52,18 @@ const Form3 = ({ datas }) => {
                 paddingVertical: 2,
                 borderRight: 1,
                 borderBottom: 1
-              }}
-            >
+              }}>
               <Text style={styles.form2_titre}>1</Text>
             </View>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                IUC
-              </Text>
+              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>IUC</Text>
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>
-              {datas?.nom}
-            </Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
           </View>
         </View>
-        <View
-          style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}
-        >
+        <View style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}>
           <View style={[styles.row, {}]}>
             <View
               style={{
@@ -87,25 +71,18 @@ const Form3 = ({ datas }) => {
                 paddingVertical: 2,
                 borderRight: 1,
                 borderBottom: 1
-              }}
-            >
+              }}>
               <Text style={styles.form2_titre}>2</Text>
             </View>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                Je veux être servi(e) en
-              </Text>
+              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Je veux être servi(e) en</Text>
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>
-              {datas?.nom}
-            </Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
           </View>
         </View>
-        <View
-          style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}
-        >
+        <View style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}>
           <View style={[styles.row, {}]}>
             <View
               style={{
@@ -113,25 +90,20 @@ const Form3 = ({ datas }) => {
                 paddingVertical: 2,
                 borderRight: 1,
                 borderBottom: 1
-              }}
-            >
+              }}>
               <Text style={styles.form2_titre}>3</Text>
             </View>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                * Visa demandé
-              </Text>
+              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>* Visa demandé</Text>
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>
-              {datas?.nom}
-            </Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
           </View>
         </View>
       </View>
 
-      <View style={{ flexDirection: "column",gap:5 }}>
+      <View style={{ flexDirection: "column", gap: 5 }}>
         <DonneePersonnelle datas={datas} />
         <Langue datas={datas} />
         <Passport datas={datas} />
