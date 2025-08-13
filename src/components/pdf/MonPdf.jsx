@@ -321,7 +321,7 @@ const TemplateTable = ({ items }) => (
 );
 
 const PageFamille=({datas})=>(
-  datas.body.map((item, ind) => (
+  datas?.body.map((item, ind) => (
     <TemplateTable key={ind} items={item} />
   ))
 )
@@ -446,7 +446,9 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
   </Page>
 );
 
-const MonPdfDocument = ({ datas }) => (
+const MonPdfDocument = ({ datas }) => {
+  // console.log("dataaa",dataa)
+  return(
   <Document>
     <PageTemplate
         nom={datas?.nom}
@@ -454,7 +456,7 @@ const MonPdfDocument = ({ datas }) => (
         email={datas?.email}
         image={datas?.image}
         datas={datas?.pages?.visiteur}
-        Custom={<Form3 datas={datas?.pages?.visiteur.body}/>}
+        Custom={<Form3 datas={datas?.pages?.visiteur?.body}/>}
       />
       <PageTemplate
         nom={datas?.nom}
@@ -470,7 +472,7 @@ const MonPdfDocument = ({ datas }) => (
         email={datas?.email}
         image={datas?.image}
         datas={datas?.pages?.resident}
-        Custom={<MainForm datas={datas?.pages?.resident.body}/>}
+        Custom={<MainForm datas={datas?.pages?.resident?.body}/>}
       />
       <PageTemplate
         nom={datas?.nom}
@@ -478,9 +480,10 @@ const MonPdfDocument = ({ datas }) => (
         email={datas?.email}
         image={datas?.image}
         datas={datas?.pages?.documents}
-        Custom={<PieceJointe datas={datas?.pages?.documents.body}/>}
+        Custom={<PieceJointe datas={datas?.pages?.documents?.body}/>}
       />
   </Document>
-);
+  )
+};
 
 export default MonPdfDocument;

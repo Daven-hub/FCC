@@ -1,5 +1,8 @@
+import { BlobProvider } from '@react-pdf/renderer';
 import React from 'react';
 import { FiPlus, FiX } from 'react-icons/fi';
+import MonPdfDocument from '../pdf/MonPdf';
+import prog from "../../datas/immigration.json"
 
 const DeclarationSection = ({
     declarationAgreed,
@@ -8,6 +11,24 @@ const DeclarationSection = ({
     onTogglePreview,
     formData
 }) => {
+    const dataa=formData.documents[0].corps[3].imageData;
+    // const previewPDF=()=>{
+    //     const dataa=formData.documents[0].corps[3].imageData;
+    //     // console.log("formplus",formData.documents[0].corps[3].imageData)
+    //     return(
+    //         <BlobProvider document={<MonPdfDocument datas={prog} dataa={dataa}/>}>
+    //             {({ url, loading }) =>
+    //                 loading ? (
+    //                 <button disabled>Chargement...</button>
+    //                 ) : (
+    //                 window.open(url)
+    //                 // <iframe src={url} width="100%" height="600" title="Aperçu PDF" />
+    //                 )
+    //             }
+    //         </BlobProvider>
+    //         )
+    // }
+    // console.log(prog)
     return (
         <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
@@ -44,7 +65,17 @@ const DeclarationSection = ({
                     </label>
                 </div>
             </div>
-            
+            <button className='p-2 bg-primary'>preview pdf</button>
+            {/* <BlobProvider document={<MonPdfDocument datas={prog}/>}>
+                {({ url, loading }) =>
+                    loading ? (
+                    <button disabled>Chargement...</button>
+                    ) : (
+                    // window.open(url)
+                    <iframe src={url} width="100%" height="600" title="Aperçu PDF" />
+                    )
+                }
+            </BlobProvider> */}
         </div>
     );
 };

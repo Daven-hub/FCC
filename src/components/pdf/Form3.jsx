@@ -5,6 +5,7 @@ import Passport from "./form3/Passport";
 import IdentiteNationale from "./form3/IdentiteNationale";
 import ResidentUSA from "./form3/ResidentUSA";
 import Coordonnee from "./form3/Coordonnee";
+import DetailVisa from "./form3/DetailVisa";
 
 export const styles = StyleSheet.create({
   page: {
@@ -37,6 +38,10 @@ export const styles = StyleSheet.create({
   col: {
     paddingVertical: 3,
     paddingHorizontal: 5
+  },
+  coll: {
+    paddingVertical: 1,
+    paddingHorizontal: 3
   }
 });
 
@@ -110,6 +115,7 @@ const Form3 = ({ datas }) => {
         <IdentiteNationale datas={datas} />
         <ResidentUSA datas={datas} />
         <Coordonnee datas={datas} />
+        <DetailVisa datas={datas} />
       </View>
     </>
   );
