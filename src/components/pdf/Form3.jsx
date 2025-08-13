@@ -6,6 +6,8 @@ import IdentiteNationale from "./form3/IdentiteNationale";
 import ResidentUSA from "./form3/ResidentUSA";
 import Coordonnee from "./form3/Coordonnee";
 import DetailVisa from "./form3/DetailVisa";
+import Scolarite from "./form3/Scolarite";
+import Emploi from "./form3/Emploi";
 
 export const styles = StyleSheet.create({
   page: {
@@ -116,6 +118,8 @@ const Form3 = ({ datas }) => {
         <ResidentUSA datas={datas} />
         <Coordonnee datas={datas} />
         <DetailVisa datas={datas} />
+        <Scolarite datas={datas} />
+        <Emploi datas={datas} />
       </View>
     </>
   );
