@@ -117,6 +117,7 @@ const CombinedApplicationForm = () => {
 
         // Étape 3: Informations familiales
         familyInfo: {
+            typeDemande: '',
             applicant: {
                 name: '',
                 dob: '',
@@ -2713,6 +2714,63 @@ const CombinedApplicationForm = () => {
             title: "Informations familiales",
             component: (
                 <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Type de demande</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center">
+                                <input
+                                    type="radio"
+                                    id="visiteur"
+                                    name="typeDemande"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                    checked={formData.familyInfo.typeDemande === 'Visiteur'}
+                                    onChange={() => handleChange('familyInfo', 'typeDemande', 'Visiteur')} // Changé ici
+                                />
+                                <label htmlFor="visiteur" className="ml-3 block text-sm font-medium text-gray-700">
+                                    Visiteur
+                                </label>
+                            </div>
+                            <div className="flex items-center">
+                                <input
+                                    type="radio"
+                                    id="travailleur"
+                                    name="typeDemande"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                    checked={formData.familyInfo.typeDemande === 'Travailleur'}
+                                    onChange={() => handleChange('familyInfo', 'typeDemande', 'Travailleur')} // Changé ici
+                                />
+                                <label htmlFor="travailleur" className="ml-3 block text-sm font-medium text-gray-700">
+                                    Travailleur
+                                </label>
+                            </div>
+                            <div className="flex items-center">
+                                <input
+                                    type="radio"
+                                    id="etudiant"
+                                    name="typeDemande"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                    checked={formData.familyInfo.typeDemande === 'Etudiant'}
+                                    onChange={() => handleChange('familyInfo', 'typeDemande', 'Etudiant')} // Changé ici
+                                />
+                                <label htmlFor="etudiant" className="ml-3 block text-sm font-medium text-gray-700">
+                                    Etudiant
+                                </label>
+                            </div>
+                            <div className="flex items-center">
+                                <input
+                                    type="radio"
+                                    id="autre"
+                                    name="typeDemande"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                    checked={formData.familyInfo.typeDemande === 'Autre'}
+                                    onChange={() => handleChange('familyInfo', 'typeDemande', 'Autre')} // Changé ici
+                                />
+                                <label htmlFor="autre" className="ml-3 block text-sm font-medium text-gray-700">
+                                    Autre
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Informations sur le demandeur principal</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
