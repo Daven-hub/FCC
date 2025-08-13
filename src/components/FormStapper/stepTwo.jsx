@@ -87,6 +87,114 @@ const CombinedApplicationForm = () => {
         },
 
         // Étape 2: Antécédents et historique
+        resident: {
+            titre: "Demande de statut de résident temporaire",
+            body: {
+                military: {
+                    isOk: false,
+                    dev: [
+                        {
+                            du: "",
+                            au: "",
+                            endroit: "",
+                            province: "",
+                            pays: ""
+                        },
+                        {
+                            du: "",
+                            au: "",
+                            endroit: "",
+                            province: "",
+                            pays: ""
+                        }
+                    ]
+                },
+                temoin: {
+                    isOk: false,
+                    dev: [
+                        {
+                            du: "",
+                            au: "",
+                            endroit: "",
+                            province: "",
+                            pays: "",
+                            detail: ""
+                        },
+                        {
+                            du: "",
+                            au: "",
+                            endroit: "",
+                            province: "",
+                            pays: "",
+                            detail: ""
+                        }
+                    ]
+                },
+                affiliation: {
+                    isOk: false,
+                    dev: [
+                        {
+                            du: "",
+                            au: "",
+                            nom_org: "",
+                            activite: "",
+                            province: "",
+                            pays: ""
+                        },
+                        {
+                            du: "",
+                            au: "",
+                            nom_org: "",
+                            activite: "",
+                            province: "",
+                            pays: ""
+                        }
+                    ]
+                },
+                charges: {
+                    isOk: false,
+                    dev: [
+                        {
+                            du: "",
+                            au: "",
+                            pays: "",
+                            sphere: "",
+                            ministere: "",
+                            activite: ""
+                        },
+                        {
+                            du: "",
+                            au: "",
+                            pays: "",
+                            sphere: "",
+                            ministere: "",
+                            activite: ""
+                        }
+                    ]
+                },
+                voyages: {
+                    isOk: false,
+                    dev: [
+                        {
+                            du: "",
+                            au: "",
+                            pays: "",
+                            endroit: "",
+                            but: ""
+                        },
+                        {
+                            du: "",
+                            au: "",
+                            pays: "",
+                            endroit: "",
+                            but: ""
+                        }
+                    ]
+                }
+            }
+        },
+
+
         background: {
             tuberculoseContact: 'non',
             troublePhysiqueMental: 'non',
@@ -322,17 +430,26 @@ const CombinedApplicationForm = () => {
         }));
     };
 
-    const handleArrayChange = (section, arrayName, index, field, value) => {
+    const handleArrayChange = (section, path, index, field, value) => {
         setFormData(prev => {
-            const newArray = [...prev[section][arrayName]];
+            // Pour gérer les chemins imbriqués comme 'body.military.dev'
+            const pathParts = path.split('.');
+            let current = { ...prev[section] };
+            let temp = current;
+
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                temp = temp[pathParts[i]] = { ...temp[pathParts[i]] };
+            }
+
+            const arrayPath = pathParts[pathParts.length - 1];
+            const newArray = [...temp[arrayPath]];
             if (!newArray[index]) newArray[index] = {};
             newArray[index][field] = value;
+            temp[arrayPath] = newArray;
+
             return {
                 ...prev,
-                [section]: {
-                    ...prev[section],
-                    [arrayName]: newArray
-                }
+                [section]: current
             };
         });
     };
@@ -538,16 +655,16 @@ const CombinedApplicationForm = () => {
                     formData.familyInfo.mother.address
                 );
 
-            case 3: // Documents
-                // Vérifie que tous les documents obligatoires sont fournis
-                return formData.documents.every(section =>
-                    section.corps.every(doc =>
-                        !doc.required ||
-                        (doc.condition && !doc.condition(formData)) ||
-                        doc.provided
-                    ));
+            // case 3: // Documents
+            //     // Vérifie que tous les documents obligatoires sont fournis
+            //     return formData.documents.every(section =>
+            //         section.corps.every(doc =>
+            //             !doc.required ||
+            //             (doc.condition && !doc.condition(formData)) ||
+            //             doc.provided
+            //         ));
 
-            case 4: // Déclaration
+            case 3: // Déclaration
                 return formData.declarationAgreed;
 
             default:
@@ -583,6 +700,7 @@ const CombinedApplicationForm = () => {
             const applicationData = {
                 personalInfo: formData.personalInfo,
                 background: formData.background,
+                resident: formData.resident,
                 familyInfo: formData.familyInfo,
                 declarationAgreed: formData.declarationAgreed,
                 documents: formData.documents.map(section => ({
@@ -1834,534 +1952,1045 @@ const CombinedApplicationForm = () => {
             title: "Antécédents et historique",
             component: (
                 <div className="space-y-6">
-                    {/* Premier antécédent (tuberculose) - reste inchangé */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous été en contact étroit avec une personne atteinte de tuberculose ou avez-vous un trouble physique ou mental qui pourrait constituer un danger pour la santé ou la sécurité publiques ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.tuberculoseContact === 'non'}
-                                    onChange={() => handleChange('background', 'tuberculoseContact', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.tuberculoseContact === 'oui'}
-                                    onChange={() => handleChange('background', 'tuberculoseContact', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
+                    {/* Section Militaire */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <div className="flex items-center mb-4">
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                checked={formData.resident.body.military.isOk}
+                                onChange={(e) => handleChange('resident', {
+                                    ...formData.resident,
+                                    body: {
+                                        ...formData.resident.body,
+                                        military: {
+                                            ...formData.resident.body.military,
+                                            isOk: e.target.checked
+                                        }
+                                    }
+                                })}
+                            />
+                            <label className="ml-2 block text-sm font-medium text-gray-700">
+                                Avez-vous déjà servi dans l'armée, une unité de milice, une organisation de police ou de sécurité dans n'importe quel pays ?
                             </label>
                         </div>
-                        {formData.background.tuberculoseContact === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsTuberculoseTrouble}
-                                    onChange={e => handleChange('background', 'detailsTuberculoseTrouble', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.military.isOk && (
+                            <div className="space-y-4">
+                                {formData.resident.body.military.dev.map((service, index) => (
+                                    <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={service.du}
+                                                    onChange={(e) => {
+                                                        const newMilitary = [...formData.resident.body.military.dev];
+                                                        newMilitary[index] = { ...newMilitary[index], du: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                military: {
+                                                                    ...formData.resident.body.military,
+                                                                    dev: newMilitary
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={service.au}
+                                                    onChange={(e) => {
+                                                        const newMilitary = [...formData.resident.body.military.dev];
+                                                        newMilitary[index] = { ...newMilitary[index], au: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                military: {
+                                                                    ...formData.resident.body.military,
+                                                                    dev: newMilitary
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Endroit</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={service.endroit}
+                                                    onChange={(e) => {
+                                                        const newMilitary = [...formData.resident.body.military.dev];
+                                                        newMilitary[index] = { ...newMilitary[index], endroit: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                military: {
+                                                                    ...formData.resident.body.military,
+                                                                    dev: newMilitary
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Province</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={service.province}
+                                                    onChange={(e) => {
+                                                        const newMilitary = [...formData.resident.body.military.dev];
+                                                        newMilitary[index] = { ...newMilitary[index], province: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                military: {
+                                                                    ...formData.resident.body.military,
+                                                                    dev: newMilitary
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={service.pays}
+                                                    onChange={(e) => {
+                                                        const newMilitary = [...formData.resident.body.military.dev];
+                                                        newMilitary[index] = { ...newMilitary[index], pays: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                military: {
+                                                                    ...formData.resident.body.military,
+                                                                    dev: newMilitary
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newMilitary = [...formData.resident.body.military.dev];
+                                                    newMilitary.splice(index, 1);
+                                                    handleChange('resident', {
+                                                        ...formData.resident,
+                                                        body: {
+                                                            ...formData.resident.body,
+                                                            military: {
+                                                                ...formData.resident.body.military,
+                                                                dev: newMilitary
+                                                            }
+                                                        }
+                                                    });
+                                                }}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newMilitary = [...formData.resident.body.military.dev, {
+                                            du: "",
+                                            au: "",
+                                            endroit: "",
+                                            province: "",
+                                            pays: ""
+                                        }];
+                                        handleChange('resident', {
+                                            ...formData.resident,
+                                            body: {
+                                                ...formData.resident.body,
+                                                military: {
+                                                    ...formData.resident.body.military,
+                                                    dev: newMilitary
+                                                }
+                                            }
+                                        });
+                                    }}
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                >
+                                    <FiPlus className="mr-2" /> Ajouter un service militaire
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    {/* Deuxième antécédent (statut expiré) */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà eu un statut d'immigration ou de résidence temporaire au Canada qui a expiré et vous avez continué à rester au Canada ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.statutExpire === 'non'}
-                                    onChange={() => handleChange('background', 'statutExpire', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.statutExpire === 'oui'}
-                                    onChange={() => handleChange('background', 'statutExpire', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
+                    {/* Section Témoin de violations */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <div className="flex items-center mb-4">
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                checked={formData.resident.body.temoin.isOk}
+                                onChange={(e) => handleChange('resident', {
+                                    ...formData.resident,
+                                    body: {
+                                        ...formData.resident.body,
+                                        temoin: {
+                                            ...formData.resident.body.temoin,
+                                            isOk: e.target.checked
+                                        }
+                                    }
+                                })}
+                            />
+                            <label className="ml-2 block text-sm font-medium text-gray-700">
+                                Avez-vous déjà été témoin ou impliqué dans des violations des droits de la personne ou des crimes de guerre ?
                             </label>
                         </div>
-                        {formData.background.statutExpire === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails du statut expiré</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsStatutExpire}
-                                    onChange={e => handleChange('background', 'detailsStatutExpire', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.temoin.isOk && (
+                            <div className="space-y-4">
+                                {formData.resident.body.temoin.dev.map((violation, index) => (
+                                    <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={violation.du}
+                                                    onChange={(e) => {
+                                                        const newTemoin = [...formData.resident.body.temoin.dev];
+                                                        newTemoin[index] = { ...newTemoin[index], du: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                temoin: {
+                                                                    ...formData.resident.body.temoin,
+                                                                    dev: newTemoin
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={violation.au}
+                                                    onChange={(e) => {
+                                                        const newTemoin = [...formData.resident.body.temoin.dev];
+                                                        newTemoin[index] = { ...newTemoin[index], au: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                temoin: {
+                                                                    ...formData.resident.body.temoin,
+                                                                    dev: newTemoin
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Endroit</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={violation.endroit}
+                                                    onChange={(e) => {
+                                                        const newTemoin = [...formData.resident.body.temoin.dev];
+                                                        newTemoin[index] = { ...newTemoin[index], endroit: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                temoin: {
+                                                                    ...formData.resident.body.temoin,
+                                                                    dev: newTemoin
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Province</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={violation.province}
+                                                    onChange={(e) => {
+                                                        const newTemoin = [...formData.resident.body.temoin.dev];
+                                                        newTemoin[index] = { ...newTemoin[index], province: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                temoin: {
+                                                                    ...formData.resident.body.temoin,
+                                                                    dev: newTemoin
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={violation.pays}
+                                                    onChange={(e) => {
+                                                        const newTemoin = [...formData.resident.body.temoin.dev];
+                                                        newTemoin[index] = { ...newTemoin[index], pays: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                temoin: {
+                                                                    ...formData.resident.body.temoin,
+                                                                    dev: newTemoin
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
+                                                <textarea
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    rows={3}
+                                                    value={violation.detail}
+                                                    onChange={(e) => {
+                                                        const newTemoin = [...formData.resident.body.temoin.dev];
+                                                        newTemoin[index] = { ...newTemoin[index], detail: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                temoin: {
+                                                                    ...formData.resident.body.temoin,
+                                                                    dev: newTemoin
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newTemoin = [...formData.resident.body.temoin.dev];
+                                                    newTemoin.splice(index, 1);
+                                                    handleChange('resident', {
+                                                        ...formData.resident,
+                                                        body: {
+                                                            ...formData.resident.body,
+                                                            temoin: {
+                                                                ...formData.resident.body.temoin,
+                                                                dev: newTemoin
+                                                            }
+                                                        }
+                                                    });
+                                                }}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newTemoin = [...formData.resident.body.temoin.dev, {
+                                            du: "",
+                                            au: "",
+                                            endroit: "",
+                                            province: "",
+                                            pays: "",
+                                            detail: ""
+                                        }];
+                                        handleChange('resident', {
+                                            ...formData.resident,
+                                            body: {
+                                                ...formData.resident.body,
+                                                temoin: {
+                                                    ...formData.resident.body.temoin,
+                                                    dev: newTemoin
+                                                }
+                                            }
+                                        });
+                                    }}
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                >
+                                    <FiPlus className="mr-2" /> Ajouter une violation
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    {/* Troisième antécédent (refus d'entrée) */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été refusé l'entrée au Canada ou fait l'objet d'une ordonnance de renvoi ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.refusEntree === 'non'}
-                                    onChange={() => handleChange('background', 'refusEntree', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.refusEntree === 'oui'}
-                                    onChange={() => handleChange('background', 'refusEntree', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
+                    {/* Section Affiliation */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <div className="flex items-center mb-4">
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                checked={formData.resident.body.affiliation.isOk}
+                                onChange={(e) => handleChange('resident', {
+                                    ...formData.resident,
+                                    body: {
+                                        ...formData.resident.body,
+                                        affiliation: {
+                                            ...formData.resident.body.affiliation,
+                                            isOk: e.target.checked
+                                        }
+                                    }
+                                })}
+                            />
+                            <label className="ml-2 block text-sm font-medium text-gray-700">
+                                Avez-vous déjà été membre ou affilié à une organisation ou association qui a utilisé la violence pour atteindre ses objectifs ?
                             </label>
                         </div>
-                        {formData.background.refusEntree === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails du refus d'entrée ou ordonnance de renvoi</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsRefusEntree}
-                                    onChange={e => handleChange('background', 'detailsRefusEntree', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.affiliation.isOk && (
+                            <div className="space-y-4">
+                                {formData.resident.body.affiliation.dev.map((org, index) => (
+                                    <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={org.du}
+                                                    onChange={(e) => {
+                                                        const newAffiliation = [...formData.resident.body.affiliation.dev];
+                                                        newAffiliation[index] = { ...newAffiliation[index], du: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                affiliation: {
+                                                                    ...formData.resident.body.affiliation,
+                                                                    dev: newAffiliation
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={org.au}
+                                                    onChange={(e) => {
+                                                        const newAffiliation = [...formData.resident.body.affiliation.dev];
+                                                        newAffiliation[index] = { ...newAffiliation[index], au: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                affiliation: {
+                                                                    ...formData.resident.body.affiliation,
+                                                                    dev: newAffiliation
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nom de l'organisation</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={org.nom_org}
+                                                    onChange={(e) => {
+                                                        const newAffiliation = [...formData.resident.body.affiliation.dev];
+                                                        newAffiliation[index] = { ...newAffiliation[index], nom_org: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                affiliation: {
+                                                                    ...formData.resident.body.affiliation,
+                                                                    dev: newAffiliation
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Activité</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={org.activite}
+                                                    onChange={(e) => {
+                                                        const newAffiliation = [...formData.resident.body.affiliation.dev];
+                                                        newAffiliation[index] = { ...newAffiliation[index], activite: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                affiliation: {
+                                                                    ...formData.resident.body.affiliation,
+                                                                    dev: newAffiliation
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Province</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={org.province}
+                                                    onChange={(e) => {
+                                                        const newAffiliation = [...formData.resident.body.affiliation.dev];
+                                                        newAffiliation[index] = { ...newAffiliation[index], province: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                affiliation: {
+                                                                    ...formData.resident.body.affiliation,
+                                                                    dev: newAffiliation
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={org.pays}
+                                                    onChange={(e) => {
+                                                        const newAffiliation = [...formData.resident.body.affiliation.dev];
+                                                        newAffiliation[index] = { ...newAffiliation[index], pays: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                affiliation: {
+                                                                    ...formData.resident.body.affiliation,
+                                                                    dev: newAffiliation
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newAffiliation = [...formData.resident.body.affiliation.dev];
+                                                    newAffiliation.splice(index, 1);
+                                                    handleChange('resident', {
+                                                        ...formData.resident,
+                                                        body: {
+                                                            ...formData.resident.body,
+                                                            affiliation: {
+                                                                ...formData.resident.body.affiliation,
+                                                                dev: newAffiliation
+                                                            }
+                                                        }
+                                                    });
+                                                }}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newAffiliation = [...formData.resident.body.affiliation.dev, {
+                                            du: "",
+                                            au: "",
+                                            nom_org: "",
+                                            activite: "",
+                                            province: "",
+                                            pays: ""
+                                        }];
+                                        handleChange('resident', {
+                                            ...formData.resident,
+                                            body: {
+                                                ...formData.resident.body,
+                                                affiliation: {
+                                                    ...formData.resident.body.affiliation,
+                                                    dev: newAffiliation
+                                                }
+                                            }
+                                        });
+                                    }}
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                >
+                                    <FiPlus className="mr-2" /> Ajouter une affiliation
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    {/* Quatrième antécédent (demande précédente) */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà fait une demande de visa, permis ou statut de résidence permanent pour le Canada ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.demandePrecedenteCanada === 'non'}
-                                    onChange={() => handleChange('background', 'demandePrecedenteCanada', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.demandePrecedenteCanada === 'oui'}
-                                    onChange={() => handleChange('background', 'demandePrecedenteCanada', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
+                    {/* Section Charges publiques */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <div className="flex items-center mb-4">
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                checked={formData.resident.body.charges.isOk}
+                                onChange={(e) => handleChange('resident', {
+                                    ...formData.resident,
+                                    body: {
+                                        ...formData.resident.body,
+                                        charges: {
+                                            ...formData.resident.body.charges,
+                                            isOk: e.target.checked
+                                        }
+                                    }
+                                })}
+                            />
+                            <label className="ml-2 block text-sm font-medium text-gray-700">
+                                Avez-vous déjà occupé un poste gouvernemental ou une charge publique ?
                             </label>
                         </div>
-                        {formData.background.demandePrecedenteCanada === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails de la demande précédente</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsDemandePrecedente}
-                                    onChange={e => handleChange('background', 'detailsDemandePrecedente', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.charges.isOk && (
+                            <div className="space-y-4">
+                                {formData.resident.body.charges.dev.map((charge, index) => (
+                                    <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={charge.du}
+                                                    onChange={(e) => {
+                                                        const newCharges = [...formData.resident.body.charges.dev];
+                                                        newCharges[index] = { ...newCharges[index], du: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                charges: {
+                                                                    ...formData.resident.body.charges,
+                                                                    dev: newCharges
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={charge.au}
+                                                    onChange={(e) => {
+                                                        const newCharges = [...formData.resident.body.charges.dev];
+                                                        newCharges[index] = { ...newCharges[index], au: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                charges: {
+                                                                    ...formData.resident.body.charges,
+                                                                    dev: newCharges
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={charge.pays}
+                                                    onChange={(e) => {
+                                                        const newCharges = [...formData.resident.body.charges.dev];
+                                                        newCharges[index] = { ...newCharges[index], pays: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                charges: {
+                                                                    ...formData.resident.body.charges,
+                                                                    dev: newCharges
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Sphère</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={charge.sphere}
+                                                    onChange={(e) => {
+                                                        const newCharges = [...formData.resident.body.charges.dev];
+                                                        newCharges[index] = { ...newCharges[index], sphere: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                charges: {
+                                                                    ...formData.resident.body.charges,
+                                                                    dev: newCharges
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Ministère</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={charge.ministere}
+                                                    onChange={(e) => {
+                                                        const newCharges = [...formData.resident.body.charges.dev];
+                                                        newCharges[index] = { ...newCharges[index], ministere: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                charges: {
+                                                                    ...formData.resident.body.charges,
+                                                                    dev: newCharges
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Activité</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={charge.activite}
+                                                    onChange={(e) => {
+                                                        const newCharges = [...formData.resident.body.charges.dev];
+                                                        newCharges[index] = { ...newCharges[index], activite: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                charges: {
+                                                                    ...formData.resident.body.charges,
+                                                                    dev: newCharges
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newCharges = [...formData.resident.body.charges.dev];
+                                                    newCharges.splice(index, 1);
+                                                    handleChange('resident', {
+                                                        ...formData.resident,
+                                                        body: {
+                                                            ...formData.resident.body,
+                                                            charges: {
+                                                                ...formData.resident.body.charges,
+                                                                dev: newCharges
+                                                            }
+                                                        }
+                                                    });
+                                                }}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newCharges = [...formData.resident.body.charges.dev, {
+                                            du: "",
+                                            au: "",
+                                            pays: "",
+                                            sphere: "",
+                                            ministere: "",
+                                            activite: ""
+                                        }];
+                                        handleChange('resident', {
+                                            ...formData.resident,
+                                            body: {
+                                                ...formData.resident.body,
+                                                charges: {
+                                                    ...formData.resident.body.charges,
+                                                    dev: newCharges
+                                                }
+                                            }
+                                        });
+                                    }}
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                >
+                                    <FiPlus className="mr-2" /> Ajouter une charge publique
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous des antécédents judiciaires dans n'importe quel pays, y compris des condamnations, des accusations en cours ou des enquêtes criminelles ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.antecedentsJudiciaires === 'non'}
-                                    onChange={() => handleChange('background', 'antecedentsJudiciaires', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.antecedentsJudiciaires === 'oui'}
-                                    onChange={() => handleChange('background', 'antecedentsJudiciaires', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
+                    {/* Section Voyages */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <div className="flex items-center mb-4">
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                checked={formData.resident.body.voyages.isOk}
+                                onChange={(e) => handleChange('resident', {
+                                    ...formData.resident,
+                                    body: {
+                                        ...formData.resident.body,
+                                        voyages: {
+                                            ...formData.resident.body.voyages,
+                                            isOk: e.target.checked
+                                        }
+                                    }
+                                })}
+                            />
+                            <label className="ml-2 block text-sm font-medium text-gray-700">
+                                Avez-vous effectué des voyages à l'étranger au cours des 5 dernières années ?
                             </label>
                         </div>
-                        {formData.background.antecedentsJudiciaires === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsAntecedentsJudiciaires}
-                                    onChange={e => handleChange('background', 'detailsAntecedentsJudiciaires', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.voyages.isOk && (
+                            <div className="space-y-4">
+                                {formData.resident.body.voyages.dev.map((voyage, index) => (
+                                    <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={voyage.du}
+                                                    onChange={(e) => {
+                                                        const newVoyages = [...formData.resident.body.voyages.dev];
+                                                        newVoyages[index] = { ...newVoyages[index], du: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                voyages: {
+                                                                    ...formData.resident.body.voyages,
+                                                                    dev: newVoyages
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={voyage.au}
+                                                    onChange={(e) => {
+                                                        const newVoyages = [...formData.resident.body.voyages.dev];
+                                                        newVoyages[index] = { ...newVoyages[index], au: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                voyages: {
+                                                                    ...formData.resident.body.voyages,
+                                                                    dev: newVoyages
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={voyage.pays}
+                                                    onChange={(e) => {
+                                                        const newVoyages = [...formData.resident.body.voyages.dev];
+                                                        newVoyages[index] = { ...newVoyages[index], pays: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                voyages: {
+                                                                    ...formData.resident.body.voyages,
+                                                                    dev: newVoyages
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Endroit</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={voyage.endroit}
+                                                    onChange={(e) => {
+                                                        const newVoyages = [...formData.resident.body.voyages.dev];
+                                                        newVoyages[index] = { ...newVoyages[index], endroit: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                voyages: {
+                                                                    ...formData.resident.body.voyages,
+                                                                    dev: newVoyages
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">But du voyage</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={voyage.but}
+                                                    onChange={(e) => {
+                                                        const newVoyages = [...formData.resident.body.voyages.dev];
+                                                        newVoyages[index] = { ...newVoyages[index], but: e.target.value };
+                                                        handleChange('resident', {
+                                                            ...formData.resident,
+                                                            body: {
+                                                                ...formData.resident.body,
+                                                                voyages: {
+                                                                    ...formData.resident.body.voyages,
+                                                                    dev: newVoyages
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newVoyages = [...formData.resident.body.voyages.dev];
+                                                    newVoyages.splice(index, 1);
+                                                    handleChange('resident', {
+                                                        ...formData.resident,
+                                                        body: {
+                                                            ...formData.resident.body,
+                                                            voyages: {
+                                                                ...formData.resident.body.voyages,
+                                                                dev: newVoyages
+                                                            }
+                                                        }
+                                                    });
+                                                }}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newVoyages = [...formData.resident.body.voyages.dev, {
+                                            du: "",
+                                            au: "",
+                                            pays: "",
+                                            endroit: "",
+                                            but: ""
+                                        }];
+                                        handleChange('resident', {
+                                            ...formData.resident,
+                                            body: {
+                                                ...formData.resident.body,
+                                                voyages: {
+                                                    ...formData.resident.body.voyages,
+                                                    dev: newVoyages
+                                                }
+                                            }
+                                        });
+                                    }}
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                >
+                                    <FiPlus className="mr-2" /> Ajouter un voyage
+                                </button>
                             </div>
                         )}
                     </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà servi dans l'armée, une unité de milice, une organisation de police ou de sécurité dans n'importe quel pays ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.serviceMilitaire === 'Non'}
-                                    onChange={() => handleChange('background', 'serviceMilitaire', 'Non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.serviceMilitaire === 'Oui'}
-                                    onChange={() => handleChange('background', 'serviceMilitaire', 'Oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {formData.background.serviceMilitaire === "Oui" && (
-                        <div className="mt-4 space-y-4">
-                            {formData.background.detailsService.map((service, index) => (
-                                <div key={index} className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Pays</label>
-                                            <input
-                                                value={service.pays || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsService', index, 'pays', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Organisation</label>
-                                            <input
-                                                value={service.organisation || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsService', index, 'organisation', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">De (MM/AAAA)</label>
-                                            <input
-                                                value={service.de || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsService', index, 'de', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">À (MM/AAAA)</label>
-                                            <input
-                                                value={service.a || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsService', index, 'a', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-end mt-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeArrayEntry('background', 'detailsService', index)}
-                                            className="text-red-500 hover:text-red-700 flex items-center"
-                                        >
-                                            <FiTrash2 className="mr-1" /> Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => addArrayEntry('background', 'detailsService')}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <FiPlus className="mr-2" /> Ajouter un service
-                            </button>
-                        </div>
-                    )}
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été témoin ou impliqué dans des violations des droits de la personne ou des crimes de guerre ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.temoinViolations === 'Non'}
-                                    onChange={() => handleChange('background', 'temoinViolations', 'Non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.temoinViolations === 'Oui'}
-                                    onChange={() => handleChange('background', 'temoinViolations', 'Oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {formData.background.temoinViolations === "Oui" && (
-                        <div className="mt-4 space-y-4">
-                            {formData.background.detailsViolations.map((violation, index) => (
-                                <div key={index} className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Détails</label>
-                                        <textarea
-                                            value={violation.details || ''}
-                                            onChange={(e) => handleArrayChange('background', 'detailsViolations', index, 'details', e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                            rows={3}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="flex justify-end mt-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeArrayEntry('background', 'detailsViolations', index)}
-                                            className="text-red-500 hover:text-red-700 flex items-center"
-                                        >
-                                            <FiTrash2 className="mr-1" /> Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => addArrayEntry('background', 'detailsViolations')}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <FiPlus className="mr-2" /> Ajouter des détails
-                            </button>
-                        </div>
-                    )}
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été membre ou affilié à une organisation ou association qui a utilisé la violence pour atteindre ses objectifs ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.affiliationOrganisation === 'Non'}
-                                    onChange={() => handleChange('background', 'affiliationOrganisation', 'Non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.affiliationOrganisation === 'Oui'}
-                                    onChange={() => handleChange('background', 'affiliationOrganisation', 'Oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {formData.background.affiliationOrganisation === "Oui" && (
-                        <div className="mt-4 space-y-4">
-                            {formData.background.detailsAffiliation.map((affiliation, index) => (
-                                <div key={index} className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Nom de l'organisation</label>
-                                            <input
-                                                value={affiliation.nom || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'nom', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Pays</label>
-                                            <input
-                                                value={affiliation.pays || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'pays', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">De (MM/AAAA)</label>
-                                            <input
-                                                value={affiliation.de || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'de', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">À (MM/AAAA)</label>
-                                            <input
-                                                value={affiliation.a || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'a', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="mt-2">
-                                        <label className="block text-sm font-medium text-gray-700">Nature de l'affiliation</label>
-                                        <textarea
-                                            value={affiliation.nature || ''}
-                                            onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'nature', e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                            rows={2}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="flex justify-end mt-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeArrayEntry('background', 'detailsAffiliation', index)}
-                                            className="text-red-500 hover:text-red-700 flex items-center"
-                                        >
-                                            <FiTrash2 className="mr-1" /> Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => addArrayEntry('background', 'detailsAffiliation')}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <FiPlus className="mr-2" /> Ajouter une affiliation
-                            </button>
-                        </div>
-                    )}
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà occupé un poste gouvernemental ou une charge publique ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.chargePublique === 'Non'}
-                                    onChange={() => handleChange('background', 'chargePublique', 'Non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.chargePublique === 'Oui'}
-                                    onChange={() => handleChange('background', 'chargePublique', 'Oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {formData.background.chargePublique === "Oui" && (
-                        <div className="mt-4 space-y-4">
-                            {formData.background.detailsCharges.map((charge, index) => (
-                                <div key={index} className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Poste occupé</label>
-                                            <input
-                                                value={charge.poste || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsCharges', index, 'poste', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Pays</label>
-                                            <input
-                                                value={charge.pays || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsCharges', index, 'pays', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">De (MM/AAAA)</label>
-                                            <input
-                                                value={charge.de || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsCharges', index, 'de', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">À (MM/AAAA)</label>
-                                            <input
-                                                value={charge.a || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsCharges', index, 'a', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-end mt-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeArrayEntry('background', 'detailsCharges', index)}
-                                            className="text-red-500 hover:text-red-700 flex items-center"
-                                        >
-                                            <FiTrash2 className="mr-1" /> Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => addArrayEntry('background', 'detailsCharges')}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <FiPlus className="mr-2" /> Ajouter un poste
-                            </button>
-                        </div>
-                    )}
                 </div>
             )
         },
@@ -3172,269 +3801,3 @@ const CombinedApplicationForm = () => {
 };
 
 export default CombinedApplicationForm;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{/* <div className="min-h-screen bg-gray-50 relative overflow-hidden">
-            
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-0 w-1/3 md:w-1/4 opacity-5">
-                    <img
-                        src="/flag.png"
-                        alt="Décor"
-                        className="w-full h-auto object-contain"
-                    />
-                </div>
-                <div className="absolute bottom-0 left-0 w-1/3 md:w-1/4 opacity-5 rotate-180">
-                    <img
-                        src="/flag.png"
-                        alt="Décor"
-                        className="w-full h-auto object-contain"
-                    />
-                </div>
-            </div>
-
-           
-            <div className="relative px-[6.5%] mx-auto  ">
-               
-                <header className="text-center mb-10 md:mb-14">
-                    <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary-100 rounded-full mb-4">
-                        <svg className="w-8 h-8 md:w-10 md:h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
-                        Formulaire de demande combinée
-                    </h1>
-                    
-                </header>
-
-                
-                <div className="mb-10 md:mb-14">
-                    <nav className="flex items-center justify-center">
-                        <ol className="flex items-center space-x-4 md:space-x-8">
-                            {steps.map((step, index) => (
-                                <li key={index} className="flex items-center">
-                                    <button
-                                        type="button"
-                                        onClick={() => validateCurrentStep(activeStep) && setActiveStep(index)}
-                                        className={`group relative flex flex-col items-center transition-all ${index <= activeStep ? "cursor-pointer" : "cursor-not-allowed"}`}
-                                        disabled={!validateCurrentStep(activeStep)}
-                                    >
-                                        <span
-                                            className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 ${index === activeStep
-                                                ? "bg-primary border-primary text-white shadow-lg scale-110"
-                                                : index < activeStep
-                                                    ? "bg-green-100 border-green-500 text-green-700"
-                                                    : "bg-white border-gray-300 text-gray-400 group-hover:border-gray-400"
-                                                }`}
-                                        >
-                                            {index < activeStep ? (
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                </svg>
-                                            ) : (
-                                                <span className="font-medium">{index + 1}</span>
-                                            )}
-                                        </span>
-                                        <span
-                                            className={`absolute top-full mt-2 w-32 text-center text-sm font-medium ${index === activeStep
-                                                ? "text-primary font-semibold"
-                                                : index < activeStep
-                                                    ? "text-gray-600"
-                                                    : "text-gray-400"
-                                                }`}
-                                        >
-                                            {step.title}
-                                        </span>
-                                    </button>
-
-                                    {index < steps.length - 1 && (
-                                        <div
-                                            className={`hidden md:block h-0.5 w-16 mx-2 transition-all duration-500 ${index < activeStep ? "bg-green-500" : "bg-gray-200"
-                                                }`}
-                                        />
-                                    )}
-                                </li>
-                            ))}
-                        </ol>
-                    </nav>
-                </div>
-
-                
-                <div className="bg-white shadow-xl rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-                    
-                    <div className="h-2 bg-gray-100">
-                        <div
-                            className="h-full bg-primary transition-all duration-500 ease-out"
-                            style={{ width: `${((activeStep + 1) / steps.length) * 100}%` }}
-                        />
-                    </div>
-
-                    
-                    <div className="px-6 py-5 border-b border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h2 className="text-lg md:text-xl font-bold text-gray-900">
-                                    Étape {activeStep + 1} : {steps[activeStep].title}
-                                </h2>
-                                <p className="mt-1 text-sm text-gray-500">
-                                    {getStepDescription(activeStep)}
-                                </p>
-                            </div>
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary">
-                                {activeStep + 1}/{steps.length}
-                            </span>
-                        </div>
-                    </div>
-
-                   
-                    <form onSubmit={handleSubmit} className="divide-y divide-gray-200">
-                        <div className="px-6 py-5 sm:p-8">
-                            {steps[activeStep].component}
-                        </div>
-
-                       
-                        <div className="px-6 py-5 bg-gray-50 sm:px-8">
-                            <div className="flex items-center justify-between">
-                                {activeStep > 0 ? (
-                                    <button
-                                        type="button"
-                                        onClick={prevStep}
-                                        className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
-                                    >
-                                        <FiChevronLeft className="mr-2" />
-                                        Précédent
-                                    </button>
-                                ) : (
-                                    <div></div>
-                                )}
-
-                                {activeStep < steps.length - 1 ? (
-                                    <button
-                                        type="button"
-                                        onClick={nextStep}
-                                        disabled={!validateCurrentStep(activeStep)}
-                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all ${validateCurrentStep(activeStep)
-                                            ? "bg-primary hover:bg-primary-600"
-                                            : "bg-gray-400 cursor-not-allowed"
-                                            }`}
-                                    >
-                                        Suivant
-                                        <FiChevronRight className="ml-2" />
-                                    </button>
-                                ) : (
-                                    <button
-                                        type="submit"
-                                        disabled={submitStatus === "loading" || !formData.declarationAgreed}
-                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${submitStatus === "loading" || !formData.declarationAgreed
-                                            ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
-                                            }`}
-                                    >
-                                        {submitStatus === "loading" ? (
-                                            <>
-                                                <svg
-                                                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <circle
-                                                        className="opacity-25"
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    ></circle>
-                                                    <path
-                                                        className="opacity-75"
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                    ></path>
-                                                </svg>
-                                                Envoi en cours...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FiCheck className="mr-2" />
-                                                Soumettre la demande
-                                            </>
-                                        )}
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-              
-                <div className="mt-8 text-center">
-                    <p className="text-sm text-gray-500">
-                        Besoin d'aide ? <a href="#" className="font-medium text-primary hover:text-primary-700">Contactez notre support</a>
-                    </p>
-                    <p className="mt-1 text-xs text-gray-400">
-                        Vos informations sont sécurisées et ne seront pas partagées.
-                    </p>
-                </div>
-            </div>
-        </div> */}

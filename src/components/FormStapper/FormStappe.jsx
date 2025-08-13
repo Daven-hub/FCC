@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { submitCombinedApplication } from '../../services/annexeSrvice';
-import DeclarationSection from './DeclarationSection';
 import { showErrorToast } from '../Toast/Toast';
+import DeclarationSection from './DeclarationSection';
 
 const CombinedApplicationForm = () => {
     const [activeStep, setActiveStep] = useState(0);
@@ -39,8 +39,10 @@ const CombinedApplicationForm = () => {
             statutDemande: '',
             demandeDe: '',
             demandeA: '',
-            voyages: 'non',
-            detailsVoyages: [{}],
+            voyages: {
+                isOk: "non",
+                dev: []
+            },
             langueMaternelle: '',
             langueAise: '',
             communicationDeuxLangues: '',
@@ -87,24 +89,30 @@ const CombinedApplicationForm = () => {
         },
 
         // Étape 2: Antécédents et historique
-        background: {
-            tuberculoseContact: 'non',
-            troublePhysiqueMental: 'non',
-            detailsTuberculoseTrouble: '',
-            statutExpire: 'non',
-            refusEntree: 'non',
-            demandePrecedenteCanada: 'non',
-            detailsStatutRefusDemande: '',
-            antecedentsJudiciaires: 'non',
-            detailsAntecedentsJudiciaires: '',
-            serviceMilitaire: 'Non',
-            temoinViolations: 'Non',
-            affiliationOrganisation: 'Non',
-            chargePublique: 'Non',
-            detailsService: [{}],
-            detailsViolations: [{}],
-            detailsAffiliation: [{}],
-            detailsCharges: [{}],
+        resident: {
+            titre: "Demande de statut de résident temporaire",
+            body: {
+                military: {
+                    isOk: "non",
+                    dev: []
+                },
+                temoin: {
+                    isOk: "non",
+                    dev: []
+                },
+                affiliation: {
+                    isOk: "non",
+                    dev: []
+                },
+                charges: {
+                    isOk: "non",
+                    dev: []
+                },
+                voyages: {
+                    isOk: "non",
+                    dev: []
+                }
+            }
         },
 
         // Étape 3: Informations familiales
@@ -269,7 +277,6 @@ const CombinedApplicationForm = () => {
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => data.background.refusEntree === 'oui',
                         type: 'PDF'
                     },
                     {
@@ -277,7 +284,6 @@ const CombinedApplicationForm = () => {
                         provided: false,
                         file: null,
                         required: false,
-                        condition: (data) => data.background.demandePrecedenteCanada === 'oui',
                         type: 'PDF'
                     },
                     {
@@ -291,16 +297,14 @@ const CombinedApplicationForm = () => {
                 ]
             }
         ],
-
         declarationAgreed: false
     });
-
-
 
     const [submitStatus, setSubmitStatus] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({});
     const [submittedData, setSubmittedData] = useState(null);
 
+    // Fonctions de gestion des changements
     const handleChange = (section, field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -324,42 +328,62 @@ const CombinedApplicationForm = () => {
         }));
     };
 
-    const handleArrayChange = (section, arrayName, index, field, value) => {
+    const handleArrayChange = (section, path, index, field, value) => {
         setFormData(prev => {
-            const newArray = [...prev[section][arrayName]];
+            const pathParts = path.split('.');
+            let current = { ...prev[section] };
+            let temp = current;
+
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                temp = temp[pathParts[i]] = { ...temp[pathParts[i]] };
+            }
+
+            const arrayPath = pathParts[pathParts.length - 1];
+            const newArray = [...temp[arrayPath]];
             if (!newArray[index]) newArray[index] = {};
             newArray[index][field] = value;
+            temp[arrayPath] = newArray;
+
             return {
                 ...prev,
-                [section]: {
-                    ...prev[section],
-                    [arrayName]: newArray
-                }
+                [section]: current
             };
         });
     };
 
-    const addArrayEntry = (section, arrayName, defaultValue = {}) => {
-        setFormData(prev => ({
-            ...prev,
-            [section]: {
-                ...prev[section],
-                [arrayName]: [...prev[section][arrayName], defaultValue]
+    const addArrayEntry = (section, arrayPath, defaultValue = {}) => {
+        setFormData(prev => {
+            const newData = { ...prev };
+            const pathParts = arrayPath.split('.');
+            let current = newData[section];
+
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                current = current[pathParts[i]] = { ...current[pathParts[i]] };
             }
-        }));
+
+            const lastKey = pathParts[pathParts.length - 1];
+            current[lastKey] = [...(current[lastKey] || []), defaultValue];
+
+            return newData;
+        });
     };
 
-    const removeArrayEntry = (section, arrayName, index) => {
+    const removeArrayEntry = (section, arrayPath, index) => {
         setFormData(prev => {
-            const newArray = [...prev[section][arrayName]];
+            const newData = { ...prev };
+            const pathParts = arrayPath.split('.');
+            let current = newData[section];
+
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                current = current[pathParts[i]] = { ...current[pathParts[i]] };
+            }
+
+            const lastKey = pathParts[pathParts.length - 1];
+            const newArray = [...current[lastKey]];
             newArray.splice(index, 1);
-            return {
-                ...prev,
-                [section]: {
-                    ...prev[section],
-                    [arrayName]: newArray
-                }
-            };
+            current[lastKey] = newArray;
+
+            return newData;
         });
     };
 
@@ -477,9 +501,86 @@ const CombinedApplicationForm = () => {
                 documents: newDocuments
             };
         });
-    };;
+    };
+
+    const validateCurrentStep = (stepIndex) => {
+        switch (stepIndex) {
+            case 0: // Informations personnelles
+                return (
+                    formData.personalInfo.nomFamille
+                    // formData.personalInfo.prenoms &&
+                    // formData.personalInfo.dateNaissance &&
+                    // formData.personalInfo.sexe &&
+                    // formData.personalInfo.email &&
+                    // formData.personalInfo.villeNaissance &&
+                    // formData.personalInfo.paysNaissance &&
+                    // formData.personalInfo.citoyennete &&
+                    // formData.personalInfo.langueMaternelle &&
+                    // formData.personalInfo.langueAise &&
+                    // formData.personalInfo.communicationDeuxLangues &&
+                    // formData.personalInfo.evaluationLangue &&
+                    // formData.personalInfo.numeroPasseport &&
+                    // formData.personalInfo.paysDelivrancePasseport &&
+                    // formData.personalInfo.dateDelivrancePasseport &&
+                    // formData.personalInfo.dateExpirationPasseport &&
+                    // formData.personalInfo.passeportTaiwan &&
+                    // formData.personalInfo.passeportIsrael &&
+                    // formData.personalInfo.adressePostale &&
+                    // formData.personalInfo.villePostale &&
+                    // formData.personalInfo.paysPostal &&
+                    // formData.personalInfo.numeroTelephone
+                );
+
+            case 1: // Antécédents et historique
+                return (
+                    formData.resident.body.military.isOk !== undefined &&
+                    formData.resident.body.temoin.isOk !== undefined &&
+                    formData.resident.body.affiliation.isOk !== undefined &&
+                    formData.resident.body.charges.isOk !== undefined &&
+                    formData.resident.body.voyages.isOk !== undefined
+                );
+
+            case 2: // Informations familiales
+                return (
+                    formData.familyInfo.applicant.name
+                    // formData.familyInfo.applicant.dob &&
+                    // formData.familyInfo.applicant.country &&
+                    // formData.familyInfo.applicant.occupation &&
+                    // formData.familyInfo.applicant.maritalStatus &&
+                    // formData.familyInfo.applicant.address &&
+                    // formData.familyInfo.father.name &&
+                    // formData.familyInfo.father.dob &&
+                    // formData.familyInfo.father.country &&
+                    // formData.familyInfo.father.occupation &&
+                    // formData.familyInfo.father.address &&
+                    // formData.familyInfo.mother.name &&
+                    // formData.familyInfo.mother.dob &&
+                    // formData.familyInfo.mother.country &&
+                    // formData.familyInfo.mother.occupation &&
+                    // formData.familyInfo.mother.address
+                );
+
+            case 3: // Documents
+                return formData.documents.every(section =>
+                    section.corps.every(doc =>
+                        !doc.required ||
+                        (doc.condition && !doc.condition(formData)) ||
+                        doc.provided
+                    ));
+
+            case 4: // Déclaration
+                return formData.declarationAgreed;
+
+            default:
+                return false;
+        }
+    };
 
     const nextStep = () => {
+        if (!validateCurrentStep(activeStep)) {
+            showErrorToast("Veuillez remplir tous les champs obligatoires avant de passer à l'étape suivante.");
+            return;
+        }
         if (activeStep < steps.length - 1) {
             setActiveStep(activeStep + 1);
         }
@@ -498,37 +599,57 @@ const CombinedApplicationForm = () => {
         try {
             const formDataToSend = new FormData();
 
-            // Créer l'objet de données à envoyer
+            // Filtrer les données avant envoi
+            const filteredPersonalInfo = {
+                ...formData.personalInfo,
+                voyages: formData.personalInfo.voyages.isOk === "oui" ? formData.personalInfo.voyages : { isOk: "non", dev: [] }
+            };
+
+            const filteredResident = {
+                ...formData.resident,
+                body: {
+                    military: formData.resident.body.military.isOk === "oui" ? formData.resident.body.military : { isOk: "non", dev: [] },
+                    temoin: formData.resident.body.temoin.isOk === "oui" ? formData.resident.body.temoin : { isOk: "non", dev: [] },
+                    affiliation: formData.resident.body.affiliation.isOk === "oui" ? formData.resident.body.affiliation : { isOk: "non", dev: [] },
+                    charges: formData.resident.body.charges.isOk === "oui" ? formData.resident.body.charges : { isOk: "non", dev: [] },
+                    voyages: formData.resident.body.voyages.isOk === "oui" ? formData.resident.body.voyages : { isOk: "non", dev: [] }
+                }
+            };
+
             const applicationData = {
-                personalInfo: formData.personalInfo,
-                background: formData.background,
+                personalInfo: filteredPersonalInfo,
+                resident: filteredResident,
                 familyInfo: formData.familyInfo,
                 declarationAgreed: formData.declarationAgreed,
                 documents: formData.documents.map(section => ({
-                    ...section,
+                    id: section.id,
+                    titre: section.titre,
                     corps: section.corps.map(doc => ({
+                        id: doc.id,
                         titre: doc.titre,
                         provided: doc.provided,
-                        imageData: doc.imageData || null
+                        required: doc.required
                     }))
                 }))
             };
 
             formDataToSend.append('applicationData', JSON.stringify(applicationData));
 
+            // Ajout des fichiers
             formData.documents.forEach((section, sectionIndex) => {
                 section.corps.forEach((doc, docIndex) => {
-                    if (doc.provided && doc.file && !doc.type.startsWith('image/')) {
-                        formDataToSend.append(`documents[${sectionIndex}][${docIndex}]`, doc.file);
+                    if (doc.provided && doc.file) {
+                        formDataToSend.append(`documents[${section.id}][${doc.id}]`, doc.file);
                     }
                 });
             });
 
             console.log(formData);
 
-            // Envoyer les données
+
             await submitCombinedApplication(formDataToSend);
             setSubmitStatus("success");
+            setSubmittedData(applicationData);
         } catch (error) {
             console.error("Erreur de soumission:", error);
             setSubmitStatus("error");
@@ -539,7 +660,6 @@ const CombinedApplicationForm = () => {
         const docState = formData.documents[sectionIndex].corps[docIndex];
         const uploadState = uploadProgress[`${sectionIndex}-${docIndex}`];
 
-        // Détermine les formats acceptés en fonction du type de document
         const getAcceptedFormats = () => {
             switch (docState.type) {
                 case 'PDF':
@@ -551,7 +671,6 @@ const CombinedApplicationForm = () => {
             }
         };
 
-        // Texte descriptif des formats
         const formatDescription = docState.type === 'PDF'
             ? "Format PDF uniquement"
             : docState.type === 'IMAGE'
@@ -699,7 +818,6 @@ const CombinedApplicationForm = () => {
         return descriptions[step];
     };
 
-
     const getDocumentLabel = (docKey, formData) => {
         const labels = {
             'ActeNaissance': 'Acte de Naissance',
@@ -721,6 +839,7 @@ const CombinedApplicationForm = () => {
 
         return labels[docKey] || docKey;
     };
+
 
     // Fonction pour déterminer si un document est obligatoire
     const isDocumentRequired = (docKey) => {
@@ -1112,8 +1231,19 @@ const CombinedApplicationForm = () => {
                                 <input
                                     type="radio"
                                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.personalInfo.voyages === 'Non'}
-                                    onChange={() => handleChange('personalInfo', 'voyages', 'Non')}
+                                    checked={formData.personalInfo.voyages.isOk === "non"}
+                                    onChange={() => {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            personalInfo: {
+                                                ...prev.personalInfo,
+                                                voyages: {
+                                                    isOk: "non",
+                                                    dev: []
+                                                }
+                                            }
+                                        }))
+                                    }}
                                     required
                                 />
                                 <span className="ml-2">Non</span>
@@ -1122,15 +1252,34 @@ const CombinedApplicationForm = () => {
                                 <input
                                     type="radio"
                                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.personalInfo.voyages === 'Oui'}
-                                    onChange={() => handleChange('personalInfo', 'voyages', 'Oui')}
+                                    checked={formData.personalInfo.voyages.isOk === "oui"}
+                                    onChange={() => {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            personalInfo: {
+                                                ...prev.personalInfo,
+                                                voyages: {
+                                                    isOk: "oui",
+                                                    dev: prev.personalInfo.voyages.dev.length > 0
+                                                        ? prev.personalInfo.voyages.dev
+                                                        : [{
+                                                            du: "",
+                                                            au: "",
+                                                            endroit: "",
+                                                            but: "",
+                                                            pays: ""
+                                                        }]
+                                                }
+                                            }
+                                        }))
+                                    }}
                                 />
                                 <span className="ml-2">Oui</span>
                             </label>
                         </div>
                     </div>
 
-                    {formData.personalInfo.voyages === 'Oui' && (
+                    {formData.personalInfo.voyages.isOk === "oui" && (
                         <div className="mt-4 space-y-4">
                             <div className="hidden md:block overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200">
@@ -1145,27 +1294,27 @@ const CombinedApplicationForm = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {formData.personalInfo.detailsVoyages.map((voyage, index) => (
+                                        {formData.personalInfo.voyages.dev.map((voyage, index) => (
                                             <tr key={`desktop-${index}`}>
                                                 <td className="px-4 py-2 whitespace-nowrap">
                                                     <input
                                                         value={voyage.pays || ''}
-                                                        onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'pays', e.target.value)}
+                                                        onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'pays', e.target.value)}
                                                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                     />
                                                 </td>
                                                 <td className="px-4 py-2 whitespace-nowrap">
                                                     <input
-                                                        value={voyage.dateDebut || ''}
-                                                        onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'dateDebut', e.target.value)}
+                                                        value={voyage.du || ''}
+                                                        onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'du', e.target.value)}
                                                         placeholder="MM/AAAA"
                                                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                     />
                                                 </td>
                                                 <td className="px-4 py-2 whitespace-nowrap">
                                                     <input
-                                                        value={voyage.dateFin || ''}
-                                                        onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'dateFin', e.target.value)}
+                                                        value={voyage.au || ''}
+                                                        onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'au', e.target.value)}
                                                         placeholder="MM/AAAA"
                                                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                     />
@@ -1173,21 +1322,21 @@ const CombinedApplicationForm = () => {
                                                 <td className="px-4 py-2 whitespace-nowrap">
                                                     <input
                                                         value={voyage.endroit || ''}
-                                                        onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'endroit', e.target.value)}
+                                                        onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'endroit', e.target.value)}
                                                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                     />
                                                 </td>
                                                 <td className="px-4 py-2 whitespace-nowrap">
                                                     <input
                                                         value={voyage.but || ''}
-                                                        onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'but', e.target.value)}
+                                                        onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'but', e.target.value)}
                                                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                     />
                                                 </td>
                                                 <td className="px-4 py-2 whitespace-nowrap">
                                                     <button
                                                         type="button"
-                                                        onClick={() => removeArrayEntry('personalInfo', 'detailsVoyages', index)}
+                                                        onClick={() => removeArrayEntry('personalInfo', 'voyages.dev', index)}
                                                         className="text-red-500 hover:text-red-700"
                                                     >
                                                         <FiTrash2 />
@@ -1200,14 +1349,14 @@ const CombinedApplicationForm = () => {
                             </div>
 
                             <div className="md:hidden space-y-4">
-                                {formData.personalInfo.detailsVoyages.map((voyage, index) => (
+                                {formData.personalInfo.voyages.dev.map((voyage, index) => (
                                     <div key={`mobile-${index}`} className="bg-white p-4 rounded-lg shadow border border-gray-200">
                                         <div className="space-y-3">
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700">Pays</label>
                                                 <input
                                                     value={voyage.pays || ''}
-                                                    onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'pays', e.target.value)}
+                                                    onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'pays', e.target.value)}
                                                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                 />
                                             </div>
@@ -1215,8 +1364,8 @@ const CombinedApplicationForm = () => {
                                                 <div>
                                                     <label className="block text-sm font-medium text-gray-700">Du (MM/AAAA)</label>
                                                     <input
-                                                        value={voyage.dateDebut || ''}
-                                                        onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'dateDebut', e.target.value)}
+                                                        value={voyage.du || ''}
+                                                        onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'du', e.target.value)}
                                                         placeholder="MM/AAAA"
                                                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                     />
@@ -1224,8 +1373,8 @@ const CombinedApplicationForm = () => {
                                                 <div>
                                                     <label className="block text-sm font-medium text-gray-700">Au (MM/AAAA)</label>
                                                     <input
-                                                        value={voyage.dateFin || ''}
-                                                        onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'dateFin', e.target.value)}
+                                                        value={voyage.au || ''}
+                                                        onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'au', e.target.value)}
                                                         placeholder="MM/AAAA"
                                                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                     />
@@ -1235,7 +1384,7 @@ const CombinedApplicationForm = () => {
                                                 <label className="block text-sm font-medium text-gray-700">Endroit</label>
                                                 <input
                                                     value={voyage.endroit || ''}
-                                                    onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'endroit', e.target.value)}
+                                                    onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'endroit', e.target.value)}
                                                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                 />
                                             </div>
@@ -1243,14 +1392,14 @@ const CombinedApplicationForm = () => {
                                                 <label className="block text-sm font-medium text-gray-700">But du voyage</label>
                                                 <input
                                                     value={voyage.but || ''}
-                                                    onChange={(e) => handleArrayChange('personalInfo', 'detailsVoyages', index, 'but', e.target.value)}
+                                                    onChange={(e) => handleArrayChange('personalInfo', 'voyages.dev', index, 'but', e.target.value)}
                                                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                 />
                                             </div>
                                             <div className="flex justify-end">
                                                 <button
                                                     type="button"
-                                                    onClick={() => removeArrayEntry('personalInfo', 'detailsVoyages', index)}
+                                                    onClick={() => removeArrayEntry('personalInfo', 'voyages.dev', index)}
                                                     className="text-red-500 hover:text-red-700 flex items-center"
                                                 >
                                                     <FiTrash2 className="mr-1" /> Supprimer
@@ -1263,12 +1412,19 @@ const CombinedApplicationForm = () => {
 
                             <button
                                 type="button"
-                                onClick={() => addArrayEntry('personalInfo', 'detailsVoyages')}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                onClick={() => addArrayEntry('personalInfo', 'voyages.dev', {
+                                    du: "",
+                                    au: "",
+                                    endroit: "",
+                                    but: "",
+                                    pays: ""
+                                })}
+                                className="flex items-center text-primary hover:text-primary-dark"
                             >
-                                <FiPlus className="mr-2" /> Ajouter un voyage
+                                <FiPlus className="mr-1" /> Ajouter un voyage
                             </button>
                         </div>
+
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1781,534 +1937,775 @@ const CombinedApplicationForm = () => {
             title: "Antécédents et historique",
             component: (
                 <div className="space-y-6">
-                    {/* Premier antécédent (tuberculose) - reste inchangé */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous été en contact étroit avec une personne atteinte de tuberculose ou avez-vous un trouble physique ou mental qui pourrait constituer un danger pour la santé ou la sécurité publiques ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.tuberculoseContact === 'non'}
-                                    onChange={() => handleChange('background', 'tuberculoseContact', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
+                    {/* Section Militaire */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Service militaire ou paramilitaire</h3>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Avez-vous déjà servi dans l'armée, une milice, un service de sécurité civile ou la police?
                             </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.tuberculoseContact === 'oui'}
-                                    onChange={() => handleChange('background', 'tuberculoseContact', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
+                            <div className="flex gap-4 mt-1">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.military.isOk === "non"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        military: {
+                                                            isOk: "non",
+                                                            dev: []
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                        required
+                                    />
+                                    <span className="ml-2">Non</span>
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.military.isOk === "oui"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        military: {
+                                                            isOk: "oui",
+                                                            dev: prev.resident.body.military.dev.length > 0
+                                                                ? prev.resident.body.military.dev
+                                                                : [{
+                                                                    pays: "",
+                                                                    Endroit: "",
+                                                                    Province: "",
+                                                                    du: "",
+                                                                    au: ""
+                                                                }]
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                    />
+                                    <span className="ml-2">Oui</span>
+                                </label>
+                            </div>
                         </div>
-                        {formData.background.tuberculoseContact === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsTuberculoseTrouble}
-                                    onChange={e => handleChange('background', 'detailsTuberculoseTrouble', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.military.isOk === "oui" && (
+                            <div className="mt-4 space-y-4">
+                                {formData.resident.body.military.dev.map((service, index) => (
+                                    <div key={`military-${index}`} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Pays</label>
+                                                <input
+                                                    value={service.pays || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.military.dev', index, 'pays', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Endroit</label>
+                                                <input
+                                                    value={service.Endroit || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.military.dev', index, 'Endroit', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Province</label>
+                                                <input
+                                                    value={service.Province || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.military.dev', index, 'Province', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={service.du || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.military.dev', index, 'du', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={service.au || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.military.dev', index, 'au', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => removeArrayEntry('resident', 'body.military.dev', index)}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => addArrayEntry('resident', 'body.military.dev', {
+                                        pays: "",
+                                        Endroit: "",
+                                        Province: "",
+                                        du: "",
+                                        au: ""
+                                    })}
+                                    className="flex items-center text-primary hover:text-primary-dark"
+                                >
+                                    <FiPlus className="mr-1" /> Ajouter un service
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    {/* Deuxième antécédent (statut expiré) */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà eu un statut d'immigration ou de résidence temporaire au Canada qui a expiré et vous avez continué à rester au Canada ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.statutExpire === 'non'}
-                                    onChange={() => handleChange('background', 'statutExpire', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
+                    {/* Section Témoin - Même structure */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Témoin de crimes de guerre ou crimes contre l'humanité</h3>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Avez-vous été témoin de crimes de guerre ou de crimes contre l'humanité?
                             </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.statutExpire === 'oui'}
-                                    onChange={() => handleChange('background', 'statutExpire', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
+                            <div className="flex gap-4 mt-1">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.temoin.isOk === "non"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        temoin: {
+                                                            isOk: "non",
+                                                            dev: []
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                        required
+                                    />
+                                    <span className="ml-2">Non</span>
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.temoin.isOk === "oui"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        temoin: {
+                                                            isOk: "oui",
+                                                            dev: prev.resident.body.temoin.dev.length > 0
+                                                                ? prev.resident.body.temoin.dev
+                                                                : [{
+                                                                    pays: "",
+                                                                    Endroit: "",
+                                                                    Province: "",
+                                                                    du: "",
+                                                                    au: ""
+                                                                }]
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                    />
+                                    <span className="ml-2">Oui</span>
+                                </label>
+                            </div>
                         </div>
-                        {formData.background.statutExpire === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails du statut expiré</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsStatutExpire}
-                                    onChange={e => handleChange('background', 'detailsStatutExpire', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.temoin.isOk === "oui" && (
+                            <div className="mt-4 space-y-4">
+                                {formData.resident.body.temoin.dev.map((temoin, index) => (
+                                    <div key={`temoin-${index}`} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Pays</label>
+                                                <input
+                                                    value={temoin.pays || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.temoin.dev', index, 'pays', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Endroit</label>
+                                                <input
+                                                    value={temoin.Endroit || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.temoin.dev', index, 'Endroit', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Province</label>
+                                                <input
+                                                    value={temoin.Province || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.temoin.dev', index, 'Province', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={temoin.du || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.temoin.dev', index, 'du', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={temoin.au || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.temoin.dev', index, 'au', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => removeArrayEntry('resident', 'body.temoin.dev', index)}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => addArrayEntry('resident', 'body.temoin.dev', {
+                                        pays: "",
+                                        Endroit: "",
+                                        Province: "",
+                                        du: "",
+                                        au: ""
+                                    })}
+                                    className="flex items-center text-primary hover:text-primary-dark"
+                                >
+                                    <FiPlus className="mr-1" /> Ajouter un témoignage
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    {/* Troisième antécédent (refus d'entrée) */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été refusé l'entrée au Canada ou fait l'objet d'une ordonnance de renvoi ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.refusEntree === 'non'}
-                                    onChange={() => handleChange('background', 'refusEntree', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
+                    {/* Section Affiliation - Même structure */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Affiliations ou appartenances</h3>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Avez-vous été membre ou affilié à une organisation ou association quelconque?
                             </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.refusEntree === 'oui'}
-                                    onChange={() => handleChange('background', 'refusEntree', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
+                            <div className="flex gap-4 mt-1">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.affiliation.isOk === "non"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        affiliation: {
+                                                            isOk: "non",
+                                                            dev: []
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                        required
+                                    />
+                                    <span className="ml-2">Non</span>
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.affiliation.isOk === "oui"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        affiliation: {
+                                                            isOk: "oui",
+                                                            dev: prev.resident.body.affiliation.dev.length > 0
+                                                                ? prev.resident.body.affiliation.dev
+                                                                : [{
+                                                                    pays: "",
+                                                                    Endroit: "",
+                                                                    Province: "",
+                                                                    du: "",
+                                                                    au: "",
+                                                                    nomOrganisation: "",
+                                                                    typeOrganisation: ""
+                                                                }]
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                    />
+                                    <span className="ml-2">Oui</span>
+                                </label>
+                            </div>
                         </div>
-                        {formData.background.refusEntree === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails du refus d'entrée ou ordonnance de renvoi</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsRefusEntree}
-                                    onChange={e => handleChange('background', 'detailsRefusEntree', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.affiliation.isOk === "oui" && (
+                            <div className="mt-4 space-y-4">
+                                {formData.resident.body.affiliation.dev.map((affiliation, index) => (
+                                    <div key={`affiliation-${index}`} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Pays</label>
+                                                <input
+                                                    value={affiliation.pays || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'pays', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Endroit</label>
+                                                <input
+                                                    value={affiliation.Endroit || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'Endroit', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Province</label>
+                                                <input
+                                                    value={affiliation.Province || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'Province', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={affiliation.du || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'du', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={affiliation.au || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'au', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Nom de l'organisation</label>
+                                                <input
+                                                    value={affiliation.nomOrganisation || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'nomOrganisation', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Type d'organisation</label>
+                                                <input
+                                                    value={affiliation.typeOrganisation || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'typeOrganisation', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => removeArrayEntry('resident', 'body.affiliation.dev', index)}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => addArrayEntry('resident', 'body.affiliation.dev', {
+                                        pays: "",
+                                        Endroit: "",
+                                        Province: "",
+                                        du: "",
+                                        au: "",
+                                        nomOrganisation: "",
+                                        typeOrganisation: ""
+                                    })}
+                                    className="flex items-center text-primary hover:text-primary-dark"
+                                >
+                                    <FiPlus className="mr-1" /> Ajouter une affiliation
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    {/* Quatrième antécédent (demande précédente) */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà fait une demande de visa, permis ou statut de résidence permanent pour le Canada ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.demandePrecedenteCanada === 'non'}
-                                    onChange={() => handleChange('background', 'demandePrecedenteCanada', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
+                    {/* Section Charges - Même structure */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Charges judiciaires</h3>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Avez-vous déjà été accusé(e), inculpé(e), mis(e) en examen ou condamné(e) pour un crime ou un délit?
                             </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.demandePrecedenteCanada === 'oui'}
-                                    onChange={() => handleChange('background', 'demandePrecedenteCanada', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
+                            <div className="flex gap-4 mt-1">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.charges.isOk === "non"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        charges: {
+                                                            isOk: "non",
+                                                            dev: []
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                        required
+                                    />
+                                    <span className="ml-2">Non</span>
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.charges.isOk === "oui"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        charges: {
+                                                            isOk: "oui",
+                                                            dev: prev.resident.body.charges.dev.length > 0
+                                                                ? prev.resident.body.charges.dev
+                                                                : [{
+                                                                    pays: "",
+                                                                    Endroit: "",
+                                                                    Province: "",
+                                                                    du: "",
+                                                                    au: "",
+                                                                    natureInfraction: ""
+                                                                }]
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                    />
+                                    <span className="ml-2">Oui</span>
+                                </label>
+                            </div>
                         </div>
-                        {formData.background.demandePrecedenteCanada === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails de la demande précédente</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsDemandePrecedente}
-                                    onChange={e => handleChange('background', 'detailsDemandePrecedente', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.charges.isOk === "oui" && (
+                            <div className="mt-4 space-y-4">
+                                {formData.resident.body.charges.dev.map((charge, index) => (
+                                    <div key={`charge-${index}`} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Pays</label>
+                                                <input
+                                                    value={charge.pays || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'pays', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Endroit</label>
+                                                <input
+                                                    value={charge.Endroit || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'Endroit', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Province</label>
+                                                <input
+                                                    value={charge.Province || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'Province', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={charge.du || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'du', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={charge.au || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'au', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Nature de l'infraction</label>
+                                                <input
+                                                    value={charge.natureInfraction || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'natureInfraction', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => removeArrayEntry('resident', 'body.charges.dev', index)}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => addArrayEntry('resident', 'body.charges.dev', {
+                                        pays: "",
+                                        Endroit: "",
+                                        Province: "",
+                                        du: "",
+                                        au: "",
+                                        natureInfraction: ""
+                                    })}
+                                    className="flex items-center text-primary hover:text-primary-dark"
+                                >
+                                    <FiPlus className="mr-1" /> Ajouter une charge
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous des antécédents judiciaires dans n'importe quel pays, y compris des condamnations, des accusations en cours ou des enquêtes criminelles ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.antecedentsJudiciaires === 'non'}
-                                    onChange={() => handleChange('background', 'antecedentsJudiciaires', 'non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
+                    {/* Section Voyages - Même structure */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Refus d'entrée ou expulsion</h3>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Avez-vous déjà été refusé(e) l'entrée ou expulsé(e) d'un pays, y compris le Canada?
                             </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.antecedentsJudiciaires === 'oui'}
-                                    onChange={() => handleChange('background', 'antecedentsJudiciaires', 'oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
+                            <div className="flex gap-4 mt-1">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.voyages.isOk === "non"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        voyages: {
+                                                            isOk: "non",
+                                                            dev: []
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                        required
+                                    />
+                                    <span className="ml-2">Non</span>
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        checked={formData.resident.body.voyages.isOk === "oui"}
+                                        onChange={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                resident: {
+                                                    ...prev.resident,
+                                                    body: {
+                                                        ...prev.resident.body,
+                                                        voyages: {
+                                                            isOk: "oui",
+                                                            dev: prev.resident.body.voyages.dev.length > 0
+                                                                ? prev.resident.body.voyages.dev
+                                                                : [{
+                                                                    pays: "",
+                                                                    Endroit: "",
+                                                                    Province: "",
+                                                                    du: "",
+                                                                    au: "",
+                                                                    raison: ""
+                                                                }]
+                                                        }
+                                                    }
+                                                }
+                                            }))
+                                        }}
+                                    />
+                                    <span className="ml-2">Oui</span>
+                                </label>
+                            </div>
                         </div>
-                        {formData.background.antecedentsJudiciaires === "oui" && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    value={formData.background.detailsAntecedentsJudiciaires}
-                                    onChange={e => handleChange('background', 'detailsAntecedentsJudiciaires', e.target.value)}
-                                    required
-                                />
+
+                        {formData.resident.body.voyages.isOk === "oui" && (
+                            <div className="mt-4 space-y-4">
+                                {formData.resident.body.voyages.dev.map((refus, index) => (
+                                    <div key={`refus-${index}`} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Pays</label>
+                                                <input
+                                                    value={refus.pays || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.voyages.dev', index, 'pays', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Endroit</label>
+                                                <input
+                                                    value={refus.Endroit || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.voyages.dev', index, 'Endroit', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Province</label>
+                                                <input
+                                                    value={refus.Province || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.voyages.dev', index, 'Province', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Du (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={refus.du || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.voyages.dev', index, 'du', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Au (MM/AAAA)</label>
+                                                <input
+                                                    type="date"
+                                                    value={refus.au || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.voyages.dev', index, 'au', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Raison</label>
+                                                <input
+                                                    value={refus.raison || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.voyages.dev', index, 'raison', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => removeArrayEntry('resident', 'body.voyages.dev', index)}
+                                                className="text-red-500 hover:text-red-700 flex items-center"
+                                            >
+                                                <FiTrash2 className="mr-1" /> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => addArrayEntry('resident', 'body.voyages.dev', {
+                                        pays: "",
+                                        Endroit: "",
+                                        Province: "",
+                                        du: "",
+                                        au: "",
+                                        raison: ""
+                                    })}
+                                    className="flex items-center text-primary hover:text-primary-dark"
+                                >
+                                    <FiPlus className="mr-1" /> Ajouter un refus
+                                </button>
                             </div>
                         )}
                     </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà servi dans l'armée, une unité de milice, une organisation de police ou de sécurité dans n'importe quel pays ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.serviceMilitaire === 'Non'}
-                                    onChange={() => handleChange('background', 'serviceMilitaire', 'Non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.serviceMilitaire === 'Oui'}
-                                    onChange={() => handleChange('background', 'serviceMilitaire', 'Oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {formData.background.serviceMilitaire === "Oui" && (
-                        <div className="mt-4 space-y-4">
-                            {formData.background.detailsService.map((service, index) => (
-                                <div key={index} className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Pays</label>
-                                            <input
-                                                value={service.pays || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsService', index, 'pays', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Organisation</label>
-                                            <input
-                                                value={service.organisation || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsService', index, 'organisation', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">De (MM/AAAA)</label>
-                                            <input
-                                                value={service.de || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsService', index, 'de', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">À (MM/AAAA)</label>
-                                            <input
-                                                value={service.a || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsService', index, 'a', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-end mt-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeArrayEntry('background', 'detailsService', index)}
-                                            className="text-red-500 hover:text-red-700 flex items-center"
-                                        >
-                                            <FiTrash2 className="mr-1" /> Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => addArrayEntry('background', 'detailsService')}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <FiPlus className="mr-2" /> Ajouter un service
-                            </button>
-                        </div>
-                    )}
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été témoin ou impliqué dans des violations des droits de la personne ou des crimes de guerre ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.temoinViolations === 'Non'}
-                                    onChange={() => handleChange('background', 'temoinViolations', 'Non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.temoinViolations === 'Oui'}
-                                    onChange={() => handleChange('background', 'temoinViolations', 'Oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {formData.background.temoinViolations === "Oui" && (
-                        <div className="mt-4 space-y-4">
-                            {formData.background.detailsViolations.map((violation, index) => (
-                                <div key={index} className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Détails</label>
-                                        <textarea
-                                            value={violation.details || ''}
-                                            onChange={(e) => handleArrayChange('background', 'detailsViolations', index, 'details', e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                            rows={3}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="flex justify-end mt-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeArrayEntry('background', 'detailsViolations', index)}
-                                            className="text-red-500 hover:text-red-700 flex items-center"
-                                        >
-                                            <FiTrash2 className="mr-1" /> Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => addArrayEntry('background', 'detailsViolations')}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <FiPlus className="mr-2" /> Ajouter des détails
-                            </button>
-                        </div>
-                    )}
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été membre ou affilié à une organisation ou association qui a utilisé la violence pour atteindre ses objectifs ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.affiliationOrganisation === 'Non'}
-                                    onChange={() => handleChange('background', 'affiliationOrganisation', 'Non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.affiliationOrganisation === 'Oui'}
-                                    onChange={() => handleChange('background', 'affiliationOrganisation', 'Oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {formData.background.affiliationOrganisation === "Oui" && (
-                        <div className="mt-4 space-y-4">
-                            {formData.background.detailsAffiliation.map((affiliation, index) => (
-                                <div key={index} className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Nom de l'organisation</label>
-                                            <input
-                                                value={affiliation.nom || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'nom', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Pays</label>
-                                            <input
-                                                value={affiliation.pays || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'pays', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">De (MM/AAAA)</label>
-                                            <input
-                                                value={affiliation.de || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'de', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">À (MM/AAAA)</label>
-                                            <input
-                                                value={affiliation.a || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'a', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="mt-2">
-                                        <label className="block text-sm font-medium text-gray-700">Nature de l'affiliation</label>
-                                        <textarea
-                                            value={affiliation.nature || ''}
-                                            onChange={(e) => handleArrayChange('background', 'detailsAffiliation', index, 'nature', e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                            rows={2}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="flex justify-end mt-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeArrayEntry('background', 'detailsAffiliation', index)}
-                                            className="text-red-500 hover:text-red-700 flex items-center"
-                                        >
-                                            <FiTrash2 className="mr-1" /> Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => addArrayEntry('background', 'detailsAffiliation')}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <FiPlus className="mr-2" /> Ajouter une affiliation
-                            </button>
-                        </div>
-                    )}
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà occupé un poste gouvernemental ou une charge publique ?</label>
-                        <div className="flex gap-4 mt-1">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.chargePublique === 'Non'}
-                                    onChange={() => handleChange('background', 'chargePublique', 'Non')}
-                                    required
-                                />
-                                <span className="ml-2">Non</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.background.chargePublique === 'Oui'}
-                                    onChange={() => handleChange('background', 'chargePublique', 'Oui')}
-                                />
-                                <span className="ml-2">Oui</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {formData.background.chargePublique === "Oui" && (
-                        <div className="mt-4 space-y-4">
-                            {formData.background.detailsCharges.map((charge, index) => (
-                                <div key={index} className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Poste occupé</label>
-                                            <input
-                                                value={charge.poste || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsCharges', index, 'poste', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Pays</label>
-                                            <input
-                                                value={charge.pays || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsCharges', index, 'pays', e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">De (MM/AAAA)</label>
-                                            <input
-                                                value={charge.de || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsCharges', index, 'de', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">À (MM/AAAA)</label>
-                                            <input
-                                                value={charge.a || ''}
-                                                onChange={(e) => handleArrayChange('background', 'detailsCharges', index, 'a', e.target.value)}
-                                                placeholder="MM/AAAA"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-end mt-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeArrayEntry('background', 'detailsCharges', index)}
-                                            className="text-red-500 hover:text-red-700 flex items-center"
-                                        >
-                                            <FiTrash2 className="mr-1" /> Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => addArrayEntry('background', 'detailsCharges')}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <FiPlus className="mr-2" /> Ajouter un poste
-                            </button>
-                        </div>
-                    )}
                 </div>
             )
         },
@@ -2906,180 +3303,214 @@ const CombinedApplicationForm = () => {
     ];
 
     return (
-        <div className="relative px-4 sm:px-[6.5%] mx-auto py-6 md:py-8">
-            {/* Image de fond décorative */}
-            <div className="absolute top-0 right-0 w-1/3 md:w-1/4 opacity-10 pointer-events-none select-none">
-                <img
-                    src="/flag.png"
-                    alt="Décor"
-                    className="w-full h-auto object-contain"
-                />
+        <div className="min-h-screen bg-gray-50 relative overflow-hidden">
+            {/* Arrière-plan avec éléments décoratifs */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 right-0 w-1/3 md:w-1/4 opacity-5">
+                    <img
+                        src="/flag.png"
+                        alt="Décor"
+                        className="w-full h-auto object-contain"
+                    />
+                </div>
+                <div className="absolute bottom-0 left-0 w-1/3 md:w-1/4 opacity-5 rotate-180">
+                    <img
+                        src="/flag.png"
+                        alt="Décor"
+                        className="w-full h-auto object-contain"
+                    />
+                </div>
             </div>
 
-            {/* En-tête */}
-            <div className="mb-6 md:mb-10 text-center relative z-10">
-                <h1 className="text-2xl sm:text-3xl font-bold text-primary leading-snug">
-                    Formulaire de demande combinée
-                </h1>
-                <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
-                    Remplissez soigneusement toutes les sections du formulaire.
-                    <br className="hidden sm:block" />
-                    Les champs marqués d’un astérisque (*) sont obligatoires.
-                </p>
-            </div>
-
-            {renderStepTitle()}
-
-            {/* Stepper */}
-            <div className="mb-8 md:mb-12 overflow-x-auto">
-                <nav className="flex items-center justify-start sm:justify-center min-w-max">
-                    {steps.map((step, index) => (
-                        <div key={index} className="flex items-center">
-                            {/* Étape */}
-                            <button
-                                type="button"
-                                onClick={() => setActiveStep(index)}
-                                className={`relative flex flex-col items-center transition-all duration-300 ${index <= activeStep ? "text-primary" : "text-gray-400"
-                                    }`}
-                            >
-                                {/* Cercle */}
-                                <span
-                                    className={`
-                    flex items-center justify-center
-                    w-9 h-9 sm:w-11 sm:h-11 rounded-full shadow-md
-                    transition-all duration-300
-                    ${index === activeStep
-                                            ? "bg-primary text-white border-2 border-primary scale-105"
-                                            : index < activeStep
-                                                ? "bg-primary-100 text-primary border-2 border-primary"
-                                                : "bg-gray-50 border-2 border-gray-300"
-                                        }
-                  `}
-                                >
-                                    {index < activeStep ? (
-                                        <FiCheck className="w-5 h-5" />
-                                    ) : (
-                                        <span className="font-medium text-sm sm:text-base">
-                                            {index + 1}
-                                        </span>
-                                    )}
-                                </span>
-
-                                {/* Titre */}
-                                <span
-                                    className={`
-                    mt-2 sm:mt-3 text-xs sm:text-sm font-medium
-                    ${index === activeStep
-                                            ? "text-primary font-semibold"
-                                            : "text-gray-500"
-                                        }
-                    transition-all duration-300
-                    ${steps.length > 4 ? "hidden xs:block" : ""}
-                  `}
-                                >
-                                    {step.title.split(" ")[0]}{" "}
-                                    {steps.length <= 4 &&
-                                        step.title.split(" ").slice(1).join(" ")}
-                                </span>
-                            </button>
-
-                            {/* Ligne */}
-                            {index < steps.length - 1 && (
-                                <div
-                                    className={`
-                    w-8 sm:w-16 h-1 mx-1 sm:mx-2 rounded-full
-                    transition-all duration-500
-                    ${index < activeStep ? "bg-primary" : "bg-gray-200"}
-                    ${steps.length > 4 ? "hidden sm:block" : ""}
-                  `}
-                                ></div>
-                            )}
-                        </div>
-                    ))}
-                </nav>
-            </div>
-
-            {/* Contenu formulaire */}
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white shadow-md sm:shadow-xl rounded-lg sm:rounded-xl p-4 sm:p-6 md:p-8 relative z-10"
-            >
-                {steps[activeStep].component}
-
-                {/* Navigation */}
-                {!showPreview && (
-                    <div className="mt-6 sm:mt-10 flex justify-between border-t pt-4 sm:pt-6">
-                        {activeStep > 0 ? (
-                            <button
-                                type="button"
-                                onClick={prevStep}
-                                className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-gray-300 shadow-sm text-sm sm:text-base font-medium rounded-md sm:rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
-                            >
-                                <FiChevronLeft className="mr-1 sm:mr-2" />
-                                <span className="hidden xs:inline">Précédent</span>
-                            </button>
-                        ) : (
-                            <div></div>
-                        )}
-
-                        {activeStep < steps.length - 1 ? (
-                            <button
-                                type="button"
-                                onClick={nextStep}
-                                className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
-                            >
-                                <span className="hidden xs:inline">Suivant</span>
-                                <FiChevronRight className="ml-1 sm:ml-2" />
-                            </button>
-                        ) : (
-                            <button
-                                type="submit"
-                                disabled={
-                                    submitStatus === "loading" || !formData.declarationAgreed
-                                }
-                                className="ml-auto inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md sm:rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
-                            >
-                                {submitStatus === "loading" ? (
-                                    <div className="flex items-center">
-                                        <svg
-                                            className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <circle
-                                                className="opacity-25"
-                                                cx="12"
-                                                cy="12"
-                                                r="10"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                            ></circle>
-                                            <path
-                                                className="opacity-75"
-                                                fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 
-                           0 5.373 0 12h4zm2 5.291A7.962 
-                           7.962 0 014 12H0c0 3.042 
-                           1.135 5.824 3 7.938l3-2.647z"
-                                            ></path>
-                                        </svg>
-                                        <span className="hidden sm:inline">Envoi en cours...</span>
-                                        <span className="sm:hidden">Envoi...</span>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <span className="hidden sm:inline">
-                                            Soumettre la demande
-                                        </span>
-                                        <span className="sm:hidden">Soumettre</span>
-                                    </>
-                                )}
-                            </button>
-                        )}
+            {/* Conteneur principal */}
+            <div className="relative px-[6.5%] mx-auto  ">
+                {/* En-tête */}
+                <header className="text-center mb-10 md:mb-14">
+                    <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary-100 rounded-full mb-4">
+                        <svg className="w-8 h-8 md:w-10 md:h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
-                )}
-            </form>
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
+                        Formulaire de demande combinée
+                    </h1>
+                    {/* <p className="mt-3 max-w-3xl mx-auto text-lg md:text-xl text-gray-600">
+                        Remplissez soigneusement toutes les sections du formulaire.
+                        <br className="hidden sm:block" />
+                        Les champs marqués d'un <span className="text-red-500">*</span> sont obligatoires.
+                    </p> */}
+                </header>
+
+                {/* Stepper amélioré */}
+                <div className="mb-10 md:mb-14">
+                    <nav className="flex items-center justify-center">
+                        <ol className="flex items-center space-x-4 md:space-x-8">
+                            {steps.map((step, index) => (
+                                <li key={index} className="flex items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => validateCurrentStep(activeStep) && setActiveStep(index)}
+                                        className={`group relative flex flex-col items-center transition-all ${index <= activeStep ? "cursor-pointer" : "cursor-not-allowed"}`}
+                                        disabled={!validateCurrentStep(activeStep)}
+                                    >
+                                        <span
+                                            className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 ${index === activeStep
+                                                ? "bg-primary border-primary text-white shadow-lg scale-110"
+                                                : index < activeStep
+                                                    ? "bg-green-100 border-green-500 text-green-700"
+                                                    : "bg-white border-gray-300 text-gray-400 group-hover:border-gray-400"
+                                                }`}
+                                        >
+                                            {index < activeStep ? (
+                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                            ) : (
+                                                <span className="font-medium">{index + 1}</span>
+                                            )}
+                                        </span>
+                                        <span
+                                            className={`absolute top-full mt-2 w-32 text-center text-sm font-medium ${index === activeStep
+                                                ? "text-primary font-semibold"
+                                                : index < activeStep
+                                                    ? "text-gray-600"
+                                                    : "text-gray-400"
+                                                }`}
+                                        >
+                                            {step.title}
+                                        </span>
+                                    </button>
+
+                                    {index < steps.length - 1 && (
+                                        <div
+                                            className={`hidden md:block h-0.5 w-16 mx-2 transition-all duration-500 ${index < activeStep ? "bg-green-500" : "bg-gray-200"
+                                                }`}
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ol>
+                    </nav>
+                </div>
+
+                {/* Carte du formulaire */}
+                <div className="bg-white shadow-xl rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+                    {/* Barre de progression */}
+                    <div className="h-2 bg-gray-100">
+                        <div
+                            className="h-full bg-primary transition-all duration-500 ease-out"
+                            style={{ width: `${((activeStep + 1) / steps.length) * 100}%` }}
+                        />
+                    </div>
+
+                    {/* En-tête de l'étape */}
+                    <div className="px-6 py-5 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-lg md:text-xl font-bold text-gray-900">
+                                    Étape {activeStep + 1} : {steps[activeStep].title}
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                    {getStepDescription(activeStep)}
+                                </p>
+                            </div>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary">
+                                {activeStep + 1}/{steps.length}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Contenu du formulaire */}
+                    <form onSubmit={handleSubmit} className="divide-y divide-gray-200">
+                        <div className="px-6 py-5 sm:p-8">
+                            {steps[activeStep].component}
+                        </div>
+
+                        {/* Navigation */}
+                        <div className="px-6 py-5 bg-gray-50 sm:px-8">
+                            <div className="flex items-center justify-between">
+                                {activeStep > 0 ? (
+                                    <button
+                                        type="button"
+                                        onClick={prevStep}
+                                        className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
+                                    >
+                                        <FiChevronLeft className="mr-2" />
+                                        Précédent
+                                    </button>
+                                ) : (
+                                    <div></div>
+                                )}
+
+                                {activeStep < steps.length - 1 ? (
+                                    <button
+                                        type="button"
+                                        onClick={nextStep}
+                                        disabled={!validateCurrentStep(activeStep)}
+                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all ${validateCurrentStep(activeStep)
+                                            ? "bg-primary hover:bg-primary-600"
+                                            : "bg-gray-400 cursor-not-allowed"
+                                            }`}
+                                    >
+                                        Suivant
+                                        <FiChevronRight className="ml-2" />
+                                    </button>
+                                ) : (
+                                    <button
+                                        type="submit"
+                                        disabled={submitStatus === "loading" || !formData.declarationAgreed}
+                                        className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${submitStatus === "loading" || !formData.declarationAgreed
+                                            ? "bg-gray-400 cursor-not-allowed"
+                                            : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+                                            }`}
+                                    >
+                                        {submitStatus === "loading" ? (
+                                            <>
+                                                <svg
+                                                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    ></circle>
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                    ></path>
+                                                </svg>
+                                                Envoi en cours...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FiCheck className="mr-2" />
+                                                Soumettre la demande
+                                            </>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                {/* Aide et informations */}
+                <div className="mt-8 text-center">
+                    <p className="text-sm text-gray-500">
+                        Besoin d'aide ? <a href="#" className="font-medium text-primary hover:text-primary-700">Contactez notre support</a>
+                    </p>
+                    <p className="mt-1 text-xs text-gray-400">
+                        Vos informations sont sécurisées et ne seront pas partagées.
+                    </p>
+                </div>
+            </div>
         </div>
     );
 };
