@@ -200,8 +200,6 @@ const CombinedApplicationForm = () => {
             }
         },
 
-
-
         // Étape 3: Informations familiales
         familyInfo: {
             applicant: {
@@ -424,12 +422,15 @@ const CombinedApplicationForm = () => {
     };
 
 
-    const handleFamilyChange = (field, value) => {
+    const handleFamilyChange = (section, field, value) => {
         setFormData(prev => ({
             ...prev,
             familyInfo: {
                 ...prev.familyInfo,
-                [field]: value
+                [section]: {
+                    ...prev.familyInfo[section],
+                    [field]: value
+                }
             }
         }));
     };
@@ -2105,6 +2106,305 @@ const CombinedApplicationForm = () => {
                             </div>
                         )}
                     </div>
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Antécédents</h3>
+
+                        {/* Santé */}
+                        <div className="mb-6">
+                            <h4 className="text-md font-medium text-gray-800 mb-3">Santé</h4>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Avez-vous eu la tuberculose ou tout autre trouble physique ou mental sérieux au cours des dernières années ?
+                                    </label>
+                                    <div className="flex gap-4 mt-1">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.sante.tuberculoseDernieresAnnees === false}
+                                                onChange={() => handleChange('antecedents.sante.tuberculoseDernieresAnnees', false)}
+                                                required
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.sante.tuberculoseDernieresAnnees === true}
+                                                onChange={() => handleChange('antecedents.sante.tuberculoseDernieresAnnees', true)}
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                {formData.formulaireVisa.antecedents.sante.tuberculoseDernieresAnnees && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
+                                        <textarea
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.antecedents.sante.details}
+                                            onChange={e => handleChange('antecedents.sante.details', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Statut au Canada */}
+                        <div className="mb-6">
+                            <h4 className="text-md font-medium text-gray-800 mb-3">Statut au Canada</h4>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Êtes-vous resté(e) au Canada après l'expiration de votre statut ?
+                                    </label>
+                                    <div className="flex gap-4 mt-1">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.statutCanada.resteApresExpiration === false}
+                                                onChange={() => handleChange('antecedents.statutCanada.resteApresExpiration', false)}
+                                                required
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.statutCanada.resteApresExpiration === true}
+                                                onChange={() => handleChange('antecedents.statutCanada.resteApresExpiration', true)}
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Avez-vous déjà été refusé(e) un visa ou permis canadien ?
+                                    </label>
+                                    <div className="flex gap-4 mt-1">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.statutCanada.refusVisaPermis === false}
+                                                onChange={() => handleChange('antecedents.statutCanada.refusVisaPermis', false)}
+                                                required
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.statutCanada.refusVisaPermis === true}
+                                                onChange={() => handleChange('antecedents.statutCanada.refusVisaPermis', true)}
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Avez-vous déjà fait une demande d'entrée au Canada ?
+                                    </label>
+                                    <div className="flex gap-4 mt-1">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.statutCanada.demandeEntreeCanada === false}
+                                                onChange={() => handleChange('antecedents.statutCanada.demandeEntreeCanada', false)}
+                                                required
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.statutCanada.demandeEntreeCanada === true}
+                                                onChange={() => handleChange('antecedents.statutCanada.demandeEntreeCanada', true)}
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                {(formData.formulaireVisa.antecedents.statutCanada.resteApresExpiration ||
+                                    formData.formulaireVisa.antecedents.statutCanada.refusVisaPermis ||
+                                    formData.formulaireVisa.antecedents.statutCanada.demandeEntreeCanada) && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
+                                            <textarea
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={formData.formulaireVisa.antecedents.statutCanada.details}
+                                                onChange={e => handleChange('antecedents.statutCanada.details', e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                    )}
+                            </div>
+                        </div>
+
+                        {/* Infractions pénales */}
+                        <div className="mb-6">
+                            <h4 className="text-md font-medium text-gray-800 mb-3">Infractions pénales</h4>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Avez-vous déjà commis, été accusé(e) ou condamné(e) pour une infraction pénale ?
+                                    </label>
+                                    <div className="flex gap-4 mt-1">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.infractionsPenales.commisOuAccuse === false}
+                                                onChange={() => handleChange('antecedents.infractionsPenales.commisOuAccuse', false)}
+                                                required
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.infractionsPenales.commisOuAccuse === true}
+                                                onChange={() => handleChange('antecedents.infractionsPenales.commisOuAccuse', true)}
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                {formData.formulaireVisa.antecedents.infractionsPenales.commisOuAccuse && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
+                                        <textarea
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.antecedents.infractionsPenales.details}
+                                            onChange={e => handleChange('antecedents.infractionsPenales.details', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Service militaire/police */}
+                        <div className="mb-6">
+                            <h4 className="text-md font-medium text-gray-800 mb-3">Service militaire ou de police</h4>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Avez-vous déjà fait partie d'un service militaire ou de police ?
+                                    </label>
+                                    <div className="flex gap-4 mt-1">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.serviceMilitairePolice.aFaitPartie === false}
+                                                onChange={() => handleChange('antecedents.serviceMilitairePolice.aFaitPartie', false)}
+                                                required
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.serviceMilitairePolice.aFaitPartie === true}
+                                                onChange={() => handleChange('antecedents.serviceMilitairePolice.aFaitPartie', true)}
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                {formData.formulaireVisa.antecedents.serviceMilitairePolice.aFaitPartie && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
+                                        <textarea
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.antecedents.serviceMilitairePolice.details}
+                                            onChange={e => handleChange('antecedents.serviceMilitairePolice.details', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Appartenance à un groupe violent */}
+                        <div className="mb-6">
+                            <h4 className="text-md font-medium text-gray-800 mb-3">Appartenance à un groupe violent</h4>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Avez-vous déjà été membre ou affilié à un groupe ou organisation qui a commis ou prôné des actes violents ?
+                                    </label>
+                                    <div className="flex gap-4 mt-1">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.appartenanceGroupeViolent.aEteMembreOuAffilie === false}
+                                                onChange={() => handleChange('antecedents.appartenanceGroupeViolent.aEteMembreOuAffilie', false)}
+                                                required
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.appartenanceGroupeViolent.aEteMembreOuAffilie === true}
+                                                onChange={() => handleChange('antecedents.appartenanceGroupeViolent.aEteMembreOuAffilie', true)}
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Témoignage de mauvais traitements */}
+                        <div>
+                            <h4 className="text-md font-medium text-gray-800 mb-3">Témoignage de mauvais traitements</h4>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Avez-vous déjà été témoin ou participé à des mauvais traitements ou à des crimes de guerre ?
+                                    </label>
+                                    <div className="flex gap-4 mt-1">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.temoignageMauvaisTraitements.aEteTemoinOuParticipe === false}
+                                                onChange={() => handleChange('antecedents.temoignageMauvaisTraitements.aEteTemoinOuParticipe', false)}
+                                                required
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.temoignageMauvaisTraitements.aEteTemoinOuParticipe === true}
+                                                onChange={() => handleChange('antecedents.temoignageMauvaisTraitements.aEteTemoinOuParticipe', true)}
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )
         },
@@ -2939,59 +3239,90 @@ const CombinedApplicationForm = () => {
             title: "Informations familiales",
             component: (
                 <div className="space-y-6">
-                    <div className='ml-3 block text-xl font-medium text-gray-700'>Type de demande : </div>
-                    <div className="flex items-center">
-                        <input
-                            type="radio"
-                            id="visiteur"
-                            name="typeDemande"
-                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                            checked={formData.familyInfo.typeDemande === 'Visiteur'}
-                            onChange={() => handleFamilyChange('typeDemande', 'Visiteur')}
-                        />
-                        <label htmlFor="visiteur" className="ml-3 block text-sm font-medium text-gray-700">
-                            Visiteur
-                        </label>
+                    {/* Section Type de demande */}
+                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Type de demande</h3>
+                        <div className="space-y-3">
+                            <div className="flex items-center">
+                                <input
+                                    type="radio"
+                                    id="visiteur"
+                                    name="typeDemande"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                    checked={formData.familyInfo.typeDemande === 'Visiteur'}
+                                    onChange={() => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            typeDemande: 'Visiteur'
+                                        }
+                                    }))}
+                                />
+                                <label htmlFor="visiteur" className="ml-3 block text-sm font-medium text-gray-700">
+                                    Visiteur
+                                </label>
+                            </div>
+                            <div className="flex items-center">
+                                <input
+                                    type="radio"
+                                    id="travailleur"
+                                    name="typeDemande"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                    checked={formData.familyInfo.typeDemande === 'Travailleur'}
+                                    onChange={() => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            typeDemande: 'Travailleur'
+                                        }
+                                    }))}
+                                />
+                                <label htmlFor="travailleur" className="ml-3 block text-sm font-medium text-gray-700">
+                                    Travailleur
+                                </label>
+                            </div>
+                            <div className="flex items-center">
+                                <input
+                                    type="radio"
+                                    id="etudiant"
+                                    name="typeDemande"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                    checked={formData.familyInfo.typeDemande === 'Etudiant'}
+                                    onChange={() => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            typeDemande: 'Etudiant'
+                                        }
+                                    }))}
+                                />
+                                <label htmlFor="etudiant" className="ml-3 block text-sm font-medium text-gray-700">
+                                    Étudiant
+                                </label>
+                            </div>
+                            <div className="flex items-center">
+                                <input
+                                    type="radio"
+                                    id="autre"
+                                    name="typeDemande"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                    checked={formData.familyInfo.typeDemande === 'Autre'}
+                                    onChange={() => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            typeDemande: 'Autre'
+                                        }
+                                    }))}
+                                />
+                                <label htmlFor="autre" className="ml-3 block text-sm font-medium text-gray-700">
+                                    Autre
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center">
-                        <input
-                            type="radio"
-                            id="travailleur"
-                            name="typeDemande"
-                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                            checked={formData.familyInfo.typeDemande === 'Travailleur'}
-                            onChange={() => handleFamilyChange('typeDemande', 'Travailleur')}
-                        />
-                        <label htmlFor="travailleur" className="ml-3 block text-sm font-medium text-gray-700">
-                            Travailleur
-                        </label>
-                    </div>
-                    <div className="flex items-center">
-                        <input
-                            type="radio"
-                            id="etudiant"
-                            name="typeDemande"
-                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                            checked={formData.familyInfo.typeDemande === 'Etudiant'}
-                            onChange={() => handleFamilyChange('typeDemande', 'Etudiant')}
-                        />
-                        <label htmlFor="etudiant" className="ml-3 block text-sm font-medium text-gray-700">
-                            Etudiant
-                        </label>
-                    </div>
-                    <div className="flex items-center">
-                        <input
-                            type="radio"
-                            id="autre"
-                            name="typeDemande"
-                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                            checked={formData.familyInfo.typeDemande === 'Autre'}
-                            onChange={() => handleFamilyChange('typeDemande', 'Autre')}
-                        />
-                        <label htmlFor="autre" className="ml-3 block text-sm font-medium text-gray-700">
-                            Autre
-                        </label>
-                    </div>
+
+                    {/* Section Demandeur principal */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Informations sur le demandeur principal</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3000,7 +3331,16 @@ const CombinedApplicationForm = () => {
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.applicant.name}
-                                    onChange={e => handleFamilyChange('applicant', 'name', e.target.value)}
+                                    onChange={e => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            applicant: {
+                                                ...prev.familyInfo.applicant,
+                                                name: e.target.value
+                                            }
+                                        }
+                                    }))}
                                     required
                                 />
                             </div>
@@ -3010,7 +3350,16 @@ const CombinedApplicationForm = () => {
                                     type="date"
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.applicant.dob}
-                                    onChange={e => handleFamilyChange('applicant', 'dob', e.target.value)}
+                                    onChange={e => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            applicant: {
+                                                ...prev.familyInfo.applicant,
+                                                dob: e.target.value
+                                            }
+                                        }
+                                    }))}
                                     required
                                 />
                             </div>
@@ -3019,7 +3368,16 @@ const CombinedApplicationForm = () => {
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.applicant.country}
-                                    onChange={e => handleFamilyChange('applicant', 'country', e.target.value)}
+                                    onChange={e => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            applicant: {
+                                                ...prev.familyInfo.applicant,
+                                                country: e.target.value
+                                            }
+                                        }
+                                    }))}
                                     required
                                 />
                             </div>
@@ -3028,7 +3386,16 @@ const CombinedApplicationForm = () => {
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.applicant.occupation}
-                                    onChange={e => handleFamilyChange('applicant', 'occupation', e.target.value)}
+                                    onChange={e => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            applicant: {
+                                                ...prev.familyInfo.applicant,
+                                                occupation: e.target.value
+                                            }
+                                        }
+                                    }))}
                                     required
                                 />
                             </div>
@@ -3037,7 +3404,16 @@ const CombinedApplicationForm = () => {
                                 <select
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.applicant.maritalStatus}
-                                    onChange={e => handleFamilyChange('applicant', 'maritalStatus', e.target.value)}
+                                    onChange={e => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            applicant: {
+                                                ...prev.familyInfo.applicant,
+                                                maritalStatus: e.target.value
+                                            }
+                                        }
+                                    }))}
                                     required
                                 >
                                     <option value="">-- Sélectionnez --</option>
@@ -3052,7 +3428,16 @@ const CombinedApplicationForm = () => {
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.applicant.address}
-                                    onChange={e => handleFamilyChange('applicant', 'address', e.target.value)}
+                                    onChange={e => setFormData(prev => ({
+                                        ...prev,
+                                        familyInfo: {
+                                            ...prev.familyInfo,
+                                            applicant: {
+                                                ...prev.familyInfo.applicant,
+                                                address: e.target.value
+                                            }
+                                        }
+                                    }))}
                                     required
                                 />
                             </div>
@@ -3064,8 +3449,16 @@ const CombinedApplicationForm = () => {
                                             type="radio"
                                             className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                                             checked={formData.familyInfo.applicant.coming === true}
-                                            onChange={() => handleFamilyChange('applicant', 'coming', true)}
-                                            required
+                                            onChange={() => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    applicant: {
+                                                        ...prev.familyInfo.applicant,
+                                                        coming: true
+                                                    }
+                                                }
+                                            }))}
                                         />
                                         <span className="ml-2">Oui</span>
                                     </label>
@@ -3074,7 +3467,16 @@ const CombinedApplicationForm = () => {
                                             type="radio"
                                             className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                                             checked={formData.familyInfo.applicant.coming === false}
-                                            onChange={() => handleFamilyChange('applicant', 'coming', false)}
+                                            onChange={() => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    applicant: {
+                                                        ...prev.familyInfo.applicant,
+                                                        coming: false
+                                                    }
+                                                }
+                                            }))}
                                         />
                                         <span className="ml-2">Non</span>
                                     </label>
@@ -3083,102 +3485,178 @@ const CombinedApplicationForm = () => {
                         </div>
                     </div>
 
-                    {(formData.familyInfo.applicant.maritalStatus === "marie" || formData.familyInfo.applicant.maritalStatus === "divorce" || formData.familyInfo.applicant.maritalStatus === "veuf") && (
-                        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">Informations sur l'époux/conjoint</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
-                                    <input
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.familyInfo.epouse.name}
-                                        onChange={e => handleFamilyChange('epouse', 'name', e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
-                                    <input
-                                        type="date"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.familyInfo.epouse.dob}
-                                        onChange={e => handleFamilyChange('epouse', 'dob', e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance</label>
-                                    <input
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.familyInfo.epouse.country}
-                                        onChange={e => handleFamilyChange('epouse', 'country', e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
-                                    <input
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.familyInfo.epouse.occupation}
-                                        onChange={e => handleFamilyChange('epouse', 'occupation', e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial</label>
-                                    <select
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.familyInfo.epouse.maritalStatus}
-                                        onChange={e => handleFamilyChange('epouse', 'maritalStatus', e.target.value)}
-                                        required
-                                    >
-                                        <option value="">-- Sélectionnez --</option>
-                                        <option value="celibataire">Célibataire</option>
-                                        <option value="marie">Marié(e)</option>
-                                        <option value="divorce">Divorcé(e)</option>
-                                        <option value="veuf">Veuf/Veuve</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle</label>
-                                    <input
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.familyInfo.epouse.address}
-                                        onChange={e => handleFamilyChange('epouse', 'address', e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ?</label>
-                                    <div className="flex gap-4 mt-1">
-                                        <label className="flex items-center">
-                                            <input
-                                                type="radio"
-                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                                checked={formData.familyInfo.epouse.coming === true}
-                                                onChange={() => handleFamilyChange('epouse', 'coming', true)}
-                                                required
-                                            />
-                                            <span className="ml-2">Oui</span>
-                                        </label>
-                                        <label className="flex items-center">
-                                            <input
-                                                type="radio"
-                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                                checked={formData.familyInfo.epouse.coming === false}
-                                                onChange={() => handleFamilyChange('epouse', 'coming', false)}
-                                            />
-                                            <span className="ml-2">Non</span>
-                                        </label>
+                    {/* Section Époux/Conjoint */}
+                    {(formData.familyInfo.applicant.maritalStatus === "marie" ||
+                        formData.familyInfo.applicant.maritalStatus === "divorce" ||
+                        formData.familyInfo.applicant.maritalStatus === "veuf") && (
+                            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                                <h3 className="text-lg font-medium text-gray-900 mb-4">Informations sur l'époux/conjoint</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.familyInfo.epouse.name}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    epouse: {
+                                                        ...prev.familyInfo.epouse,
+                                                        name: e.target.value
+                                                    }
+                                                }
+                                            }))}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.familyInfo.epouse.dob}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    epouse: {
+                                                        ...prev.familyInfo.epouse,
+                                                        dob: e.target.value
+                                                    }
+                                                }
+                                            }))}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.familyInfo.epouse.country}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    epouse: {
+                                                        ...prev.familyInfo.epouse,
+                                                        country: e.target.value
+                                                    }
+                                                }
+                                            }))}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.familyInfo.epouse.occupation}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    epouse: {
+                                                        ...prev.familyInfo.epouse,
+                                                        occupation: e.target.value
+                                                    }
+                                                }
+                                            }))}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial</label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.familyInfo.epouse.maritalStatus}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    epouse: {
+                                                        ...prev.familyInfo.epouse,
+                                                        maritalStatus: e.target.value
+                                                    }
+                                                }
+                                            }))}
+                                            required
+                                        >
+                                            <option value="">-- Sélectionnez --</option>
+                                            <option value="celibataire">Célibataire</option>
+                                            <option value="marie">Marié(e)</option>
+                                            <option value="divorce">Divorcé(e)</option>
+                                            <option value="veuf">Veuf/Veuve</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.familyInfo.epouse.address}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    epouse: {
+                                                        ...prev.familyInfo.epouse,
+                                                        address: e.target.value
+                                                    }
+                                                }
+                                            }))}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ?</label>
+                                        <div className="flex gap-4 mt-1">
+                                            <label className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                    checked={formData.familyInfo.epouse.coming === true}
+                                                    onChange={() => setFormData(prev => ({
+                                                        ...prev,
+                                                        familyInfo: {
+                                                            ...prev.familyInfo,
+                                                            epouse: {
+                                                                ...prev.familyInfo.epouse,
+                                                                coming: true
+                                                            }
+                                                        }
+                                                    }))}
+                                                />
+                                                <span className="ml-2">Oui</span>
+                                            </label>
+                                            <label className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                    checked={formData.familyInfo.epouse.coming === false}
+                                                    onChange={() => setFormData(prev => ({
+                                                        ...prev,
+                                                        familyInfo: {
+                                                            ...prev.familyInfo,
+                                                            epouse: {
+                                                                ...prev.familyInfo.epouse,
+                                                                coming: false
+                                                            }
+                                                        }
+                                                    }))}
+                                                />
+                                                <span className="ml-2">Non</span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
+                    {/* Section Parents */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Parents</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Père */}
                             <div>
                                 <h4 className="text-md font-medium text-gray-800 mb-3">Père</h4>
                                 <div className="space-y-4">
@@ -3187,7 +3665,16 @@ const CombinedApplicationForm = () => {
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.father.name}
-                                            onChange={e => handleFamilyChange('father', 'name', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    father: {
+                                                        ...prev.familyInfo.father,
+                                                        name: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3197,7 +3684,16 @@ const CombinedApplicationForm = () => {
                                             type="date"
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.father.dob}
-                                            onChange={e => handleFamilyChange('father', 'dob', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    father: {
+                                                        ...prev.familyInfo.father,
+                                                        dob: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3206,7 +3702,16 @@ const CombinedApplicationForm = () => {
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.father.country}
-                                            onChange={e => handleFamilyChange('father', 'country', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    father: {
+                                                        ...prev.familyInfo.father,
+                                                        country: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3215,7 +3720,16 @@ const CombinedApplicationForm = () => {
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.father.occupation}
-                                            onChange={e => handleFamilyChange('father', 'occupation', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    father: {
+                                                        ...prev.familyInfo.father,
+                                                        occupation: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3224,7 +3738,16 @@ const CombinedApplicationForm = () => {
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.father.address}
-                                            onChange={e => handleFamilyChange('father', 'address', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    father: {
+                                                        ...prev.familyInfo.father,
+                                                        address: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3236,8 +3759,16 @@ const CombinedApplicationForm = () => {
                                                     type="radio"
                                                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                                                     checked={formData.familyInfo.father.coming === true}
-                                                    onChange={() => handleFamilyChange('father', 'coming', true)}
-                                                    required
+                                                    onChange={() => setFormData(prev => ({
+                                                        ...prev,
+                                                        familyInfo: {
+                                                            ...prev.familyInfo,
+                                                            father: {
+                                                                ...prev.familyInfo.father,
+                                                                coming: true
+                                                            }
+                                                        }
+                                                    }))}
                                                 />
                                                 <span className="ml-2">Oui</span>
                                             </label>
@@ -3246,7 +3777,16 @@ const CombinedApplicationForm = () => {
                                                     type="radio"
                                                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                                                     checked={formData.familyInfo.father.coming === false}
-                                                    onChange={() => handleFamilyChange('father', 'coming', false)}
+                                                    onChange={() => setFormData(prev => ({
+                                                        ...prev,
+                                                        familyInfo: {
+                                                            ...prev.familyInfo,
+                                                            father: {
+                                                                ...prev.familyInfo.father,
+                                                                coming: false
+                                                            }
+                                                        }
+                                                    }))}
                                                 />
                                                 <span className="ml-2">Non</span>
                                             </label>
@@ -3255,6 +3795,7 @@ const CombinedApplicationForm = () => {
                                 </div>
                             </div>
 
+                            {/* Mère */}
                             <div>
                                 <h4 className="text-md font-medium text-gray-800 mb-3">Mère</h4>
                                 <div className="space-y-4">
@@ -3263,7 +3804,16 @@ const CombinedApplicationForm = () => {
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.mother.name}
-                                            onChange={e => handleFamilyChange('mother', 'name', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    mother: {
+                                                        ...prev.familyInfo.mother,
+                                                        name: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3273,7 +3823,16 @@ const CombinedApplicationForm = () => {
                                             type="date"
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.mother.dob}
-                                            onChange={e => handleFamilyChange('mother', 'dob', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    mother: {
+                                                        ...prev.familyInfo.mother,
+                                                        dob: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3282,7 +3841,16 @@ const CombinedApplicationForm = () => {
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.mother.country}
-                                            onChange={e => handleFamilyChange('mother', 'country', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    mother: {
+                                                        ...prev.familyInfo.mother,
+                                                        country: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3291,7 +3859,16 @@ const CombinedApplicationForm = () => {
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.mother.occupation}
-                                            onChange={e => handleFamilyChange('mother', 'occupation', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    mother: {
+                                                        ...prev.familyInfo.mother,
+                                                        occupation: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3300,7 +3877,16 @@ const CombinedApplicationForm = () => {
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.familyInfo.mother.address}
-                                            onChange={e => handleFamilyChange('mother', 'address', e.target.value)}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    mother: {
+                                                        ...prev.familyInfo.mother,
+                                                        address: e.target.value
+                                                    }
+                                                }
+                                            }))}
                                             required
                                         />
                                     </div>
@@ -3312,8 +3898,16 @@ const CombinedApplicationForm = () => {
                                                     type="radio"
                                                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                                                     checked={formData.familyInfo.mother.coming === true}
-                                                    onChange={() => handleFamilyChange('mother', 'coming', true)}
-                                                    required
+                                                    onChange={() => setFormData(prev => ({
+                                                        ...prev,
+                                                        familyInfo: {
+                                                            ...prev.familyInfo,
+                                                            mother: {
+                                                                ...prev.familyInfo.mother,
+                                                                coming: true
+                                                            }
+                                                        }
+                                                    }))}
                                                 />
                                                 <span className="ml-2">Oui</span>
                                             </label>
@@ -3322,7 +3916,16 @@ const CombinedApplicationForm = () => {
                                                     type="radio"
                                                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                                                     checked={formData.familyInfo.mother.coming === false}
-                                                    onChange={() => handleFamilyChange('mother', 'coming', false)}
+                                                    onChange={() => setFormData(prev => ({
+                                                        ...prev,
+                                                        familyInfo: {
+                                                            ...prev.familyInfo,
+                                                            mother: {
+                                                                ...prev.familyInfo.mother,
+                                                                coming: false
+                                                            }
+                                                        }
+                                                    }))}
                                                 />
                                                 <span className="ml-2">Non</span>
                                             </label>
@@ -3333,12 +3936,19 @@ const CombinedApplicationForm = () => {
                         </div>
                     </div>
 
+                    {/* Section Enfants */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-medium text-gray-900">Enfants</h3>
                             <button
                                 type="button"
-                                onClick={() => addArrayEntry('familyInfo', 'children')}
+                                onClick={() => addArrayEntry('familyInfo', 'children', {
+                                    name: '',
+                                    dob: '',
+                                    country: '',
+                                    maritalStatus: '',
+                                    coming: false
+                                })}
                                 className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 <FiPlus className="mr-1" /> Ajouter un enfant
@@ -3381,6 +3991,21 @@ const CombinedApplicationForm = () => {
                                                 />
                                             </div>
                                             <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial</label>
+                                                <select
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={child.maritalStatus || ''}
+                                                    onChange={(e) => handleArrayChange('familyInfo', 'children', index, 'maritalStatus', e.target.value)}
+                                                    required
+                                                >
+                                                    <option value="">-- Sélectionnez --</option>
+                                                    <option value="celibataire">Célibataire</option>
+                                                    <option value="marie">Marié(e)</option>
+                                                    <option value="divorce">Divorcé(e)</option>
+                                                    <option value="veuf">Veuf/Veuve</option>
+                                                </select>
+                                            </div>
+                                            <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ?</label>
                                                 <div className="flex gap-4 mt-1">
                                                     <label className="flex items-center">
@@ -3389,7 +4014,6 @@ const CombinedApplicationForm = () => {
                                                             className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                                                             checked={child.coming === true}
                                                             onChange={() => handleArrayChange('familyInfo', 'children', index, 'coming', true)}
-                                                            required
                                                         />
                                                         <span className="ml-2">Oui</span>
                                                     </label>
@@ -3420,12 +4044,19 @@ const CombinedApplicationForm = () => {
                         )}
                     </div>
 
+                    {/* Section Frères et sœurs */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-medium text-gray-900">Frères et sœurs</h3>
                             <button
                                 type="button"
-                                onClick={() => addArrayEntry('familyInfo', 'siblings')}
+                                onClick={() => addArrayEntry('familyInfo', 'siblings', {
+                                    name: '',
+                                    dob: '',
+                                    country: '',
+                                    maritalStatus: '',
+                                    coming: false
+                                })}
                                 className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 <FiPlus className="mr-1" /> Ajouter un frère/sœur
@@ -3468,6 +4099,21 @@ const CombinedApplicationForm = () => {
                                                 />
                                             </div>
                                             <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial</label>
+                                                <select
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={sibling.maritalStatus || ''}
+                                                    onChange={(e) => handleArrayChange('familyInfo', 'siblings', index, 'maritalStatus', e.target.value)}
+                                                    required
+                                                >
+                                                    <option value="">-- Sélectionnez --</option>
+                                                    <option value="celibataire">Célibataire</option>
+                                                    <option value="marie">Marié(e)</option>
+                                                    <option value="divorce">Divorcé(e)</option>
+                                                    <option value="veuf">Veuf/Veuve</option>
+                                                </select>
+                                            </div>
+                                            <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ?</label>
                                                 <div className="flex gap-4 mt-1">
                                                     <label className="flex items-center">
@@ -3476,7 +4122,6 @@ const CombinedApplicationForm = () => {
                                                             className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                                                             checked={sibling.coming === true}
                                                             onChange={() => handleArrayChange('familyInfo', 'siblings', index, 'coming', true)}
-                                                            required
                                                         />
                                                         <span className="ml-2">Oui</span>
                                                     </label>
@@ -3498,8 +4143,7 @@ const CombinedApplicationForm = () => {
                                                 onClick={() => removeArrayEntry('familyInfo', 'siblings', index)}
                                                 className="text-red-500 hover:text-red-700 flex items-center"
                                             >
-                                                <FiTrash2 className="mr-1" /> Supprimer
-                                            </button>
+                                                <FiTrash2 className="mr-1" /> Supprimer </button>
                                         </div>
                                     </div>
                                 ))}
