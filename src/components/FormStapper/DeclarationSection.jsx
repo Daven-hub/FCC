@@ -1,4 +1,4 @@
-import { BlobProvider } from '@react-pdf/renderer';
+import { BlobProvider,pdf } from '@react-pdf/renderer';
 import React from 'react';
 import { FiPlus, FiX } from 'react-icons/fi';
 import MonPdfDocument from '../pdf/MonPdf';
@@ -12,23 +12,31 @@ const DeclarationSection = ({
     formData
 }) => {
     const dataa=formData.documents[0].corps[3].imageData;
-    // const previewPDF=()=>{
-    //     const dataa=formData.documents[0].corps[3].imageData;
-    //     // console.log("formplus",formData.documents[0].corps[3].imageData)
-    //     return(
-    //         <BlobProvider document={<MonPdfDocument datas={prog} dataa={dataa}/>}>
-    //             {({ url, loading }) =>
-    //                 loading ? (
-    //                 <button disabled>Chargement...</button>
-    //                 ) : (
-    //                 window.open(url)
-    //                 // <iframe src={url} width="100%" height="600" title="Aperçu PDF" />
-    //                 )
-    //             }
-    //         </BlobProvider>
-    //         )
-    // }
-    // console.log(prog)
+    const previewPDF =  () => {
+        const newWindow = window.open("", "_blank");
+    newWindow.document.write(`
+      <html>
+        <head>
+          <title>Prévisualisation PDF</title>
+        </head>
+        <body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">
+          <h2>📄 Chargement du PDF...</h2>
+        </body>
+      </html>
+    `);
+
+    // 3. Générer le PDF
+    pdf(<MonPdfDocument datas={prog} datac={formData} forme3={formData?.personalInfo} dataa={dataa} documents={formData.documents} />)
+      .toBlob()
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        newWindow.location.href = url;
+      })
+      .catch((err) => {
+        console.error("Erreur génération PDF:", err);
+        newWindow.document.body.innerHTML = "<p>Erreur lors de la génération du PDF.</p>";
+      });
+      };
     return (
         <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
@@ -65,7 +73,7 @@ const DeclarationSection = ({
                     </label>
                 </div>
             </div>
-            <button className='p-2 bg-primary'>preview pdf</button>
+            <button className='p-2 bg-primary' onClick={previewPDF}>preview pdf</button>
             {/* <BlobProvider document={<MonPdfDocument datas={prog}/>}>
                 {({ url, loading }) =>
                     loading ? (

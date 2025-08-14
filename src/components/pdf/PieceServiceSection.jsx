@@ -49,7 +49,7 @@ export const HeaderT=()=>(
 export const BodyT=({item})=>(
   <View style={[styles.row,{borderTop:1}]}>
       <View style={[styles.col,{width:"70%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
-        <Text style={[styles.form2_titre,{lineHeight:1.4,fontWeight:"bold"}]}>{item?.nom}</Text>
+        <Text style={[styles.form2_titre,{lineHeight:1.4,fontWeight:"bold"}]}>{item?.titre}</Text>
       </View>
       <View style={[styles.row,{width:"30%", padding:3,alignItems:"center",justifyContent:"center"}]}>
             <View style={[[styles.row,{gap:15,alignItems:"center"}]]}>

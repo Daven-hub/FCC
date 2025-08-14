@@ -14,6 +14,7 @@ import logo from "/fcc.png";
 import MainForm from "./MainForm";
 import PieceJointe from "./PieceJointe";
 import Form3 from "./Form3";
+// import { body } from "framer-motion/client";
 
 Font.register({
   family: "CourierPrime",
@@ -143,7 +144,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     width: "100%",
     color: "grey",
-    backgroundColor:"red"
+    // backgroundColor:"red"
+    borderTop:1,
+    borderColor:"gray"
   }
 });
 
@@ -152,12 +155,12 @@ const PersonRow = ({ relation }) => (
     <View style={styles.row}>
       <View style={[styles.cell, { width: "30%" }]}>
         <View style={styles.formField}>
-          <Text style={styles.formText}>{relation.nom.toLowerCase()}</Text>
+          <Text style={styles.formText}>{relation?.nom?.toLowerCase()}</Text>
         </View>
         <Text style={styles.vertPad}>État civil:</Text>
         <View style={styles.formField}>
           <Text style={styles.formText}>
-            {relation.etat_civil.toLowerCase()}
+            {relation?.etat_civil?.toLowerCase()}
           </Text>
         </View>
       </View>
@@ -172,24 +175,24 @@ const PersonRow = ({ relation }) => (
           }
         ]}
       >
-        <Text style={[styles.label, { padding: 5 }]}>{relation.role}</Text>
+        <Text style={[styles.label, { padding: 5 }]}>{relation?.role}</Text>
       </View>
       <View style={[styles.cell, { width: "15%" }]}>
         <View style={styles.formField}>
-          <Text style={styles.formText}>{relation.date}</Text>
+          <Text style={styles.formText}>{relation?.date}</Text>
         </View>
         <Text style={styles.vertPad}>Pays de naissance:</Text>
         <View style={styles.formField}>
-          <Text style={styles.formText}>{relation.pays_naissance}</Text>
+          <Text style={styles.formText}>{relation?.pays_naissance}</Text>
         </View>
       </View>
       <View style={[styles.cell, { width: "26%" }]}>
         <View style={styles.formField}>
-          <Text style={styles.formText}>{relation.adresse}</Text>
+          <Text style={styles.formText}>{relation?.adresse}</Text>
         </View>
         <Text style={styles.vertPad}>Profession actuelle:</Text>
         <View style={styles.formField}>
-          <Text style={styles.formText}>{relation.profession}</Text>
+          <Text style={styles.formText}>{relation?.profession}</Text>
         </View>
       </View>
       <View
@@ -212,7 +215,7 @@ const PersonRow = ({ relation }) => (
             style={[
               styles.checkbox,
               {
-                backgroundColor: relation.case_gauche ? "green" : "transparent"
+                backgroundColor: relation?.case_gauche ? "green" : "transparent"
               }
             ]}
           ></View>
@@ -222,7 +225,7 @@ const PersonRow = ({ relation }) => (
           <View
             style={[
               styles.checkbox,
-              { backgroundColor: relation.case_droite ? "red" : "transparent" }
+              { backgroundColor: relation?.case_droite ? "red" : "transparent" }
             ]}
           />
         </View>
@@ -299,12 +302,11 @@ const TemplateTable = ({ items }) => (
             flexDirection: "row",
             width: "75%",
             gap: 4,
-            backgroundColor: "green"
           }}
         >
           <Text>Signature :</Text>
           <View style={styles.signatureLine}>
-            <Text>Lionel</Text>
+            <Text></Text>
           </View>
         </View>
         <View style={{ flexDirection: "row", width: "25%", gap: 4 }}>
@@ -446,41 +448,204 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
   </Page>
 );
 
-const MonPdfDocument = ({ datas }) => {
+const MonPdfDocument = ({ datas,datac, forme3,dataa,documents }) => {
   // console.log("dataaa",dataa)
+  const fam=datac?.familyInfo;
+  const familes={
+    body:[
+      {
+          "section": "SECTION A",
+          "header": [
+              {
+                  "title": "Nom",
+                  "sigle": "nom",
+                  "width": "30%"
+              },
+              {
+                  "title": "Lien de parenté VOIR NOTE 1",
+                  "sigle": "lien",
+                  "width": "15%"
+              },
+              {
+                  "title": "Date de naissance (AAAA-MM-JJ)",
+                  "sigle": "date",
+                  "width": "15%"
+              },
+              {
+                  "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+                  "sigle": "adresse",
+                  "width": "26%"
+              },
+              {
+                  "title": "Vous accompagnera au Canada? OUI / NON",
+                  "sigle": "vous",
+                  "width": "14%"
+              }
+          ],
+          "corps": [
+              {
+                  "role": "DEMANDEUR",
+                  "nom": fam?.applicant?.name,
+                  "etat_civil": fam?.applicant?.maritalStatus,
+                  "date": fam?.applicant?.dob,
+                  "adresse": fam?.applicant?.address,
+                  "pays_naissance": fam?.applicant?.country,
+                  "profession": fam?.applicant?.occupation,
+                  "case_gauche": true,
+                  "case_droite": false
+              },
+              {
+                  "role": "ÉPOUX OU CONJOINT DE FAIT",
+                  "nom": fam?.epouse?.name,
+                  "etat_civil": fam?.epouse?.maritalStatus,
+                  "date": fam?.epouse?.dob,
+                  "adresse": fam?.epouse?.address,
+                  "pays_naissance": fam?.epouse?.country,
+                  "profession": fam?.epouse?.occupation,
+                  "case_gauche": true,
+                  "case_droite": false
+              },
+              {
+                  "role": "MÈRE",
+                  "nom": fam?.mother?.name,
+                  "etat_civil": fam?.mother?.maritalStatus,
+                  "date": fam?.mother?.dob,
+                  "adresse": fam?.mother?.address,
+                  "pays_naissance": fam?.mother?.country,
+                  "profession": fam?.mother?.occupation,
+                  "case_gauche": false,
+                  "case_droite": true
+              },
+              {
+                  "role": "PÈRE",
+                  "nom": fam?.father?.name,
+                  "etat_civil": fam?.father?.maritalStatus,
+                  "date": fam?.father?.dob,
+                  "adresse": fam?.father?.address,
+                  "pays_naissance": fam?.father?.country,
+                  "profession": fam?.father?.occupation,
+                  "case_gauche": false,
+                  "case_droite": true
+              }
+          ]
+      },
+      {
+          "section": "SECTION B - ENFANT",
+          "header": [
+              {
+                  "title": "Nom",
+                  "sigle": "nom",
+                  "width": "30%"
+              },
+              {
+                  "title": "Lien de parenté VOIR NOTE 2",
+                  "sigle": "lien",
+                  "width": "15%"
+              },
+              {
+                  "title": "Date de naissance (AAAA-MM-JJ)",
+                  "sigle": "date",
+                  "width": "15%"
+              },
+              {
+                  "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+                  "sigle": "adresse",
+                  "width": "26%"
+              },
+              {
+                  "title": "Vous accompagnera au Canada? OUI / NON",
+                  "sigle": "vous",
+                  "width": "14%"
+              }
+          ],
+          "corps": fam?.children?.map(item => ({
+            nom: item?.name,
+            etat_civil: item?.maritalStatus, 
+            date: item?.dob,
+            adresse: item?.address,
+            pays_naissance: item?.country,
+            profession: item?.occupation,
+            case_gauche: item?.coming,
+            case_droite: item?.coming
+          })),
+      },
+      {
+          "section": "SECTION C - FRÈRES ET SOEURS",
+          "header": [
+              {
+                  "title": "Nom",
+                  "sigle": "nom",
+                  "width": "30%"
+              },
+              {
+                  "title": "Lien de parenté VOIR NOTE 2",
+                  "sigle": "lien",
+                  "width": "15%"
+              },
+              {
+                  "title": "Date de naissance (AAAA-MM-JJ)",
+                  "sigle": "date",
+                  "width": "15%"
+              },
+              {
+                  "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+                  "sigle": "adresse",
+                  "width": "26%"
+              },
+              {
+                  "title": "Vous accompagnera au Canada? OUI / NON",
+                  "sigle": "vous",
+                  "width": "14%"
+              }
+          ],
+          "corps":fam?.children?.map(item => ({
+            nom: item?.name,
+            etat_civil: item?.maritalStatus, 
+            date: item?.dob,
+            adresse: item?.address,
+            pays_naissance: item?.country,
+            profession: item?.occupation,
+            case_gauche: item?.coming,
+            case_droite: item?.coming
+          })),
+      }
+  ]
+  }
+
+  console.log(familes)
   return(
   <Document>
     <PageTemplate
         nom={datas?.nom}
         type={datas?.type}
         email={datas?.email}
-        image={datas?.image}
-        datas={datas?.pages?.visiteur}
-        Custom={<Form3 datas={datas?.pages?.visiteur?.body}/>}
+        image={dataa}
+        datas={{titre: "Demande de visa de visiteur (visa de résident temporaire)",}}
+        Custom={<Form3 datas={forme3}/>}
       />
       <PageTemplate
         nom={datas?.nom}
         type={datas?.type}
         email={datas?.email}
-        image={datas?.image}
-        datas={datas?.pages?.famille}
-        Custom={<PageFamille datas={datas?.pages?.famille} />}
+        image={dataa}
+        datas={{ titre: "INFORMATION SUR LA FAMILLE",}}
+        Custom={<PageFamille datas={familes} />}
       />
       <PageTemplate
         nom={datas?.nom}
         type={datas?.type}
         email={datas?.email}
-        image={datas?.image}
-        datas={datas?.pages?.resident}
-        Custom={<MainForm datas={datas?.pages?.resident?.body}/>}
+        image={dataa}
+        datas={{titre: "Demande de statut de résident temporaire"}}
+        Custom={<MainForm datas={datac?.resident?.body}/>}
       />
       <PageTemplate
         nom={datas?.nom}
         type={datas?.type}
         email={datas?.email}
-        image={datas?.image}
-        datas={datas?.pages?.documents}
-        Custom={<PieceJointe datas={datas?.pages?.documents?.body}/>}
+        image={dataa}
+        datas={{titre:"PIÈCES JOINTES"}}
+        Custom={<PieceJointe datas={documents}/>}
       />
   </Document>
   )

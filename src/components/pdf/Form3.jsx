@@ -67,7 +67,7 @@ const Form3 = ({ datas }) => {
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.iuc}</Text>
           </View>
         </View>
         <View style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}>
@@ -86,7 +86,7 @@ const Form3 = ({ datas }) => {
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.servi}</Text>
           </View>
         </View>
         <View style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}>
