@@ -200,19 +200,19 @@ const CombinedApplicationForm = () => {
             }
         },
 
+
+
         // Étape 3: Informations familiales
         familyInfo: {
-            typeDemande: '', // Visiteur, Travailleur, Étudiant, Autre
             applicant: {
                 name: '',
-                dob: '', // AAAA-MM-JJ
-                country: '', // Pays de naissance
+                dob: '',
+                country: '',
                 occupation: '',
                 maritalStatus: '',
                 address: '',
                 coming: false
             },
-
             epouse: {
                 name: '',
                 dob: '',
@@ -222,30 +222,28 @@ const CombinedApplicationForm = () => {
                 address: '',
                 coming: false
             },
-
-            mother: {
-                name: '',
-                dob: '',
-                country: '',
-                occupation: '',
-                maritalStatus: '',
-                address: '',
-                coming: false
-            },
-
             father: {
                 name: '',
                 dob: '',
                 country: '',
                 occupation: '',
-                maritalStatus: '',
                 address: '',
-                coming: false
+                coming: false,
+                maritalStatus: '',
             },
-
+            mother: {
+                name: '',
+                dob: '',
+                country: '',
+                occupation: '',
+                address: '',
+                coming: false,
+                maritalStatus: '',
+            },
             children: [],
+            siblings: [],
+            typeDemande: '', // Visiteur, Travailleur, Étudiant, Autre
 
-            siblings: []
         },
 
         // Étape 4: Documents
@@ -737,8 +735,7 @@ const CombinedApplicationForm = () => {
 
             // Filtrer les données avant envoi
             const filteredPersonalInfo = {
-                ...formData.formulaireVisa,
-                voyages: formData.personalInfo.voyages.isOk === "oui" ? formData.personalInfo.voyages : { isOk: "non", dev: [] }
+                ...formData.formulaireVisa
             };
 
             const filteredResident = {
@@ -2942,6 +2939,7 @@ const CombinedApplicationForm = () => {
             title: "Informations familiales",
             component: (
                 <div className="space-y-6">
+                    <div className='ml-3 block text-xl font-medium text-gray-700'>Type de demande : </div>
                     <div className="flex items-center">
                         <input
                             type="radio"
