@@ -175,7 +175,7 @@ const CombinedApplicationForm = () => {
         // Étape 2: Antécédents et historique
         resident: {
             titre: "Demande de statut de résident temporaire",
-            Demandeur: '',  // Le demandeur principal ou l'epoux, le conjoin , enfant age plus 18 ans 
+            Demandeur: [],  // Le demandeur principal ou l'epoux, le conjoin , enfant age plus 18 ans 
             body: {
                 military: {
                     isOk: "non",
@@ -425,105 +425,103 @@ const CombinedApplicationForm = () => {
         });
     };
 
-    
 
-    // Fonction pour gérer les changements dans la section resident (étape 2)
-    const handleResidentChange = (section, field, value) => {
-        setFormData(prev => ({
-            ...prev,
-            resident: {
-                ...prev.resident,
-                body: {
-                    ...prev.resident.body,
-                    [section]: {
-                        ...prev.resident.body[section],
-                        [field]: value
-                    }
-                }
-            }
-        }));
-    };
-
-    // Fonction pour gérer les changements dans la section familyInfo (étape 3)
-    const handleFamilyChange = (section, field, value) => {
+    const handleFamilyChange = (field, value) => {
         setFormData(prev => ({
             ...prev,
             familyInfo: {
                 ...prev.familyInfo,
-                [section]: {
-                    ...prev.familyInfo[section],
-                    [field]: value
-                }
+                [field]: value
             }
         }));
     };
 
-    const handleArrayChange = (parentPath, arrayPath, index, field, value) => {
-        const pathParts = parentPath.split('.');
+    const handleArrayChange = (section, path, index, field, value) => {
         setFormData(prev => {
-            const newState = { ...prev };
-            let current = newState;
+            // Pour gérer les chemins imbriqués comme 'body.military.dev'
+            const pathParts = path.split('.');
+            let current = { ...prev[section] };
+            let temp = current;
 
-            // Naviguer jusqu'au parent
-            for (let i = 0; i < pathParts.length; i++) {
-                current[pathParts[i]] = { ...current[pathParts[i]] };
-                current = current[pathParts[i]];
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                temp = temp[pathParts[i]] = { ...temp[pathParts[i]] };
             }
 
-            // Mettre à jour le tableau spécifique
-            if (current[arrayPath] && Array.isArray(current[arrayPath])) {
-                const array = [...current[arrayPath]];
-                array[index] = { ...array[index], [field]: value };
-                current[arrayPath] = array;
-            }
+            const arrayPath = pathParts[pathParts.length - 1];
+            const newArray = [...temp[arrayPath]];
+            if (!newArray[index]) newArray[index] = {};
+            newArray[index][field] = value;
+            temp[arrayPath] = newArray;
 
-            return newState;
+            return {
+                ...prev,
+                [section]: current
+            };
         });
     };
 
-    const addArrayEntry = (parentPath, arrayPath, defaultValue = {}) => {
-        const pathParts = parentPath.split('.');
+    const addArrayEntry = (section, path, defaultValue = {}) => {
+        const pathParts = path.split('.');
         setFormData(prev => {
-            const newState = { ...prev };
-            let current = newState;
+            // Créer une copie profonde de la section concernée
+            const newSection = JSON.parse(JSON.stringify(prev[section]));
 
-            // Naviguer jusqu'au parent
-            for (let i = 0; i < pathParts.length; i++) {
-                current[pathParts[i]] = { ...current[pathParts[i]] };
+            // Naviguer jusqu'au tableau cible
+            let current = newSection;
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                if (!current[pathParts[i]]) {
+                    current[pathParts[i]] = {};
+                }
                 current = current[pathParts[i]];
             }
 
-            // Ajouter une nouvelle entrée au tableau
-            if (current[arrayPath]) {
-                current[arrayPath] = [...current[arrayPath], defaultValue];
-            } else {
-                current[arrayPath] = [defaultValue];
+            // Initialiser le tableau s'il n'existe pas
+            const arrayName = pathParts[pathParts.length - 1];
+            if (!Array.isArray(current[arrayName])) {
+                current[arrayName] = [];
             }
 
-            return newState;
+            // Ajouter la nouvelle entrée
+            current[arrayName] = [...current[arrayName], defaultValue];
+
+            // Retourner le nouvel état avec la section mise à jour
+            return {
+                ...prev,
+                [section]: newSection
+            };
         });
     };
 
-    const removeArrayEntry = (parentPath, arrayPath, index) => {
-        const pathParts = parentPath.split('.');
+    const removeArrayEntry = (section, path, index) => {
+        const pathParts = path.split('.');
         setFormData(prev => {
-            const newState = { ...prev };
-            let current = newState;
+            // Créer une copie profonde de la section concernée
+            const newSection = JSON.parse(JSON.stringify(prev[section]));
 
-            // Naviguer jusqu'au parent
-            for (let i = 0; i < pathParts.length; i++) {
-                current[pathParts[i]] = { ...current[pathParts[i]] };
+            // Naviguer jusqu'au tableau cible
+            let current = newSection;
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                if (!current[pathParts[i]]) {
+                    // Si le chemin n'existe pas, rien à supprimer
+                    return prev;
+                }
                 current = current[pathParts[i]];
             }
 
-            // Supprimer l'entrée du tableau
-            if (current[arrayPath] && Array.isArray(current[arrayPath])) {
-                const array = [...current[arrayPath]];
-                array.splice(index, 1);
-                current[arrayPath] = array;
+            // Vérifier que le tableau existe et que l'index est valide
+            const arrayName = pathParts[pathParts.length - 1];
+            if (!Array.isArray(current[arrayName]) || index < 0 || index >= current[arrayName].length) {
+                return prev;
             }
 
-            return newState;
+            // Supprimer l'entrée
+            current[arrayName] = current[arrayName].filter((_, i) => i !== index);
+
+            // Retourner le nouvel état avec la section mise à jour
+            return {
+                ...prev,
+                [section]: newSection
+            };
         });
     };
 
@@ -739,7 +737,7 @@ const CombinedApplicationForm = () => {
 
             // Filtrer les données avant envoi
             const filteredPersonalInfo = {
-                ...formData. formulaireVisa,
+                ...formData.formulaireVisa,
                 voyages: formData.personalInfo.voyages.isOk === "oui" ? formData.personalInfo.voyages : { isOk: "non", dev: [] }
             };
 
@@ -2113,10 +2111,61 @@ const CombinedApplicationForm = () => {
                 </div>
             )
         },
+        // Étape 2: Antécédents et historique
         {
             title: "Antécédents et historique",
             component: (
                 <div className="space-y-6">
+                    {/* Champ Demandeur */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Qui est le demandeur principal ? (cochez toutes les cases applicables)
+                        </label>
+                        <div className="space-y-2">
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                    checked={formData.resident.Demandeur.includes('principal')}
+                                    onChange={(e) => {
+                                        const isChecked = e.target.checked;
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            resident: {
+                                                ...prev.resident,
+                                                Demandeur: isChecked
+                                                    ? [...prev.resident.Demandeur, 'principal']
+                                                    : prev.resident.Demandeur.filter(item => item !== 'principal')
+                                            }
+                                        }));
+                                    }}
+                                />
+                                <span className="ml-2">Demandeur principal</span>
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                    checked={formData.resident.Demandeur.includes('conjoint')}
+                                    onChange={(e) => {
+                                        const isChecked = e.target.checked;
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            resident: {
+                                                ...prev.resident,
+                                                Demandeur: isChecked
+                                                    ? [...prev.resident.Demandeur, 'conjoint']
+                                                    : prev.resident.Demandeur.filter(item => item !== 'conjoint')
+                                            }
+                                        }));
+                                    }}
+                                />
+                                <span className="ml-2">Époux/Conjoint ou Enfant (+18 ans) </span>
+                            </label>
+
+                        </div>
+                    </div>
+
                     {/* Section Militaire */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Service militaire ou paramilitaire</h3>
@@ -2263,7 +2312,7 @@ const CombinedApplicationForm = () => {
                         )}
                     </div>
 
-                    {/* Section Témoin - Même structure */}
+                    {/* Section Témoin */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Témoin de crimes de guerre ou crimes contre l'humanité</h3>
                         <div className="mb-4">
@@ -2409,7 +2458,7 @@ const CombinedApplicationForm = () => {
                         )}
                     </div>
 
-                    {/* Section Affiliation - Même structure */}
+                    {/* Section Affiliation */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Affiliations ou appartenances</h3>
                         <div className="mb-4">
@@ -2575,7 +2624,7 @@ const CombinedApplicationForm = () => {
                         )}
                     </div>
 
-                    {/* Section Charges - Même structure */}
+                    {/* Section Charges */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Charges judiciaires</h3>
                         <div className="mb-4">
@@ -2731,7 +2780,7 @@ const CombinedApplicationForm = () => {
                         )}
                     </div>
 
-                    {/* Section Voyages - Même structure */}
+                    {/* Section Voyages */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Refus d'entrée ou expulsion</h3>
                         <div className="mb-4">
@@ -2893,62 +2942,57 @@ const CombinedApplicationForm = () => {
             title: "Informations familiales",
             component: (
                 <div className="space-y-6">
-                    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Type de demande</h3>
-                        <div className="space-y-4">
-                            <div className="flex items-center">
-                                <input
-                                    type="radio"
-                                    id="visiteur"
-                                    name="typeDemande"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.familyInfo.typeDemande === 'Visiteur'}
-                                    onChange={() => handleChange('familyInfo', 'typeDemande', 'Visiteur')} // Changé ici
-                                />
-                                <label htmlFor="visiteur" className="ml-3 block text-sm font-medium text-gray-700">
-                                    Visiteur
-                                </label>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    type="radio"
-                                    id="travailleur"
-                                    name="typeDemande"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.familyInfo.typeDemande === 'Travailleur'}
-                                    onChange={() => handleChange('familyInfo', 'typeDemande', 'Travailleur')} // Changé ici
-                                />
-                                <label htmlFor="travailleur" className="ml-3 block text-sm font-medium text-gray-700">
-                                    Travailleur
-                                </label>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    type="radio"
-                                    id="etudiant"
-                                    name="typeDemande"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.familyInfo.typeDemande === 'Etudiant'}
-                                    onChange={() => handleChange('familyInfo', 'typeDemande', 'Etudiant')} // Changé ici
-                                />
-                                <label htmlFor="etudiant" className="ml-3 block text-sm font-medium text-gray-700">
-                                    Etudiant
-                                </label>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    type="radio"
-                                    id="autre"
-                                    name="typeDemande"
-                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                    checked={formData.familyInfo.typeDemande === 'Autre'}
-                                    onChange={() => handleChange('familyInfo', 'typeDemande', 'Autre')} // Changé ici
-                                />
-                                <label htmlFor="autre" className="ml-3 block text-sm font-medium text-gray-700">
-                                    Autre
-                                </label>
-                            </div>
-                        </div>
+                    <div className="flex items-center">
+                        <input
+                            type="radio"
+                            id="visiteur"
+                            name="typeDemande"
+                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                            checked={formData.familyInfo.typeDemande === 'Visiteur'}
+                            onChange={() => handleFamilyChange('typeDemande', 'Visiteur')}
+                        />
+                        <label htmlFor="visiteur" className="ml-3 block text-sm font-medium text-gray-700">
+                            Visiteur
+                        </label>
+                    </div>
+                    <div className="flex items-center">
+                        <input
+                            type="radio"
+                            id="travailleur"
+                            name="typeDemande"
+                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                            checked={formData.familyInfo.typeDemande === 'Travailleur'}
+                            onChange={() => handleFamilyChange('typeDemande', 'Travailleur')}
+                        />
+                        <label htmlFor="travailleur" className="ml-3 block text-sm font-medium text-gray-700">
+                            Travailleur
+                        </label>
+                    </div>
+                    <div className="flex items-center">
+                        <input
+                            type="radio"
+                            id="etudiant"
+                            name="typeDemande"
+                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                            checked={formData.familyInfo.typeDemande === 'Etudiant'}
+                            onChange={() => handleFamilyChange('typeDemande', 'Etudiant')}
+                        />
+                        <label htmlFor="etudiant" className="ml-3 block text-sm font-medium text-gray-700">
+                            Etudiant
+                        </label>
+                    </div>
+                    <div className="flex items-center">
+                        <input
+                            type="radio"
+                            id="autre"
+                            name="typeDemande"
+                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                            checked={formData.familyInfo.typeDemande === 'Autre'}
+                            onChange={() => handleFamilyChange('typeDemande', 'Autre')}
+                        />
+                        <label htmlFor="autre" className="ml-3 block text-sm font-medium text-gray-700">
+                            Autre
+                        </label>
                     </div>
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Informations sur le demandeur principal</h3>
