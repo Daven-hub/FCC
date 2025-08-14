@@ -216,44 +216,7 @@ const CombinedApplicationForm = () => {
         },
 
         // Étape 3: Informations familiales
-        familyInfo: {
-            applicant: {
-                name: '',
-                dob: '',
-                country: '',
-                occupation: '',
-                maritalStatus: '',
-                address: '',
-                coming: false
-            },
-            epouse: {
-                name: '',
-                dob: '',
-                country: '',
-                occupation: '',
-                maritalStatus: '',
-                address: '',
-                coming: false
-            },
-            father: {
-                name: '',
-                dob: '',
-                country: '',
-                occupation: '',
-                address: '',
-                coming: false
-            },
-            mother: {
-                name: '',
-                dob: '',
-                country: '',
-                occupation: '',
-                address: '',
-                coming: false
-            },
-            children: [],
-            siblings: []
-        },
+        
 
         // Étape 4: Documents
         documents: [
@@ -1945,6 +1908,7 @@ const CombinedApplicationForm = () => {
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             )
         },
