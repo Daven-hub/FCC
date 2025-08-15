@@ -1339,7 +1339,7 @@ const CombinedApplicationForm = () => {
                                                 <input
                                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
                                                     value={sejour.pays || ''}
-                                                    onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.pays`, e.target.value)}
+                                                    onChange={e => handleArrayChange('formulaireVisa', 'residence.anterieure.sejours', index, 'pays', e.target.value)}
                                                     required
                                                 />
                                             </div>
@@ -1348,7 +1348,7 @@ const CombinedApplicationForm = () => {
                                                 <select
                                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
                                                     value={sejour.statut || ''}
-                                                    onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.statut`, e.target.value)}
+                                                    onChange={e => handleArrayChange('formulaireVisa', 'residence.anterieure.sejours', index, 'statut', e.target.value)}
                                                     required
                                                 >
                                                     <option value="">Sélectionnez un statut</option>
@@ -1367,7 +1367,7 @@ const CombinedApplicationForm = () => {
                                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
                                                             placeholder="Précisez votre statut"
                                                             value={sejour.statutAutre || ''}
-                                                            onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.statutAutre`, e.target.value)}
+                                                            onChange={e => handleArrayChange('formulaireVisa', 'residence.anterieure.sejours', index, 'statutAutre', e.target.value)}
                                                             required
                                                         />
                                                     </div>
@@ -1380,7 +1380,7 @@ const CombinedApplicationForm = () => {
                                                     placeholder="MM/AAAA"
                                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
                                                     value={sejour.du || ''}
-                                                    onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.du`, e.target.value)}
+                                                    onChange={e => handleArrayChange('formulaireVisa', 'residence.anterieure.sejours', index, 'du', e.target.value)}
                                                     required
                                                 />
                                             </div>
@@ -1391,7 +1391,7 @@ const CombinedApplicationForm = () => {
                                                     placeholder="MM/AAAA"
                                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
                                                     value={sejour.au || ''}
-                                                    onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.au`, e.target.value)}
+                                                    onChange={e => handleArrayChange('formulaireVisa', 'residence.anterieure.sejours', index, 'au', e.target.value)}
                                                     required
                                                 />
                                             </div>
@@ -1417,6 +1417,7 @@ const CombinedApplicationForm = () => {
                                 </button>
                             </div>
                         )}
+
 
                         {/* Section pays de demande */}
                         <div className="mt-4">
@@ -1679,24 +1680,6 @@ const CombinedApplicationForm = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Nature de l'union *
-                                        </label>
-                                        <select
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={formData.formulaireVisa.mariage.conjoint.genreLienParente}
-                                            onChange={e => handleChange('mariage.conjoint.genreLienParente', e.target.value)}
-                                            required
-                                        >
-                                            <option value="">-- Sélectionnez --</option>
-                                            <option value="mariage">Mariage</option>
-                                            <option value="union de fait">Union de fait</option>
-                                            <option value="divorce">Divorce</option>
-                                            <option value="separation">Séparation</option>
-                                            <option value="veuvage">Veuvage</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
                                             Date du mariage/début d'union
                                         </label>
                                         <input
@@ -1740,13 +1723,13 @@ const CombinedApplicationForm = () => {
                                         </label>
                                         <select
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={formData.formulaireVisa.mariage.conjoint.lienParenter}
-                                            onChange={e => handleChange('mariage.conjoint.lienParenter', e.target.value)}
+                                            value={formData.formulaireVisa.mariage.conjoint.genreLienParente}
+                                            onChange={e => handleChange('mariage.conjoint.genreLienParente', e.target.value)}
                                         >
                                             <option value="">-- Sélectionnez --</option>
-                                            <option value="conjoint">Conjoint</option>
+                                            <option value="conjoint">Marié (e)</option>
                                             <option value="conjoint de fait">Conjoint de fait</option>
-                                            <option value="ex-conjoint">Ex-conjoint</option>
+                                           
                                         </select>
                                     </div>
                                     <div>
@@ -2170,8 +2153,8 @@ const CombinedApplicationForm = () => {
                                     <input
                                         type="radio"
                                         className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === true}
-                                        onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', true)}
+                                        checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === false}
+                                        onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', false)}
                                         required
                                     />
                                     <span className="ml-2">Oui</span>
@@ -2180,8 +2163,8 @@ const CombinedApplicationForm = () => {
                                     <input
                                         type="radio"
                                         className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === false}
-                                        onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', false)}
+                                        checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === true}
+                                        onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', true)}
                                     />
                                     <span className="ml-2">Non</span>
                                 </label>
