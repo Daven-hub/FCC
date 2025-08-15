@@ -566,39 +566,40 @@ const MonPdfDocument = ({ datas,datac, forme3,dataa,documents }) => {
             pays_naissance: item?.country,
             profession: item?.occupation,
             case_gauche: item?.coming,
-            case_droite: item?.coming
+            case_droite: item?.coming,
+            role:""
           })),
       },
       {
-          "section": "SECTION C - FRÈRES ET SOEURS",
-          "header": [
+          section: "SECTION C - FRÈRES ET SOEURS",
+          header: [
               {
                   "title": "Nom",
                   "sigle": "nom",
-                  "width": "30%"
+                  width: "30%"
               },
               {
                   "title": "Lien de parenté VOIR NOTE 2",
                   "sigle": "lien",
-                  "width": "15%"
+                  width: "15%"
               },
               {
                   "title": "Date de naissance (AAAA-MM-JJ)",
                   "sigle": "date",
-                  "width": "15%"
+                  width: "15%"
               },
               {
                   "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
                   "sigle": "adresse",
-                  "width": "26%"
+                  width: "26%"
               },
               {
                   "title": "Vous accompagnera au Canada? OUI / NON",
                   "sigle": "vous",
-                  "width": "14%"
+                  width: "14%"
               }
           ],
-          "corps":fam?.children?.map(item => ({
+          "corps":fam?.siblings?.map(item => ({
             nom: item?.name,
             etat_civil: item?.maritalStatus, 
             date: item?.dob,
@@ -606,7 +607,8 @@ const MonPdfDocument = ({ datas,datac, forme3,dataa,documents }) => {
             pays_naissance: item?.country,
             profession: item?.occupation,
             case_gauche: item?.coming,
-            case_droite: item?.coming
+            case_droite: item?.coming,
+            role:""
           })),
       }
   ]
@@ -621,7 +623,7 @@ const MonPdfDocument = ({ datas,datac, forme3,dataa,documents }) => {
         email={datas?.email}
         image={dataa}
         datas={{titre: "Demande de visa de visiteur (visa de résident temporaire)",}}
-        Custom={<Form3 datas={forme3}/>}
+        Custom={<Form3 datas={datac?.formulaireVisa}/>}
       />
       <PageTemplate
         nom={datas?.nom}

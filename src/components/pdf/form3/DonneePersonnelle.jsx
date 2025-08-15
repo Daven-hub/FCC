@@ -15,11 +15,8 @@ const HeaderF = () => {
             alignItems: "center",
             borderRight: 1
           }
-        ]}
-      >
-        <Text style={[styles.form2_titre, { fontWeight: "" }]}>
-          Pays ou Territoire
-        </Text>
+        ]}>
+        <Text style={[styles.form2_titre, { fontWeight: "" }]}>Pays ou Territoire</Text>
       </View>
       <View
         style={[
@@ -31,8 +28,7 @@ const HeaderF = () => {
             alignItems: "center",
             borderRight: 1
           }
-        ]}
-      >
+        ]}>
         <Text style={[styles.form2_titre, { fontWeight: "" }]}>Statut</Text>
       </View>
       <View
@@ -45,11 +41,8 @@ const HeaderF = () => {
             borderRight: 1,
             textAlign: "center"
           }
-        ]}
-      >
-        <Text style={[styles.form2_titre, { fontWeight: "", lineHeight: 1.4 }]}>
-          Autre
-        </Text>
+        ]}>
+        <Text style={[styles.form2_titre, { fontWeight: "", lineHeight: 1.4 }]}>Autre</Text>
       </View>
       <View
         style={[
@@ -61,11 +54,8 @@ const HeaderF = () => {
             borderRight: 1,
             textAlign: "center"
           }
-        ]}
-      >
-        <Text style={[styles.form2_titre, { fontWeight: "", lineHeight: 1.4 }]}>
-          De
-        </Text>
+        ]}>
+        <Text style={[styles.form2_titre, { fontWeight: "", lineHeight: 1.4 }]}>De</Text>
       </View>
       <View
         style={[
@@ -76,11 +66,8 @@ const HeaderF = () => {
             justifyContent: "center",
             textAlign: "center"
           }
-        ]}
-      >
-        <Text style={[styles.form2_titre, { fontWeight: "", lineHeight: 1.4 }]}>
-          A
-        </Text>
+        ]}>
+        <Text style={[styles.form2_titre, { fontWeight: "", lineHeight: 1.4 }]}>A</Text>
       </View>
     </View>
   );
@@ -99,11 +86,8 @@ const BodyF = () => {
             alignItems: "center",
             borderRight: 1
           }
-        ]}
-      >
-        <Text style={[styles.form3_input, { fontWeight: "" }]}>
-          Pays ou Territoire
-        </Text>
+        ]}>
+        <Text style={[styles.form3_input, { fontWeight: "" }]}>Pays ou Territoire</Text>
       </View>
       <View
         style={[
@@ -116,8 +100,7 @@ const BodyF = () => {
             alignItems: "center",
             borderRight: 1
           }
-        ]}
-      >
+        ]}>
         <Text style={[styles.form2_text, { fontWeight: "" }]}>Statut</Text>
       </View>
       <View
@@ -130,11 +113,8 @@ const BodyF = () => {
             borderRight: 1,
             textAlign: "center"
           }
-        ]}
-      >
-        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>
-          Autre
-        </Text>
+        ]}>
+        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>Autre</Text>
       </View>
       <View
         style={[
@@ -146,11 +126,8 @@ const BodyF = () => {
             borderRight: 1,
             textAlign: "center"
           }
-        ]}
-      >
-        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>
-          De
-        </Text>
+        ]}>
+        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>De</Text>
       </View>
       <View
         style={[
@@ -161,11 +138,8 @@ const BodyF = () => {
             justifyContent: "center",
             textAlign: "center"
           }
-        ]}
-      >
-        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>
-          A
-        </Text>
+        ]}>
+        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>A</Text>
       </View>
     </View>
   );
@@ -174,9 +148,7 @@ const BodyF = () => {
 function DonneePersonnelle({ datas }) {
   return (
     <View style={{ flexDirection: "column", gap: 2.5 }}>
-      <Text style={{ fontSize: 9, fontWeight: "bold" }}>
-        DONNÉES PERSONNELLES
-      </Text>
+      <Text style={{ fontSize: 9, fontWeight: "bold" }}>DONNÉES PERSONNELLES</Text>
       <View>
         <View style={{ borderWidth: 1, borderColor: "black" }}>
           <View style={[styles.row, {}]}>
@@ -186,14 +158,11 @@ function DonneePersonnelle({ datas }) {
                 paddingVertical: 2,
                 borderRight: 1,
                 borderBottom: 1
-              }}
-            >
+              }}>
               <Text style={styles.form2_titre}>1</Text>
             </View>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                Nom Complet
-              </Text>
+              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Nom Complet</Text>
             </View>
           </View>
           <View style={[styles.row]}>
@@ -204,10 +173,9 @@ function DonneePersonnelle({ datas }) {
                 borderRight: 1,
                 flexDirection: "column",
                 gap: 2
-              }}
-            >
+              }}>
               <Text style={styles.form2_text}>* Nom de Famille</Text>
-              <Text style={styles.form3_input}>{datas?.nom}</Text>
+              <Text style={styles.form3_input}>{datas?.nomComplet?.nom}</Text>
             </View>
             <View
               style={{
@@ -215,10 +183,9 @@ function DonneePersonnelle({ datas }) {
                 padding: 3,
                 flexDirection: "column",
                 gap: 2
-              }}
-            >
+              }}>
               <Text style={styles.form2_text}>* Prénom(s)</Text>
-              <Text style={styles.form3_input}>{datas?.prenom}</Text>
+              <Text style={styles.form3_input}>{datas?.nomComplet?.prenoms}</Text>
             </View>
           </View>
         </View>
@@ -231,14 +198,11 @@ function DonneePersonnelle({ datas }) {
                 paddingVertical: 2,
                 borderRight: 1,
                 borderBottom: 1
-              }}
-            >
+              }}>
               <Text style={styles.form2_titre}>2</Text>
             </View>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                Avez vous déjà utilisé un autre nom ?
-              </Text>
+              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Avez vous déjà utilisé un autre nom ?</Text>
             </View>
           </View>
           <View style={[styles.row]}>
@@ -249,10 +213,9 @@ function DonneePersonnelle({ datas }) {
                 borderRight: 1,
                 flexDirection: "column",
                 gap: 2
-              }}
-            >
+              }}>
               <Text style={styles.form2_text}>* Nom de Famille</Text>
-              <Text style={styles.form3_input}>{datas?.nom}</Text>
+              <Text style={styles.form3_input}>{datas?.autreNomUtilise?.nom}</Text>
             </View>
             <View
               style={{
@@ -260,10 +223,9 @@ function DonneePersonnelle({ datas }) {
                 padding: 3,
                 flexDirection: "column",
                 gap: 2
-              }}
-            >
+              }}>
               <Text style={styles.form2_text}>* Prénom(s)</Text>
-              <Text style={styles.form3_input}>{datas?.prenom}</Text>
+              <Text style={styles.form3_input}>{datas?.autreNomUtilise?.prenoms}</Text>
             </View>
           </View>
         </View>
@@ -276,20 +238,15 @@ function DonneePersonnelle({ datas }) {
                   paddingVertical: 2,
                   borderRight: 1,
                   borderBottom: 1
-                }}
-              >
+                }}>
                 <Text style={styles.form2_titre}>3</Text>
               </View>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  Sexe
-                </Text>
+                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Sexe</Text>
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
-              </Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.sexe}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "20%", borderColor: "black" }}>
@@ -300,20 +257,15 @@ function DonneePersonnelle({ datas }) {
                   paddingVertical: 2,
                   borderRight: 1,
                   borderBottom: 1
-                }}
-              >
+                }}>
                 <Text style={styles.form2_titre}>4</Text>
               </View>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  Date de naissance
-                </Text>
+                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Date de naissance</Text>
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
-              </Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateNaissance}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "60%", borderColor: "black" }}>
@@ -324,20 +276,15 @@ function DonneePersonnelle({ datas }) {
                   paddingVertical: 2,
                   borderRight: 1,
                   borderBottom: 1
-                }}
-              >
+                }}>
                 <Text style={styles.form2_titre}>5</Text>
               </View>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  * Lieu de naissance
-                </Text>
+                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>* Lieu de naissance</Text>
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
-              </Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.lieuNaissance?.villeVillage}, {datas?.lieuNaissance?.pays}</Text>
             </View>
           </View>
         </View>
@@ -350,25 +297,18 @@ function DonneePersonnelle({ datas }) {
                   paddingVertical: 2,
                   borderRight: 1,
                   borderBottom: 1
-                }}
-              >
+                }}>
                 <Text style={styles.form2_titre}>6</Text>
               </View>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  *Citoyenneté
-                </Text>
+                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>*Citoyenneté</Text>
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
-              </Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.citoyennete}</Text>
             </View>
           </View>
-          <View
-            style={{ borderWidth: 1, width: "60%", borderColor: "black" }}
-          ></View>
+          <View style={{ borderWidth: 1, width: "60%", borderColor: "black" }}></View>
         </View>
         <View style={{ borderWidth: 1, borderColor: "black" }}>
           <View style={[styles.row, {}]}>
@@ -377,14 +317,11 @@ function DonneePersonnelle({ datas }) {
                 paddingHorizontal: 5,
                 paddingVertical: 2,
                 borderRight: 1
-              }}
-            >
+              }}>
               <Text style={styles.form2_titre}>7</Text>
             </View>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                *Pays ou Territoire de résidence actuel:
-              </Text>
+              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>*Pays ou Territoire de résidence actuel:</Text>
             </View>
           </View>
           <View style={{ flexDirection: "column" }}>
@@ -400,8 +337,7 @@ function DonneePersonnelle({ datas }) {
                 paddingHorizontal: 5,
                 paddingVertical: 2,
                 borderRight: 1
-              }}
-            >
+              }}>
               <Text style={styles.form2_titre}>8</Text>
             </View>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
@@ -423,14 +359,11 @@ function DonneePersonnelle({ datas }) {
                 paddingHorizontal: 5,
                 paddingVertical: 2,
                 borderRight: 1
-              }}
-            >
+              }}>
               <Text style={styles.form2_titre}>9</Text>
             </View>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                * Pays ou Territoire ou vous éffectuez la demande:
-              </Text>
+              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>* Pays ou Territoire ou vous éffectuez la demande:</Text>
             </View>
           </View>
           <View style={{ flexDirection: "column" }}>
@@ -440,9 +373,7 @@ function DonneePersonnelle({ datas }) {
         </View>
         <View>
           <View style={[styles.row, { justifyContent: "space-between" }]}>
-            <View
-              style={{ borderWidth: 1, width: "40%", borderColor: "black" }}
-            >
+            <View style={{ borderWidth: 1, width: "40%", borderColor: "black" }}>
               <View style={[styles.row, {}]}>
                 <View
                   style={{
@@ -450,28 +381,18 @@ function DonneePersonnelle({ datas }) {
                     paddingVertical: 2,
                     borderRight: 1,
                     borderBottom: 1
-                  }}
-                >
+                  }}>
                   <Text style={styles.form2_titre}>10</Text>
                 </View>
                 <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-                  <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                    * a) État matrimonial actuel
-                  </Text>
+                  <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>* a) État matrimonial actuel</Text>
                 </View>
               </View>
               <View style={[styles.row, { gap: 2 }]}>
-                <Text style={[styles.form3_input, { width: "100%" }]}>
-                  {datas?.nom}
-                </Text>
+                <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
               </View>
             </View>
-            <View
-              style={[
-                styles.row,
-                { borderWidth: 1, width: "60%", borderColor: "black" }
-              ]}
-            >
+            <View style={[styles.row, { borderWidth: 1, width: "60%", borderColor: "black" }]}>
               <View
                 style={[
                   styles.row,
@@ -482,8 +403,7 @@ function DonneePersonnelle({ datas }) {
                     borderRight: 1,
                     alignItems: "center"
                   }
-                ]}
-              >
+                ]}>
                 <Text style={[styles.form2_titre]}>
                   <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
                     b) (si vous êtes mariés ou vivez en union de fait)
@@ -498,13 +418,10 @@ function DonneePersonnelle({ datas }) {
                   gap: 3,
                   paddingVertical: 2,
                   paddingHorizontal: 4
-                }}
-              >
+                }}>
                 <Text>*Date</Text>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>
-                    {datas?.nom}
-                  </Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
                 </View>
               </View>
             </View>
@@ -515,13 +432,11 @@ function DonneePersonnelle({ datas }) {
               borderTop: 0,
               borderColor: "black",
               paddingHorizontal: 4
-            }}
-          >
+            }}>
             <View style={[styles.row]}>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
                 <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  c) Fournissez le nom de votre conjoint(e)/époux(se) de fait
-                  actuel(le)
+                  c) Fournissez le nom de votre conjoint(e)/époux(se) de fait actuel(le)
                 </Text>
               </View>
             </View>
@@ -533,8 +448,7 @@ function DonneePersonnelle({ datas }) {
                   borderRight: 1,
                   flexDirection: "column",
                   gap: 2
-                }}
-              >
+                }}>
                 <Text style={styles.form2_text}>* Nom de Famille</Text>
                 <Text style={styles.form3_input}>{datas?.nom}</Text>
               </View>
@@ -544,8 +458,7 @@ function DonneePersonnelle({ datas }) {
                   padding: 3,
                   flexDirection: "column",
                   gap: 2
-                }}
-              >
+                }}>
                 <Text style={styles.form2_text}>* Prénom(s)</Text>
                 <Text style={styles.form3_input}>{datas?.prenom}</Text>
               </View>
@@ -560,8 +473,7 @@ function DonneePersonnelle({ datas }) {
                 paddingVertical: 2,
                 borderRight: 1,
                 borderBottom: 1
-              }}
-            >
+              }}>
               <Text style={styles.form2_titre}>11</Text>
             </View>
             <View
@@ -573,11 +485,8 @@ function DonneePersonnelle({ datas }) {
                   gap: 8,
                   alignItems: "center"
                 }
-              ]}
-            >
-              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                a) Avez vous déjà été mariéou en union de fait?
-              </Text>
+              ]}>
+              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>a) Avez vous déjà été mariéou en union de fait?</Text>
               <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
                 <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
                   <View
@@ -586,8 +495,7 @@ function DonneePersonnelle({ datas }) {
                       borderColor: "black",
                       width: 8,
                       height: 8
-                    }}
-                  ></View>
+                    }}></View>
                   <Text style={styles.form2_text}>* OUI</Text>
                 </View>
                 <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
@@ -597,8 +505,7 @@ function DonneePersonnelle({ datas }) {
                       borderColor: "black",
                       width: 8,
                       height: 8
-                    }}
-                  ></View>
+                    }}></View>
                   <Text style={styles.form2_text}>* NON</Text>
                 </View>
               </View>
@@ -610,11 +517,9 @@ function DonneePersonnelle({ datas }) {
               gap: 3,
               paddingLeft: 4,
               paddingTop: 2
-            }}
-          >
+            }}>
             <Text style={[styles.form2_text, { paddingLeft: 2 }]}>
-              b) fournissez les détails suivants sur votre époux(se)/
-              conjoinct(e) :
+              b) fournissez les détails suivants sur votre époux(se)/ conjoinct(e) :
             </Text>
             <View style={[styles.row]}>
               <View
@@ -624,8 +529,7 @@ function DonneePersonnelle({ datas }) {
                   borderRight: 1,
                   flexDirection: "column",
                   gap: 2
-                }}
-              >
+                }}>
                 <Text style={styles.form2_text}>* Nom de Famille</Text>
                 <Text style={styles.form3_input}>{datas?.nom}</Text>
               </View>
@@ -635,14 +539,13 @@ function DonneePersonnelle({ datas }) {
                   padding: 3,
                   flexDirection: "column",
                   gap: 2
-                }}
-              >
+                }}>
                 <Text style={styles.form2_text}>* Prénom(s)</Text>
                 <Text style={styles.form3_input}>{datas?.prenom}</Text>
               </View>
             </View>
           </View>
-          <View style={[styles.row,{borderTop:1}]}>
+          <View style={[styles.row, { borderTop: 1 }]}>
             <View
               style={{
                 width: "25%",
@@ -650,8 +553,7 @@ function DonneePersonnelle({ datas }) {
                 borderRight: 1,
                 flexDirection: "column",
                 gap: 2
-              }}
-            >
+              }}>
               <Text style={styles.form2_text}>c) Date de Naissance</Text>
               <Text style={styles.form3_input}>{datas?.nom}</Text>
             </View>
@@ -661,9 +563,8 @@ function DonneePersonnelle({ datas }) {
                 padding: 3,
                 flexDirection: "column",
                 gap: 2,
-                borderRight:1
-              }}
-            >
+                borderRight: 1
+              }}>
               <Text style={styles.form2_text}>d) Genre de lien parenté(s)</Text>
               <Text style={styles.form3_input}>{datas?.prenom}</Text>
             </View>
@@ -673,9 +574,8 @@ function DonneePersonnelle({ datas }) {
                 padding: 3,
                 flexDirection: "column",
                 gap: 2,
-                borderRight:1
-              }}
-            >
+                borderRight: 1
+              }}>
               <Text style={styles.form2_text}>De</Text>
               <Text style={styles.form3_input}>{datas?.prenom}</Text>
             </View>
@@ -685,8 +585,7 @@ function DonneePersonnelle({ datas }) {
                 padding: 3,
                 flexDirection: "column",
                 gap: 2
-              }}
-            >
+              }}>
               <Text style={styles.form2_text}>À</Text>
               <Text style={styles.form3_input}>{datas?.prenom}</Text>
             </View>

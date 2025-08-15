@@ -67,7 +67,7 @@ const Form3 = ({ datas }) => {
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.iuc}</Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.informationsGenerales?.IUC}</Text>
           </View>
         </View>
         <View style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}>
@@ -86,7 +86,7 @@ const Form3 = ({ datas }) => {
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.servi}</Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.informationsGenerales?.servi}</Text>
           </View>
         </View>
         <View style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}>
@@ -105,13 +105,13 @@ const Form3 = ({ datas }) => {
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.informationsGenerales?.visa}</Text>
           </View>
         </View>
       </View>
 
       <View style={{ flexDirection: "column", gap: 5 }}>
-        <DonneePersonnelle datas={datas} />
+        <DonneePersonnelle datas={datas?.donneesPersonnelles} />
         <Langue datas={datas} />
         <Passport datas={datas} />
         <IdentiteNationale datas={datas} />
