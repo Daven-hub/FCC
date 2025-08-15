@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { submitCombinedApplication } from '../../services/annexeSrvice';
 import { showErrorToast } from '../Toast/Toast';
@@ -27,11 +27,7 @@ const CombinedApplicationForm = () => {
                     prenoms: ""
                 },
                 sexe: "",
-                dateNaissance: {
-                    annee: "",
-                    mois: "",
-                    jour: ""
-                },
+                dateNaissance: "",
                 lieuNaissance: {
                     villeVillage: "",
                     pays: ""
@@ -49,8 +45,8 @@ const CombinedApplicationForm = () => {
                     pays: "",
                     statut: "",
                     autre: "",
-                    dateDe: "",
-                    dateA: ""
+                    du: "",
+                    au: ""
                 },
                 paysDemande: {
                     pays: "",
@@ -66,8 +62,8 @@ const CombinedApplicationForm = () => {
                     prenoms: "",
                     dateNaissance: "",
                     genreLienParente: "",
-                    dateDe: "",
-                    dateA: ""
+                    du: "",
+                    au: ""
                 }
             },
             langues: {
@@ -175,6 +171,10 @@ const CombinedApplicationForm = () => {
         // Étape 2: Antécédents et historique
         resident: {
             titre: "Demande de statut de résident temporaire",
+            nom: "",
+            prenom: "",
+            dateNais: "",
+            iuc: "",
             Demandeur: [],  // Le demandeur principal ou l'epoux, le conjoin , enfant age plus 18 ans 
             body: {
                 military: {
@@ -246,8 +246,13 @@ const CombinedApplicationForm = () => {
 
         // Étape 4: Documents
         documents: [
+
             {
                 titre: "Documents d'Identité Personnelle",
+                nom: "",
+                prenom: "",
+                dateNais: "",
+                iuc: "",
                 corps: [
                     {
                         titre: "Acte de Naissance",
@@ -404,6 +409,47 @@ const CombinedApplicationForm = () => {
     const [uploadProgress, setUploadProgress] = useState({});
     const [submittedData, setSubmittedData] = useState(null);
 
+    useEffect(() => {
+        const { nom, prenoms } = formData.formulaireVisa.donneesPersonnelles.nomComplet;
+        const dateNaissance = formData.formulaireVisa.donneesPersonnelles.dateNaissance;
+        const iuc = formData.formulaireVisa.informationsGenerales.IUC;
+
+        const dateNais = dateNaissance;
+
+        setFormData(prev => ({
+            ...prev,
+            resident: {
+                ...prev.resident,
+                nom: nom || prev.resident.nom,
+                prenom: prenoms || prev.resident.prenom,
+                dateNais: dateNais || prev.resident.dateNais,
+                iuc: iuc || prev.resident.iuc
+            }
+        }));
+
+        // Mettre à jour l'étape 4 (Documents)
+        setFormData(prev => ({
+            ...prev,
+            documents: prev.documents.map((section, index) => {
+                if (index === 0) { // Seulement la première section contient les infos personnelles
+                    return {
+                        ...section,
+                        nom: nom || section.nom,
+                        prenom: prenoms || section.prenom,
+                        dateNais: dateNais || section.dateNais,
+                        iuc: iuc || section.iuc
+                    };
+                }
+                return section;
+            })
+        }));
+    }, [
+        formData.formulaireVisa.donneesPersonnelles.nomComplet.nom,
+        formData.formulaireVisa.donneesPersonnelles.nomComplet.prenoms,
+        formData.formulaireVisa.donneesPersonnelles.dateNaissance,
+        formData.formulaireVisa.informationsGenerales.IUC
+    ]);
+
     // Fonctions de gestion des changements
     const handleChange = (path, value) => {
         const pathParts = path.split('.');
@@ -421,7 +467,6 @@ const CombinedApplicationForm = () => {
         });
     };
 
-
     const handleFamilyChange = (section, field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -437,7 +482,6 @@ const CombinedApplicationForm = () => {
 
     const handleArrayChange = (section, path, index, field, value) => {
         setFormData(prev => {
-            // Pour gérer les chemins imbriqués comme 'body.military.dev'
             const pathParts = path.split('.');
             let current = { ...prev[section] };
             let temp = current;
@@ -462,10 +506,8 @@ const CombinedApplicationForm = () => {
     const addArrayEntry = (section, path, defaultValue = {}) => {
         const pathParts = path.split('.');
         setFormData(prev => {
-            // Créer une copie profonde de la section concernée
             const newSection = JSON.parse(JSON.stringify(prev[section]));
 
-            // Naviguer jusqu'au tableau cible
             let current = newSection;
             for (let i = 0; i < pathParts.length - 1; i++) {
                 if (!current[pathParts[i]]) {
@@ -474,16 +516,13 @@ const CombinedApplicationForm = () => {
                 current = current[pathParts[i]];
             }
 
-            // Initialiser le tableau s'il n'existe pas
             const arrayName = pathParts[pathParts.length - 1];
             if (!Array.isArray(current[arrayName])) {
                 current[arrayName] = [];
             }
 
-            // Ajouter la nouvelle entrée
             current[arrayName] = [...current[arrayName], defaultValue];
 
-            // Retourner le nouvel état avec la section mise à jour
             return {
                 ...prev,
                 [section]: newSection
@@ -494,29 +533,23 @@ const CombinedApplicationForm = () => {
     const removeArrayEntry = (section, path, index) => {
         const pathParts = path.split('.');
         setFormData(prev => {
-            // Créer une copie profonde de la section concernée
             const newSection = JSON.parse(JSON.stringify(prev[section]));
 
-            // Naviguer jusqu'au tableau cible
             let current = newSection;
             for (let i = 0; i < pathParts.length - 1; i++) {
                 if (!current[pathParts[i]]) {
-                    // Si le chemin n'existe pas, rien à supprimer
                     return prev;
                 }
                 current = current[pathParts[i]];
             }
 
-            // Vérifier que le tableau existe et que l'index est valide
             const arrayName = pathParts[pathParts.length - 1];
             if (!Array.isArray(current[arrayName]) || index < 0 || index >= current[arrayName].length) {
                 return prev;
             }
 
-            // Supprimer l'entrée
             current[arrayName] = current[arrayName].filter((_, i) => i !== index);
 
-            // Retourner le nouvel état avec la section mise à jour
             return {
                 ...prev,
                 [section]: newSection
@@ -652,7 +685,10 @@ const CombinedApplicationForm = () => {
                             condition: {
                                 ...doc.condition,
                                 response: value
-                            }
+                            },
+                            // Réinitialiser le fichier si la condition passe à 'non'
+                            provided: value === 'non' ? false : doc.provided,
+                            file: value === 'non' ? null : doc.file
                         };
                     }
                     return doc;
@@ -734,7 +770,6 @@ const CombinedApplicationForm = () => {
         try {
             const formDataToSend = new FormData();
 
-            // Filtrer les données avant envoi
             const filteredPersonalInfo = {
                 ...formData.formulaireVisa
             };
@@ -769,7 +804,6 @@ const CombinedApplicationForm = () => {
 
             formDataToSend.append('applicationData', JSON.stringify(applicationData));
 
-            // Ajout des fichiers
             formData.documents.forEach((section, sectionIndex) => {
                 section.corps.forEach((doc, docIndex) => {
                     if (doc.provided && doc.file) {
@@ -809,7 +843,6 @@ const CombinedApplicationForm = () => {
 
         return (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                {/* Section condition */}
                 {condition && (
                     <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-100">
                         <p className="text-sm font-medium text-gray-700 mb-2">{condition.question}</p>
@@ -836,7 +869,6 @@ const CombinedApplicationForm = () => {
                     </div>
                 )}
 
-                {/* Section upload de fichier */}
                 <div className="flex justify-between items-start mb-2">
                     <div>
                         <label className="font-medium text-gray-700">
@@ -994,8 +1026,6 @@ const CombinedApplicationForm = () => {
         return labels[docKey] || docKey;
     };
 
-
-    // Fonction pour déterminer si un document est obligatoire
     const isDocumentRequired = (docKey) => {
         const requiredDocs = [
             'actetenaissance',
@@ -1004,7 +1034,6 @@ const CombinedApplicationForm = () => {
             'relevesbancairespersonnels'
         ];
 
-        // Acte de mariage est requis si marié
         if (docKey.toLowerCase() === 'actemariage' &&
             ['marie', 'union'].includes(formData.personalInfo.etatMatrimonial)) {
             return true;
@@ -1158,75 +1187,15 @@ const CombinedApplicationForm = () => {
                             </div>
                         </div>
 
-                        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance (Jour)</label>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    max="31"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.donneesPersonnelles.dateNaissance.jour}
-                                    onChange={e => handleChange('donneesPersonnelles.dateNaissance.jour', e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Mois</label>
-                                <select
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.donneesPersonnelles.dateNaissance.mois}
-                                    onChange={e => handleChange('donneesPersonnelles.dateNaissance.mois', e.target.value)}
-                                    required
-                                >
-                                    <option value="">-- Mois --</option>
-                                    <option value="01">Janvier</option>
-                                    <option value="02">Février</option>
-                                    <option value="03">Mars</option>
-                                    <option value="04">Avril</option>
-                                    <option value="05">Mai</option>
-                                    <option value="06">Juin</option>
-                                    <option value="07">Juillet</option>
-                                    <option value="08">Août</option>
-                                    <option value="09">Septembre</option>
-                                    <option value="10">Octobre</option>
-                                    <option value="11">Novembre</option>
-                                    <option value="12">Décembre</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Année</label>
-                                <input
-                                    type="number"
-                                    min="1900"
-                                    max={new Date().getFullYear()}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.donneesPersonnelles.dateNaissance.annee}
-                                    onChange={e => handleChange('donneesPersonnelles.dateNaissance.annee', e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Lieu de naissance (Ville/Village)</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.donneesPersonnelles.lieuNaissance.villeVillage}
-                                    onChange={e => handleChange('donneesPersonnelles.lieuNaissance.villeVillage', e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.donneesPersonnelles.lieuNaissance.pays}
-                                    onChange={e => handleChange('donneesPersonnelles.lieuNaissance.pays', e.target.value)}
-                                    required
-                                />
-                            </div>
+                        <div className='mt-4'>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+                            <input
+                                type="date"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.formulaireVisa.donneesPersonnelles.dateNaissance}
+                                onChange={e => handleChange('donneesPersonnelles.dateNaissance', e.target.value)}
+                                required
+                            />
                         </div>
 
                         <div className="mt-4">
@@ -1316,8 +1285,8 @@ const CombinedApplicationForm = () => {
                                         type="text"
                                         placeholder="MM/AAAA"
                                         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.formulaireVisa.residence.anterieure.dateDe}
-                                        onChange={e => handleChange('residence.anterieure.dateDe', e.target.value)}
+                                        value={formData.formulaireVisa.residence.anterieure.du}
+                                        onChange={e => handleChange('residence.anterieure.du', e.target.value)}
                                         required
                                     />
                                 </div>
@@ -1327,8 +1296,8 @@ const CombinedApplicationForm = () => {
                                         type="text"
                                         placeholder="MM/AAAA"
                                         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.formulaireVisa.residence.anterieure.dateA}
-                                        onChange={e => handleChange('residence.anterieure.dateA', e.target.value)}
+                                        value={formData.formulaireVisa.residence.anterieure.au}
+                                        onChange={e => handleChange('residence.anterieure.au', e.target.value)}
                                         required
                                     />
                                 </div>
@@ -4183,23 +4152,25 @@ const CombinedApplicationForm = () => {
                             </div>
                         </div>
                     </div>
+
                     {formData.documents.map((section, sectionIndex) => (
                         <div key={sectionIndex} className="bg-white p-4 rounded-lg shadow border border-gray-200">
                             <h3 className="text-lg font-medium text-gray-900 mb-4">{section.titre}</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {section.corps.map((doc, docIndex) => {
-                                    // Afficher seulement si pas de condition ou si condition est 'oui'
-                                    if (doc.condition && doc.condition.response !== 'oui') {
+                                    // Ne pas afficher si le document a une condition et que la réponse est 'non'
+                                    if (doc.condition && doc.condition.response === 'non') {
                                         return null;
                                     }
 
+                                    // Afficher tous les autres documents (sans condition ou avec condition 'oui')
                                     return (
                                         <FileUpload
                                             key={docIndex}
                                             sectionIndex={sectionIndex}
                                             docIndex={docIndex}
                                             label={doc.titre}
-                                            required={doc.required}
+                                            required={doc.required && (!doc.condition || doc.condition.response === 'oui')}
                                             specifications={doc.specifications}
                                             period={doc.period}
                                             condition={doc.condition}
