@@ -7,7 +7,7 @@ function DetailVisa({ datas }) {
 
   const BodyD = () => {
     return (
-      <View style={styles.row}>
+      <View style={styles.row} wrap={false}>
         <View style={{ flex: 1,width:"2.8%", justifyContent:"center",alignItems:"center", borderWidth:1,borderTop:0, borderRight:0 }}>
           <Text style={styles.form2_titre}>1</Text>
         </View>
@@ -109,7 +109,7 @@ function DetailVisa({ datas }) {
         </View>
 
         <View style={{flexDirection:"column"}}>
-          <View style={[styles.row, { borderWidth: 1 }]}>
+          <View style={[styles.row, { borderWidth: 1 }]} wrap={false}>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2, borderRight: 1 }}>
               <Text style={styles.form2_titre}>4</Text>
             </View>
@@ -119,8 +119,10 @@ function DetailVisa({ datas }) {
               </Text>
             </View>
           </View>
-          <BodyD />
-          <BodyD />
+          <View wrap={false}>
+            <BodyD />
+            <BodyD />
+          </View>
         </View>
       </View>
     </View>

@@ -67,7 +67,7 @@ export const BodyT=({item})=>(
 )
 
 const PieceServiceSection = ({datas,index}) => (
-  <View style={{ borderWidth: 1, borderColor: "black"}}>
+  <View style={{ borderWidth: 1, borderColor: "black"}} wrap={false}>
     <View style={[styles.row, {}]}>
       <View
         style={{
@@ -82,7 +82,7 @@ const PieceServiceSection = ({datas,index}) => (
         <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>{datas?.titre}</Text>
       </View>
     </View>
-    <View style={{borderTop:1}}>
+    <View style={{borderTop:1}} wrap={false}>
         <HeaderT />
         {datas?.corps?.map((item,index)=>
           <BodyT item={item} key={index}/>

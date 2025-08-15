@@ -1,13 +1,5 @@
 // MyPdfDocument.jsx
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  Font
-} from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Image, Font } from "@react-pdf/renderer";
 // import { CheckCheck } from "lucide-react";
 import moment from "moment";
 import logo from "/fcc.png";
@@ -25,7 +17,7 @@ const styles = StyleSheet.create({
   page: {
     paddingTop: 15,
     // paddingBottom: 15,
-    paddingBottom:29,
+    paddingBottom: 29,
     position: "relative",
     // paddingHorizontal: 20,
     flex: 1,
@@ -68,12 +60,12 @@ const styles = StyleSheet.create({
   },
   tinyText: {
     fontSize: 6,
-    lineHeight:1.4
+    lineHeight: 1.4
   },
   label: {
     fontWeight: "bold",
     fontSize: 6.5,
-    lineHeight:1.4
+    lineHeight: 1.4
   },
   signatureRow: {
     flexDirection: "row",
@@ -138,15 +130,15 @@ const styles = StyleSheet.create({
   footer: {
     position: "absolute",
     bottom: 0,
-    paddingVertical:9,
-    paddigTop:9,
-    zIndex:50,
+    paddingVertical: 9,
+    paddigTop: 9,
+    zIndex: 50,
     textAlign: "center",
     width: "100%",
     color: "grey",
     // backgroundColor:"red"
-    borderTop:1,
-    borderColor:"gray"
+    borderTop: 1,
+    borderColor: "gray"
   }
 });
 
@@ -159,9 +151,7 @@ const PersonRow = ({ relation }) => (
         </View>
         <Text style={styles.vertPad}>État civil:</Text>
         <View style={styles.formField}>
-          <Text style={styles.formText}>
-            {relation?.etat_civil?.toLowerCase()}
-          </Text>
+          <Text style={styles.formText}>{relation?.etat_civil?.toLowerCase()}</Text>
         </View>
       </View>
       <View
@@ -173,8 +163,7 @@ const PersonRow = ({ relation }) => (
             justifyContent: "center",
             textAlign: "center"
           }
-        ]}
-      >
+        ]}>
         <Text style={[styles.label, { padding: 5 }]}>{relation?.role}</Text>
       </View>
       <View style={[styles.cell, { width: "15%" }]}>
@@ -207,8 +196,7 @@ const PersonRow = ({ relation }) => (
             alignItems: "center",
             justifyContent: "center"
           }
-        ]}
-      >
+        ]}>
         <View style={[{ flex: 1 }, styles.row]}>
           <Text style={{ fontSize: 7 }}>Oui</Text>
           <View
@@ -217,17 +205,11 @@ const PersonRow = ({ relation }) => (
               {
                 backgroundColor: relation?.case_gauche ? "green" : "transparent"
               }
-            ]}
-          ></View>
+            ]}></View>
         </View>
         <View style={[{ flex: 1 }, styles.row]}>
           <Text style={{ fontSize: 7 }}>Non</Text>
-          <View
-            style={[
-              styles.checkbox,
-              { backgroundColor: relation?.case_droite ? "red" : "transparent" }
-            ]}
-          />
+          <View style={[styles.checkbox, { backgroundColor: relation?.case_droite ? "red" : "transparent" }]} />
         </View>
       </View>
     </View>
@@ -236,24 +218,9 @@ const PersonRow = ({ relation }) => (
 
 const TemplateTable = ({ items }) => (
   <View>
-    <Text style={{ marginBottom: 6, fontWeight: "bold" }}>
-      {items?.section}
-    </Text>
-    <View
-      style={[
-        styles.table,
-        {
-          // flex:1,
-          // borderWidth: 1,
-          borderBottom: 0,
-          borderRight: 0
-          // width: "100%",
-          // borderColor: "#000"
-        }
-      ]}
-    >
-      {/* Table Header */}
-      <View style={styles.row}>
+    <Text style={{ marginBottom: 6, fontWeight: "bold" }}>{items?.section}</Text>
+    <View wrap={false} style={[styles.table, { borderBottom: 0, borderRight: 0 }]}>
+      <View style={styles.row} wrap={false}>
         {items?.header?.map((x, inde) => (
           <View
             key={inde}
@@ -261,17 +228,14 @@ const TemplateTable = ({ items }) => (
               styles.cell,
               styles.header,
               {
-                // flex: 1,
                 width: x.width
               }
-            ]}
-          >
+            ]}>
             <Text>{x.title}</Text>
           </View>
         ))}
       </View>
-
-      {/* Form Rows */}
+    
       {items?.corps?.map((x, indd) => (
         <PersonRow key={indd} relation={x} />
       ))}
@@ -284,16 +248,12 @@ const TemplateTable = ({ items }) => (
         borderTop: 0,
         paddingVertical: 2,
         paddingHorizontal: 10
-      }}
-    >
+      }}>
       <Text style={{ marginTop: 8 }}>
         <Text style={styles.label}>NOTE 1: </Text>
-        Si vous n'avez pas d'époux ou de conjoint de fait, lisez la déclaration
-        suivante et signez-la.
+        Si vous n'avez pas d'époux ou de conjoint de fait, lisez la déclaration suivante et signez-la.
       </Text>
-      <Text style={{ marginTop: 3 }}>
-        Je déclare que je n'ai pas d'époux ou de conjoint de fait.
-      </Text>
+      <Text style={{ marginTop: 3 }}>Je déclare que je n'ai pas d'époux ou de conjoint de fait.</Text>
 
       {/* Signature */}
       <View style={[styles.signatureRow, { gap: 20 }]}>
@@ -301,9 +261,8 @@ const TemplateTable = ({ items }) => (
           style={{
             flexDirection: "row",
             width: "75%",
-            gap: 4,
-          }}
-        >
+            gap: 4
+          }}>
           <Text>Signature :</Text>
           <View style={styles.signatureLine}>
             <Text></Text>
@@ -312,9 +271,7 @@ const TemplateTable = ({ items }) => (
         <View style={{ flexDirection: "row", width: "25%", gap: 4 }}>
           <Text>Date :</Text>
           <View style={styles.signatureLine}>
-            <Text style={{ textAlign: "center" }}>
-              {moment(Date.now()).format("YYYY-MM-DD à HH:mm:ss")}
-            </Text>
+            <Text style={{ textAlign: "center" }}>{moment(Date.now()).format("YYYY-MM-DD à HH:mm:ss")}</Text>
           </View>
         </View>
       </View>
@@ -322,25 +279,22 @@ const TemplateTable = ({ items }) => (
   </View>
 );
 
-const PageFamille=({datas})=>(
-  datas?.body.map((item, ind) => (
-    <TemplateTable key={ind} items={item} />
-  ))
-)
+const PageFamille = ({ datas }) => datas?.body.map((item, ind) => <TemplateTable key={ind} items={item} />);
 
-const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
+const PageTemplate = ({ datas, image, type, nom, email, Custom }) => (
   <Page size="A4" orientation="portrait" style={styles.page}>
     <View style={styles.headers}>
       <Image src={logo} style={styles.logo} />
       <View>
         <Text style={styles.title}>FRANCHISE CONSEILS CAMEROUN SARL</Text>
         <Text style={{ fontSize: 9, marginTop: 0, color: "gray" }}>
-          Education Internationnale . Mobilité Internationale . Dévéloppement
-          d'affaire
+          Education Internationnale . Mobilité Internationale . Dévéloppement d'affaire
         </Text>
       </View>
     </View>
-    <Text style={{fontWeight:800, fontSize:16, marginBottom:15,textTransform:"uppercase", textAlign:"center"}}>DEMANDE DE VISA {type}</Text>
+    <Text style={{ fontWeight: 800, fontSize: 16, marginBottom: 15, textTransform: "uppercase", textAlign: "center" }}>
+      DEMANDE DE VISA {type}
+    </Text>
     <View style={{ paddingHorizontal: 20, flex: 1 }}>
       <View
         style={{
@@ -348,8 +302,7 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
           flexDirection: "row",
           gap: 10,
           marginBottom: 20
-        }}
-      >
+        }}>
         <Image
           src={image}
           style={{
@@ -368,29 +321,20 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
             flexDirection: "column",
             gap: 8,
             paddingVertical: 5
-          }}
-        >
-          <View
-            style={{ flexDirection: "row", alignItems: "center", fontSize: 10 }}
-          >
+          }}>
+          <View style={{ flexDirection: "row", alignItems: "center", fontSize: 10 }}>
             <Text>Nom Complet : </Text>
             <Text style={{ color: "black", fontWeight: "bold" }}>{nom}</Text>
           </View>
-          <View
-            style={{ flexDirection: "row", alignItems: "center", fontSize: 10 }}
-          >
+          <View style={{ flexDirection: "row", alignItems: "center", fontSize: 10 }}>
             <Text>Email : </Text>
             <Text style={{ color: "black", fontWeight: "bold" }}>{email}</Text>
           </View>
-          <View
-            style={{ flexDirection: "row", alignItems: "center", fontSize: 10 }}
-          >
+          <View style={{ flexDirection: "row", alignItems: "center", fontSize: 10 }}>
             <Text>Contact : </Text>
             <Text style={{ color: "black", fontWeight: "bold" }}>{email}</Text>
           </View>
-          <View
-            style={{ flexDirection: "row", alignItems: "center", fontSize: 10 }}
-          >
+          <View style={{ flexDirection: "row", alignItems: "center", fontSize: 10 }}>
             <Text>Type de visa : </Text>
             <Text style={{ color: "black", fontWeight: "bold" }}>{type}</Text>
           </View>
@@ -413,16 +357,13 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
           textAlign: "start",
           paddingVertical: 10,
           textTransform: "uppercase",
-          borderTopWidth:1,
-          borderColor:"gray",
-          color:"#076e9a"
-        }}
-      >
+          borderTopWidth: 1,
+          borderColor: "gray",
+          color: "#076e9a"
+        }}>
         {datas?.titre}
       </Text>
-      <View style={{ flex: 1, flexDirection: "column", gap: 18 }}>
-       {Custom}
-      </View>
+      <View style={{ flex: 1, flexDirection: "column", gap: 18 }}>{Custom}</View>
     </View>
     <Image
       fixed={true}
@@ -439,198 +380,194 @@ const PageTemplate = ({ datas,image, type, nom, email, Custom }) => (
       }}
     />
     <View fixed style={styles.footer}>
-      <Text style={{fontSize: 8}}
-        render={({ pageNumber, totalPages }) =>
-          `Page ${pageNumber} / ${totalPages}`
-        }
-      />
+      <Text style={{ fontSize: 8 }} render={({ pageNumber, totalPages }) => `Page ${pageNumber} / ${totalPages}`} />
     </View>
   </Page>
 );
 
-const MonPdfDocument = ({ datas,datac, forme3,dataa,documents }) => {
+const MonPdfDocument = ({ datas, datac, forme3, dataa, documents }) => {
   // console.log("dataaa",dataa)
-  const fam=datac?.familyInfo;
-  const familes={
-    body:[
+  const fam = datac?.familyInfo;
+  const familes = {
+    body: [
       {
-          "section": "SECTION A",
-          "header": [
-              {
-                  "title": "Nom",
-                  "sigle": "nom",
-                  "width": "30%"
-              },
-              {
-                  "title": "Lien de parenté VOIR NOTE 1",
-                  "sigle": "lien",
-                  "width": "15%"
-              },
-              {
-                  "title": "Date de naissance (AAAA-MM-JJ)",
-                  "sigle": "date",
-                  "width": "15%"
-              },
-              {
-                  "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
-                  "sigle": "adresse",
-                  "width": "26%"
-              },
-              {
-                  "title": "Vous accompagnera au Canada? OUI / NON",
-                  "sigle": "vous",
-                  "width": "14%"
-              }
-          ],
-          "corps": [
-              {
-                  "role": "DEMANDEUR",
-                  "nom": fam?.applicant?.name,
-                  "etat_civil": fam?.applicant?.maritalStatus,
-                  "date": fam?.applicant?.dob,
-                  "adresse": fam?.applicant?.address,
-                  "pays_naissance": fam?.applicant?.country,
-                  "profession": fam?.applicant?.occupation,
-                  "case_gauche": true,
-                  "case_droite": false
-              },
-              {
-                  "role": "ÉPOUX OU CONJOINT DE FAIT",
-                  "nom": fam?.epouse?.name,
-                  "etat_civil": fam?.epouse?.maritalStatus,
-                  "date": fam?.epouse?.dob,
-                  "adresse": fam?.epouse?.address,
-                  "pays_naissance": fam?.epouse?.country,
-                  "profession": fam?.epouse?.occupation,
-                  "case_gauche": true,
-                  "case_droite": false
-              },
-              {
-                  "role": "MÈRE",
-                  "nom": fam?.mother?.name,
-                  "etat_civil": fam?.mother?.maritalStatus,
-                  "date": fam?.mother?.dob,
-                  "adresse": fam?.mother?.address,
-                  "pays_naissance": fam?.mother?.country,
-                  "profession": fam?.mother?.occupation,
-                  "case_gauche": false,
-                  "case_droite": true
-              },
-              {
-                  "role": "PÈRE",
-                  "nom": fam?.father?.name,
-                  "etat_civil": fam?.father?.maritalStatus,
-                  "date": fam?.father?.dob,
-                  "adresse": fam?.father?.address,
-                  "pays_naissance": fam?.father?.country,
-                  "profession": fam?.father?.occupation,
-                  "case_gauche": false,
-                  "case_droite": true
-              }
-          ]
+        section: "SECTION A",
+        header: [
+          {
+            title: "Nom",
+            sigle: "nom",
+            width: "30%"
+          },
+          {
+            title: "Lien de parenté VOIR NOTE 1",
+            sigle: "lien",
+            width: "15%"
+          },
+          {
+            title: "Date de naissance (AAAA-MM-JJ)",
+            sigle: "date",
+            width: "15%"
+          },
+          {
+            title: "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+            sigle: "adresse",
+            width: "26%"
+          },
+          {
+            title: "Vous accompagnera au Canada? OUI / NON",
+            sigle: "vous",
+            width: "14%"
+          }
+        ],
+        corps: [
+          {
+            role: "DEMANDEUR",
+            nom: fam?.applicant?.name,
+            etat_civil: fam?.applicant?.maritalStatus,
+            date: fam?.applicant?.dob,
+            adresse: fam?.applicant?.address,
+            pays_naissance: fam?.applicant?.country,
+            profession: fam?.applicant?.occupation,
+            case_gauche: true,
+            case_droite: false
+          },
+          {
+            role: "ÉPOUX OU CONJOINT DE FAIT",
+            nom: fam?.epouse?.name,
+            etat_civil: fam?.epouse?.maritalStatus,
+            date: fam?.epouse?.dob,
+            adresse: fam?.epouse?.address,
+            pays_naissance: fam?.epouse?.country,
+            profession: fam?.epouse?.occupation,
+            case_gauche: true,
+            case_droite: false
+          },
+          {
+            role: "MÈRE",
+            nom: fam?.mother?.name,
+            etat_civil: fam?.mother?.maritalStatus,
+            date: fam?.mother?.dob,
+            adresse: fam?.mother?.address,
+            pays_naissance: fam?.mother?.country,
+            profession: fam?.mother?.occupation,
+            case_gauche: false,
+            case_droite: true
+          },
+          {
+            role: "PÈRE",
+            nom: fam?.father?.name,
+            etat_civil: fam?.father?.maritalStatus,
+            date: fam?.father?.dob,
+            adresse: fam?.father?.address,
+            pays_naissance: fam?.father?.country,
+            profession: fam?.father?.occupation,
+            case_gauche: false,
+            case_droite: true
+          }
+        ]
       },
       {
-          "section": "SECTION B - ENFANT",
-          "header": [
-              {
-                  "title": "Nom",
-                  "sigle": "nom",
-                  "width": "30%"
-              },
-              {
-                  "title": "Lien de parenté VOIR NOTE 2",
-                  "sigle": "lien",
-                  "width": "15%"
-              },
-              {
-                  "title": "Date de naissance (AAAA-MM-JJ)",
-                  "sigle": "date",
-                  "width": "15%"
-              },
-              {
-                  "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
-                  "sigle": "adresse",
-                  "width": "26%"
-              },
-              {
-                  "title": "Vous accompagnera au Canada? OUI / NON",
-                  "sigle": "vous",
-                  "width": "14%"
-              }
-          ],
-          "corps": fam?.children?.map(item => ({
-            nom: item?.name,
-            etat_civil: item?.maritalStatus, 
-            date: item?.dob,
-            adresse: item?.address,
-            pays_naissance: item?.country,
-            profession: item?.occupation,
-            case_gauche: item?.coming,
-            case_droite: item?.coming,
-            role:""
-          })),
+        section: "SECTION B - ENFANT",
+        header: [
+          {
+            title: "Nom",
+            sigle: "nom",
+            width: "30%"
+          },
+          {
+            title: "Lien de parenté VOIR NOTE 2",
+            sigle: "lien",
+            width: "15%"
+          },
+          {
+            title: "Date de naissance (AAAA-MM-JJ)",
+            sigle: "date",
+            width: "15%"
+          },
+          {
+            title: "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+            sigle: "adresse",
+            width: "26%"
+          },
+          {
+            title: "Vous accompagnera au Canada? OUI / NON",
+            sigle: "vous",
+            width: "14%"
+          }
+        ],
+        corps: fam?.children?.map((item) => ({
+          nom: item?.name,
+          etat_civil: item?.maritalStatus,
+          date: item?.dob,
+          adresse: item?.address,
+          pays_naissance: item?.country,
+          profession: item?.occupation,
+          case_gauche: item?.coming,
+          case_droite: item?.coming,
+          role: ""
+        }))
       },
       {
-          section: "SECTION C - FRÈRES ET SOEURS",
-          header: [
-              {
-                  "title": "Nom",
-                  "sigle": "nom",
-                  width: "30%"
-              },
-              {
-                  "title": "Lien de parenté VOIR NOTE 2",
-                  "sigle": "lien",
-                  width: "15%"
-              },
-              {
-                  "title": "Date de naissance (AAAA-MM-JJ)",
-                  "sigle": "date",
-                  width: "15%"
-              },
-              {
-                  "title": "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
-                  "sigle": "adresse",
-                  width: "26%"
-              },
-              {
-                  "title": "Vous accompagnera au Canada? OUI / NON",
-                  "sigle": "vous",
-                  width: "14%"
-              }
-          ],
-          "corps":fam?.siblings?.map(item => ({
-            nom: item?.name,
-            etat_civil: item?.maritalStatus, 
-            date: item?.dob,
-            adresse: item?.address,
-            pays_naissance: item?.country,
-            profession: item?.occupation,
-            case_gauche: item?.coming,
-            case_droite: item?.coming,
-            role:""
-          })),
+        section: "SECTION C - FRÈRES ET SOEURS",
+        header: [
+          {
+            title: "Nom",
+            sigle: "nom",
+            width: "30%"
+          },
+          {
+            title: "Lien de parenté VOIR NOTE 2",
+            sigle: "lien",
+            width: "15%"
+          },
+          {
+            title: "Date de naissance (AAAA-MM-JJ)",
+            sigle: "date",
+            width: "15%"
+          },
+          {
+            title: "Adresse actuelle (si décédé: dites dans quelle ville, pays et la date)",
+            sigle: "adresse",
+            width: "26%"
+          },
+          {
+            title: "Vous accompagnera au Canada? OUI / NON",
+            sigle: "vous",
+            width: "14%"
+          }
+        ],
+        corps: fam?.siblings?.map((item) => ({
+          nom: item?.name,
+          etat_civil: item?.maritalStatus,
+          date: item?.dob,
+          adresse: item?.address,
+          pays_naissance: item?.country,
+          profession: item?.occupation,
+          case_gauche: item?.coming,
+          case_droite: item?.coming,
+          role: ""
+        }))
       }
-  ]
-  }
+    ]
+  };
 
-  console.log(familes)
-  return(
-  <Document>
-    <PageTemplate
+  console.log(familes);
+  return (
+    <Document>
+      <PageTemplate
         nom={datas?.nom}
         type={datas?.type}
         email={datas?.email}
         image={dataa}
-        datas={{titre: "Demande de visa de visiteur (visa de résident temporaire)",}}
-        Custom={<Form3 datas={datac?.formulaireVisa}/>}
+        datas={{ titre: "Demande de visa de visiteur (visa de résident temporaire)" }}
+        Custom={<Form3 datas={datac?.formulaireVisa} />}
       />
       <PageTemplate
         nom={datas?.nom}
         type={datas?.type}
         email={datas?.email}
         image={dataa}
-        datas={{ titre: "INFORMATION SUR LA FAMILLE",}}
+        datas={{ titre: "INFORMATION SUR LA FAMILLE" }}
         Custom={<PageFamille datas={familes} />}
       />
       <PageTemplate
@@ -638,19 +575,19 @@ const MonPdfDocument = ({ datas,datac, forme3,dataa,documents }) => {
         type={datas?.type}
         email={datas?.email}
         image={dataa}
-        datas={{titre: "Demande de statut de résident temporaire"}}
-        Custom={<MainForm datas={datac?.resident?.body}/>}
+        datas={{ titre: "Demande de statut de résident temporaire" }}
+        Custom={<MainForm datas={datac?.resident} />}
       />
       <PageTemplate
         nom={datas?.nom}
         type={datas?.type}
         email={datas?.email}
         image={dataa}
-        datas={{titre:"PIÈCES JOINTES"}}
-        Custom={<PieceJointe datas={documents}/>}
+        datas={{ titre: "PIÈCES JOINTES" }}
+        Custom={<PieceJointe datas={documents} />}
       />
-  </Document>
-  )
+    </Document>
+  );
 };
 
 export default MonPdfDocument;

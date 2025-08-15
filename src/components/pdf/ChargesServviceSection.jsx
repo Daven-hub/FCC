@@ -98,7 +98,7 @@ export const BodyT=({item})=>(
 )
 
 const ChargesServiceSection = ({datas}) => (
-  <View style={{ borderWidth: 1, borderColor: "black"}}>
+  <View style={{ borderWidth: 1, borderColor: "black"}} wrap={false}>
     <View style={[styles.row, {}]}>
       <View
         style={{
@@ -127,7 +127,7 @@ const ChargesServiceSection = ({datas}) => (
             </View>
           </View>
     </View>
-    <View style={{borderTop:1}}>
+    <View style={{borderTop:1}} wrap={false}>
         <HeaderT />
         {datas?.dev?.map((item,index)=>
         <BodyT key={index} item={item}/>

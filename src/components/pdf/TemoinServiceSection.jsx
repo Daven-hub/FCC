@@ -39,7 +39,7 @@ import { styles } from "./MainForm";
 
 
 const TemoinServiceSection = ({datas}) => (
-  <View style={{ borderWidth: 1, borderColor: "black"}}>
+  <View style={{ borderWidth: 1, borderColor: "black"}} wrap={false}>
     <View style={[styles.row, {}]}>
       <View
         style={{
@@ -68,7 +68,7 @@ const TemoinServiceSection = ({datas}) => (
             </View>
           </View>
     </View>
-    <View style={{borderTop:1}}>
+    <View style={{borderTop:1}} wrap={false}>
         <HeaderT />
         {datas?.dev?.map((item,index)=>
         <View key={index} style={[styles.row,{flexDirection:"column"}]}>

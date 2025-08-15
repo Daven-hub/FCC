@@ -4,7 +4,7 @@ import { styles } from "../Form3";
 
 const HeaderF = () => {
   return (
-    <View style={[styles.row, { backgroundColor: "#80808065", borderTop: 1 }]}>
+    <View style={[styles.row, { backgroundColor: "#80808065", borderTop: 1 }]} wrap={false}>
       <View
         style={[
           styles.col,
@@ -75,7 +75,7 @@ const HeaderF = () => {
 
 const BodyF = () => {
   return (
-    <View style={[styles.row, { borderTop: 1 }]}>
+    <View style={[styles.row, { borderTop: 1 }]} wrap={false}>
       <View
         style={[
           styles.form3_input,
@@ -284,7 +284,9 @@ function DonneePersonnelle({ datas }) {
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.lieuNaissance?.villeVillage}, {datas?.lieuNaissance?.pays}</Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>
+                {datas?.lieuNaissance?.villeVillage}, {datas?.lieuNaissance?.pays}
+              </Text>
             </View>
           </View>
         </View>
@@ -324,7 +326,7 @@ function DonneePersonnelle({ datas }) {
               <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>*Pays ou Territoire de résidence actuel:</Text>
             </View>
           </View>
-          <View style={{ flexDirection: "column" }}>
+          <View style={{ flexDirection: "column" }} wrap={false}>
             <HeaderF />
             <BodyF />
           </View>
@@ -346,7 +348,7 @@ function DonneePersonnelle({ datas }) {
               </Text>
             </View>
           </View>
-          <View style={{ flexDirection: "column" }}>
+          <View style={{ flexDirection: "column" }} wrap={false}>
             <HeaderF />
             <BodyF />
             <BodyF />
@@ -372,8 +374,8 @@ function DonneePersonnelle({ datas }) {
           </View>
         </View>
         <View>
-          <View style={[styles.row, { justifyContent: "space-between" }]}>
-            <View style={{ borderWidth: 1, width: "40%", borderColor: "black" }}>
+          <View style={[styles.row, { justifyContent: "space-between" }]} wrap={false}>
+            <View style={{ borderWidth: 1, width: "40%", borderColor: "black" }} wrap={false}>
               <View style={[styles.row, {}]}>
                 <View
                   style={{
@@ -392,7 +394,7 @@ function DonneePersonnelle({ datas }) {
                 <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
               </View>
             </View>
-            <View style={[styles.row, { borderWidth: 1, width: "60%", borderColor: "black" }]}>
+            <View style={[styles.row, { borderWidth: 1, width: "60%", borderColor: "black" }]} wrap={false}>
               <View
                 style={[
                   styles.row,
@@ -465,8 +467,8 @@ function DonneePersonnelle({ datas }) {
             </View>
           </View>
         </View>
-        <View style={{ borderWidth: 1, borderColor: "black" }}>
-          <View style={[styles.row, {}]}>
+        <View style={{ borderWidth: 1, borderColor: "black" }} wrap={false}>
+          <View style={[styles.row, {}]} wrap={false}>
             <View
               style={{
                 paddingHorizontal: 5,
@@ -511,83 +513,85 @@ function DonneePersonnelle({ datas }) {
               </View>
             </View>
           </View>
-          <View
-            style={{
-              flexDirection: "column",
-              gap: 3,
-              paddingLeft: 4,
-              paddingTop: 2
-            }}>
-            <Text style={[styles.form2_text, { paddingLeft: 2 }]}>
-              b) fournissez les détails suivants sur votre époux(se)/ conjoinct(e) :
-            </Text>
-            <View style={[styles.row]}>
+          <View wrap={false}>
+            <View
+              style={{
+                flexDirection: "column",
+                gap: 3,
+                paddingLeft: 4,
+                paddingTop: 2
+              }}>
+              <Text style={[styles.form2_text, { paddingLeft: 2 }]}>
+                b) fournissez les détails suivants sur votre époux(se)/ conjoinct(e) :
+              </Text>
+              <View style={[styles.row]}>
+                <View
+                  style={{
+                    width: "50%",
+                    padding: 3,
+                    borderRight: 1,
+                    flexDirection: "column",
+                    gap: 2
+                  }}>
+                  <Text style={styles.form2_text}>* Nom de Famille</Text>
+                  <Text style={styles.form3_input}>{datas?.nom}</Text>
+                </View>
+                <View
+                  style={{
+                    width: "50%",
+                    padding: 3,
+                    flexDirection: "column",
+                    gap: 2
+                  }}>
+                  <Text style={styles.form2_text}>* Prénom(s)</Text>
+                  <Text style={styles.form3_input}>{datas?.prenom}</Text>
+                </View>
+              </View>
+            </View>
+            <View style={[styles.row, { borderTop: 1 }]}>
               <View
                 style={{
-                  width: "50%",
+                  width: "25%",
                   padding: 3,
                   borderRight: 1,
                   flexDirection: "column",
                   gap: 2
                 }}>
-                <Text style={styles.form2_text}>* Nom de Famille</Text>
+                <Text style={styles.form2_text}>c) Date de Naissance</Text>
                 <Text style={styles.form3_input}>{datas?.nom}</Text>
               </View>
               <View
                 style={{
-                  width: "50%",
+                  width: "45%",
+                  padding: 3,
+                  flexDirection: "column",
+                  gap: 2,
+                  borderRight: 1
+                }}>
+                <Text style={styles.form2_text}>d) Genre de lien parenté(s)</Text>
+                <Text style={styles.form3_input}>{datas?.prenom}</Text>
+              </View>
+              <View
+                style={{
+                  width: "15%",
+                  padding: 3,
+                  flexDirection: "column",
+                  gap: 2,
+                  borderRight: 1
+                }}>
+                <Text style={styles.form2_text}>De</Text>
+                <Text style={styles.form3_input}>{datas?.prenom}</Text>
+              </View>
+              <View
+                style={{
+                  width: "15%",
                   padding: 3,
                   flexDirection: "column",
                   gap: 2
                 }}>
-                <Text style={styles.form2_text}>* Prénom(s)</Text>
+                <Text style={styles.form2_text}>À</Text>
                 <Text style={styles.form3_input}>{datas?.prenom}</Text>
               </View>
-            </View>
-          </View>
-          <View style={[styles.row, { borderTop: 1 }]}>
-            <View
-              style={{
-                width: "25%",
-                padding: 3,
-                borderRight: 1,
-                flexDirection: "column",
-                gap: 2
-              }}>
-              <Text style={styles.form2_text}>c) Date de Naissance</Text>
-              <Text style={styles.form3_input}>{datas?.nom}</Text>
-            </View>
-            <View
-              style={{
-                width: "45%",
-                padding: 3,
-                flexDirection: "column",
-                gap: 2,
-                borderRight: 1
-              }}>
-              <Text style={styles.form2_text}>d) Genre de lien parenté(s)</Text>
-              <Text style={styles.form3_input}>{datas?.prenom}</Text>
-            </View>
-            <View
-              style={{
-                width: "15%",
-                padding: 3,
-                flexDirection: "column",
-                gap: 2,
-                borderRight: 1
-              }}>
-              <Text style={styles.form2_text}>De</Text>
-              <Text style={styles.form3_input}>{datas?.prenom}</Text>
-            </View>
-            <View
-              style={{
-                width: "15%",
-                padding: 3,
-                flexDirection: "column",
-                gap: 2
-              }}>
-              <Text style={styles.form2_text}>À</Text>
-              <Text style={styles.form3_input}>{datas?.prenom}</Text>
             </View>
           </View>
         </View>
