@@ -3387,9 +3387,12 @@ const CombinedApplicationForm = () => {
                                 >
                                     <option value="">-- Sélectionnez --</option>
                                     <option value="celibataire">Célibataire</option>
+                                    <option value="conjoint">Conjoint (e) de fait</option>
                                     <option value="marie">Marié(e)</option>
+                                    <option value="annule">Mariage annulé</option>
                                     <option value="divorce">Divorcé(e)</option>
-                                    <option value="veuf">Veuf/Veuve</option>
+                                    <option value="separe">Séparé (e) légalement</option>
+                                    <option value="veuf">Veuf (ve)</option>
                                 </select>
                             </div>
                             <div>
@@ -3553,9 +3556,12 @@ const CombinedApplicationForm = () => {
                                         >
                                             <option value="">-- Sélectionnez --</option>
                                             <option value="celibataire">Célibataire</option>
+                                            <option value="conjoint">Conjoint (e) de fait</option>
                                             <option value="marie">Marié(e)</option>
+                                            <option value="annule">Mariage annulé</option>
                                             <option value="divorce">Divorcé(e)</option>
-                                            <option value="veuf">Veuf/Veuve</option>
+                                            <option value="separe">Séparé (e) légalement</option>
+                                            <option value="veuf">Veuf (ve)</option>
                                         </select>
                                     </div>
                                     <div>
@@ -3703,6 +3709,33 @@ const CombinedApplicationForm = () => {
                                         />
                                     </div>
                                     <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial</label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.familyInfo.father.maritalStatus}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    father: {
+                                                        ...prev.familyInfo.father,
+                                                        maritalStatus: e.target.value
+                                                    }
+                                                }
+                                            }))}
+                                            required
+                                        >
+                                            <option value="">-- Sélectionnez --</option>
+                                            <option value="celibataire">Célibataire</option>
+                                            <option value="conjoint">Conjoint (e) de fait</option>
+                                            <option value="marie">Marié(e)</option>
+                                            <option value="annule">Mariage annulé</option>
+                                            <option value="divorce">Divorcé(e)</option>
+                                            <option value="separe">Séparé (e) légalement</option>
+                                            <option value="veuf">Veuf (ve)</option>
+                                        </select>
+                                    </div>
+                                    <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle</label>
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -3842,6 +3875,33 @@ const CombinedApplicationForm = () => {
                                         />
                                     </div>
                                     <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial</label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.familyInfo.mother.maritalStatus}
+                                            onChange={e => setFormData(prev => ({
+                                                ...prev,
+                                                familyInfo: {
+                                                    ...prev.familyInfo,
+                                                    mother: {
+                                                        ...prev.familyInfo.mother,
+                                                        maritalStatus: e.target.value
+                                                    }
+                                                }
+                                            }))}
+                                            required
+                                        >
+                                            <option value="">-- Sélectionnez --</option>
+                                            <option value="celibataire">Célibataire</option>
+                                            <option value="conjoint">Conjoint (e) de fait</option>
+                                            <option value="marie">Marié(e)</option>
+                                            <option value="annule">Mariage annulé</option>
+                                            <option value="divorce">Divorcé(e)</option>
+                                            <option value="separe">Séparé (e) légalement</option>
+                                            <option value="veuf">Veuf (ve)</option>
+                                        </select>
+                                    </div>
+                                    <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle</label>
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -3916,7 +3976,9 @@ const CombinedApplicationForm = () => {
                                     dob: '',
                                     country: '',
                                     maritalStatus: '',
-                                    coming: false
+                                    coming: false,
+                                    profession: '',
+                                    address: ""
                                 })}
                                 className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
@@ -3969,10 +4031,31 @@ const CombinedApplicationForm = () => {
                                                 >
                                                     <option value="">-- Sélectionnez --</option>
                                                     <option value="celibataire">Célibataire</option>
+                                                    <option value="conjoint">Conjoint (e) de fait</option>
                                                     <option value="marie">Marié(e)</option>
+                                                    <option value="annule">Mariage annulé</option>
                                                     <option value="divorce">Divorcé(e)</option>
-                                                    <option value="veuf">Veuf/Veuve</option>
+                                                    <option value="separe">Séparé (e) légalement</option>
+                                                    <option value="veuf">Veuf (ve)</option>
                                                 </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={child.profession || ''}
+                                                    onChange={(e) => handleArrayChange('familyInfo', 'children', index, 'profession', e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={child.address || ''}
+                                                    onChange={(e) => handleArrayChange('familyInfo', 'children', index, 'address', e.target.value)}
+                                                    required
+                                                />
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ?</label>
@@ -4024,7 +4107,9 @@ const CombinedApplicationForm = () => {
                                     dob: '',
                                     country: '',
                                     maritalStatus: '',
-                                    coming: false
+                                    coming: false,
+                                    profession: '',
+                                    address: ""
                                 })}
                                 className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
@@ -4081,6 +4166,24 @@ const CombinedApplicationForm = () => {
                                                     <option value="divorce">Divorcé(e)</option>
                                                     <option value="veuf">Veuf/Veuve</option>
                                                 </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={sibling.profession || ''}
+                                                    onChange={(e) => handleArrayChange('familyInfo', 'siblings', index, 'profession', e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    value={sibling.address || ''}
+                                                    onChange={(e) => handleArrayChange('familyInfo', 'siblings', index, 'address', e.target.value)}
+                                                    required
+                                                />
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ?</label>
