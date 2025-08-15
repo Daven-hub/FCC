@@ -1729,7 +1729,7 @@ const CombinedApplicationForm = () => {
                                             <option value="">-- Sélectionnez --</option>
                                             <option value="conjoint">Marié (e)</option>
                                             <option value="conjoint de fait">Conjoint de fait</option>
-                                           
+
                                         </select>
                                     </div>
                                     <div>
@@ -2806,7 +2806,7 @@ const CombinedApplicationForm = () => {
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Service militaire ou paramilitaire</h3>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous déjà servi dans l'armée, une milice, un service de sécurité civile ou la police?
+                                Avez-vous fait partie d'une armée, d'une milice, d'une unité de défense civile, d'un service de renseignement ou d'un corps de police (y compris le service national non obligatoire et les unités de réserve ou volontaires) ?
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -2938,6 +2938,7 @@ const CombinedApplicationForm = () => {
                                         Province: "",
                                         du: "",
                                         au: ""
+
                                     })}
                                     className="flex items-center text-primary hover:text-primary-dark"
                                 >
@@ -2952,7 +2953,7 @@ const CombinedApplicationForm = () => {
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Témoin de crimes de guerre ou crimes contre l'humanité</h3>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous été témoin de crimes de guerre ou de crimes contre l'humanité?
+                                Avez-vous été témoin de mauvais traitements infligés à des prisonniers ou des civils, ou d'actes de pillage ou de profanation d'édifices religieux, ou avez-vous participé à ces actes ?
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -3000,7 +3001,8 @@ const CombinedApplicationForm = () => {
                                                                     Endroit: "",
                                                                     Province: "",
                                                                     du: "",
-                                                                    au: ""
+                                                                    au: "",
+                                                                    detail: ""
                                                                 }]
                                                         }
                                                     }
@@ -3064,6 +3066,16 @@ const CombinedApplicationForm = () => {
                                                     required
                                                 />
                                             </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">Details</label>
+                                                <textarea
+                                                    value={temoin.detail || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.temoin.dev', index, 'detail', e.target.value)}
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                                                    rows={4}
+                                                    required
+                                                />
+                                            </div>
                                         </div>
                                         <div className="flex justify-end mt-3">
                                             <button
@@ -3083,7 +3095,8 @@ const CombinedApplicationForm = () => {
                                         Endroit: "",
                                         Province: "",
                                         du: "",
-                                        au: ""
+                                        au: "",
+                                        detail: ""
                                     })}
                                     className="flex items-center text-primary hover:text-primary-dark"
                                 >
@@ -3093,12 +3106,14 @@ const CombinedApplicationForm = () => {
                         )}
                     </div>
 
+
+
                     {/* Section Affiliation */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Affiliations ou appartenances</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Appartenance ou affiliation à des organisations</h3>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous été membre ou affilié à une organisation ou association quelconque?
+                                Êtes-vous, ou avez-vous déjà été, membre ou affilié d’un parti politique ou d’un autre groupe ou d’une autre organisation qui ont utilisé ou prôné la violence dans le but d’atteindre un objectif politique ou religieux, ou qui ont déjà été impliqués dans des activités criminelles ? N’utilisez pas d’abréviations.
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -3143,12 +3158,11 @@ const CombinedApplicationForm = () => {
                                                                 ? prev.resident.body.affiliation.dev
                                                                 : [{
                                                                     pays: "",
-                                                                    Endroit: "",
                                                                     Province: "",
                                                                     du: "",
                                                                     au: "",
                                                                     nomOrganisation: "",
-                                                                    typeOrganisation: ""
+                                                                    poste: ""
                                                                 }]
                                                         }
                                                     }
@@ -3175,15 +3189,7 @@ const CombinedApplicationForm = () => {
                                                     required
                                                 />
                                             </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700">Endroit</label>
-                                                <input
-                                                    value={affiliation.Endroit || ''}
-                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'Endroit', e.target.value)}
-                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                    required
-                                                />
-                                            </div>
+
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700">Province</label>
                                                 <input
@@ -3221,10 +3227,10 @@ const CombinedApplicationForm = () => {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700">Type d'organisation</label>
+                                                <label className="block text-sm font-medium text-gray-700">Poste occupés au sein de l'organisation</label>
                                                 <input
-                                                    value={affiliation.typeOrganisation || ''}
-                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'typeOrganisation', e.target.value)}
+                                                    value={affiliation.poste || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.affiliation.dev', index, 'poste', e.target.value)}
                                                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                 />
                                             </div>
@@ -3244,12 +3250,11 @@ const CombinedApplicationForm = () => {
                                     type="button"
                                     onClick={() => addArrayEntry('resident', 'body.affiliation.dev', {
                                         pays: "",
-                                        Endroit: "",
                                         Province: "",
                                         du: "",
                                         au: "",
                                         nomOrganisation: "",
-                                        typeOrganisation: ""
+                                        poste: ""
                                     })}
                                     className="flex items-center text-primary hover:text-primary-dark"
                                 >
@@ -3261,10 +3266,10 @@ const CombinedApplicationForm = () => {
 
                     {/* Section Charges */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Charges judiciaires</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Charges publiques officielles</h3>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous déjà été accusé(e), inculpé(e), mis(e) en examen ou condamné(e) pour un crime ou un délit?
+                                AAvez-vous déjà occupé une charge publique (telle que fonctionnaire, juge, policier, maire, député, administrateur d’hôpital) ? N’utilisez pas d’abréviations.
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -3309,11 +3314,11 @@ const CombinedApplicationForm = () => {
                                                                 ? prev.resident.body.charges.dev
                                                                 : [{
                                                                     pays: "",
-                                                                    Endroit: "",
-                                                                    Province: "",
+                                                                    sphere: "",
+                                                                    direction: "",
                                                                     du: "",
                                                                     au: "",
-                                                                    natureInfraction: ""
+                                                                    activite: ""
                                                                 }]
                                                         }
                                                     }
@@ -3341,19 +3346,19 @@ const CombinedApplicationForm = () => {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700">Endroit</label>
+                                                <label className="block text-sm font-medium text-gray-700">Pays et sphere de compétence</label>
                                                 <input
-                                                    value={charge.Endroit || ''}
-                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'Endroit', e.target.value)}
+                                                    value={charge.sphere || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'sphere', e.target.value)}
                                                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                     required
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700">Province</label>
+                                                <label className="block text-sm font-medium text-gray-700">Direction</label>
                                                 <input
-                                                    value={charge.Province || ''}
-                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'Province', e.target.value)}
+                                                    value={charge.direction || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'direction', e.target.value)}
                                                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                 />
                                             </div>
@@ -3378,10 +3383,10 @@ const CombinedApplicationForm = () => {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700">Nature de l'infraction</label>
+                                                <label className="block text-sm font-medium text-gray-700">Activitées et ou / Postes occupés</label>
                                                 <input
-                                                    value={charge.natureInfraction || ''}
-                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'natureInfraction', e.target.value)}
+                                                    value={charge.activite || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.charges.dev', index, 'activite', e.target.value)}
                                                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                 />
                                             </div>
@@ -3401,11 +3406,11 @@ const CombinedApplicationForm = () => {
                                     type="button"
                                     onClick={() => addArrayEntry('resident', 'body.charges.dev', {
                                         pays: "",
-                                        Endroit: "",
-                                        Province: "",
+                                        sphere: "",
+                                        direction: "",
                                         du: "",
                                         au: "",
-                                        natureInfraction: ""
+                                        activite: ""
                                     })}
                                     className="flex items-center text-primary hover:text-primary-dark"
                                 >
@@ -3417,10 +3422,10 @@ const CombinedApplicationForm = () => {
 
                     {/* Section Voyages */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Refus d'entrée ou expulsion</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Voyage précédente</h3>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous déjà été refusé(e) l'entrée ou expulsé(e) d'un pays, y compris le Canada?
+                                Depuis l’âge de 18 ans ou au cours des cinq dernières années, selon la plus récente, avez-vous voyagé vers un pays ou territoire autre que le pays de votre nationalité ou votre pays ou territoire de résidence actuel ?
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -3466,10 +3471,10 @@ const CombinedApplicationForm = () => {
                                                                 : [{
                                                                     pays: "",
                                                                     Endroit: "",
-                                                                    Province: "",
+                                                                    but: "",
                                                                     du: "",
                                                                     au: "",
-                                                                    raison: ""
+
                                                                 }]
                                                         }
                                                     }
@@ -3506,10 +3511,10 @@ const CombinedApplicationForm = () => {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700">Province</label>
+                                                <label className="block text-sm font-medium text-gray-700">But du voyage</label>
                                                 <input
-                                                    value={refus.Province || ''}
-                                                    onChange={(e) => handleArrayChange('resident', 'body.voyages.dev', index, 'Province', e.target.value)}
+                                                    value={refus.but || ''}
+                                                    onChange={(e) => handleArrayChange('resident', 'body.voyages.dev', index, 'but', e.target.value)}
                                                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
                                                 />
                                             </div>
@@ -3533,14 +3538,7 @@ const CombinedApplicationForm = () => {
                                                     required
                                                 />
                                             </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700">Raison</label>
-                                                <input
-                                                    value={refus.raison || ''}
-                                                    onChange={(e) => handleArrayChange('resident', 'body.voyages.dev', index, 'raison', e.target.value)}
-                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
-                                                />
-                                            </div>
+
                                         </div>
                                         <div className="flex justify-end mt-3">
                                             <button
@@ -3558,10 +3556,9 @@ const CombinedApplicationForm = () => {
                                     onClick={() => addArrayEntry('resident', 'body.voyages.dev', {
                                         pays: "",
                                         Endroit: "",
-                                        Province: "",
+                                        but: "",
                                         du: "",
                                         au: "",
-                                        raison: ""
                                     })}
                                     className="flex items-center text-primary hover:text-primary-dark"
                                 >
