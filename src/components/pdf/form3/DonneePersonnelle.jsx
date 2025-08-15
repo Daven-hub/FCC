@@ -265,7 +265,7 @@ function DonneePersonnelle({ datas }) {
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateNaissance}</Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateNaissance?.jour}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "60%", borderColor: "black" }}>
