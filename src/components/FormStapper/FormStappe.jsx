@@ -38,19 +38,22 @@ const CombinedApplicationForm = () => {
                 actuelle: {
                     pays: "",
                     statut: "",
-                    autre: ""
+                    statutAutre: "",
+                    du: "",
+                    au: ""
+
                 },
                 anterieure: {
                     aVecuAutrePays: false,
-                    pays: "",
-                    statut: "",
-                    autre: "",
-                    du: "",
-                    au: ""
+                    sejours: []
                 },
                 paysDemande: {
                     pays: "",
-                    memeQueResidence: false
+                    memeQueResidence: false,
+                    statutAutre: "",
+                    autre: "",
+                    du: "",
+                    au: ""
                 }
             },
             etatMatrimonial: {
@@ -61,6 +64,17 @@ const CombinedApplicationForm = () => {
                     nom: "",
                     prenoms: "",
                     dateNaissance: "",
+                }
+            },
+            mariage: {
+                etat: "", // Initialisé à "non" au lieu de ""
+                dateMariageOuUnion: "",
+                dejaMarieOuUnionFait: false,
+                conjoint: {
+                    nom: "",
+                    prenoms: "",
+                    dateNaissance: "",
+                    lienParenter: "",
                     genreLienParente: "",
                     du: "",
                     au: ""
@@ -1082,9 +1096,8 @@ const CombinedApplicationForm = () => {
                                 >
                                     <option value="">-- Sélectionnez --</option>
                                     <option value="visiteur">Visiteur</option>
-                                    <option value="travailleur">Travailleur</option>
-                                    <option value="etudiant">Étudiant</option>
-                                    <option value="resident">Résident permanent</option>
+                                    <option value="travailleur">Transit</option>
+
                                 </select>
                             </div>
                         </div>
@@ -1225,25 +1238,72 @@ const CombinedApplicationForm = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Statut de résidence</label>
-                                <input
+                                <select
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.formulaireVisa.residence.actuelle.statut}
                                     onChange={e => handleChange('residence.actuelle.statut', e.target.value)}
                                     required
-                                />
+                                >
+                                    <option value="">Sélectionnez un statut</option>
+                                    <option value="Citoyen">Citoyen</option>
+                                    <option value="Résident permanent">Résident permanent</option>
+                                    <option value="Personne Protégée">Personne Protégée</option>
+                                    <option value="Résident temporaire">Demandeur d'asile</option>
+                                    <option value="Étudiant">Étudiant</option>
+                                    <option value="Travailleur">Travailleur</option>
+                                    <option value="Touriste">Touriste</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+
+                                {formData.formulaireVisa.residence.actuelle.statut === "Autre" && (
+                                    <div className="mt-2">
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Précisez votre statut"
+                                            value={formData.formulaireVisa.residence.actuelle.statutAutre || ''}
+                                            onChange={e => handleChange('residence.actuelle.statutAutre', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                )}
                             </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Du</label>
+                                    <input
+                                        type="date"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.formulaireVisa.residence.actuelle.du || ''}
+                                        onChange={e => handleChange('residence.actuelle.du', e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Au</label>
+                                    <input
+                                        type="date"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.formulaireVisa.residence.actuelle.au || ''}
+                                        onChange={e => handleChange('residence.actuelle.au', e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
                         </div>
 
+
+
                         <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous vécu dans un autre pays que votre pays de citoyenneté ou de résidence actuelle ?</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Avez-vous vécu dans un autre pays que votre pays de citoyenneté ou de résidence actuelle ?
+                            </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
                                     <input
                                         type="radio"
                                         className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.formulaireVisa.residence.anterieure.aVecuAutrePays === false}
+                                        checked={!formData.formulaireVisa.residence.anterieure.aVecuAutrePays}
                                         onChange={() => handleChange('residence.anterieure.aVecuAutrePays', false)}
-                                        required
                                     />
                                     <span className="ml-2">Non</span>
                                 </label>
@@ -1251,7 +1311,7 @@ const CombinedApplicationForm = () => {
                                     <input
                                         type="radio"
                                         className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                        checked={formData.formulaireVisa.residence.anterieure.aVecuAutrePays === true}
+                                        checked={formData.formulaireVisa.residence.anterieure.aVecuAutrePays}
                                         onChange={() => handleChange('residence.anterieure.aVecuAutrePays', true)}
                                     />
                                     <span className="ml-2">Oui</span>
@@ -1260,50 +1320,105 @@ const CombinedApplicationForm = () => {
                         </div>
 
                         {formData.formulaireVisa.residence.anterieure.aVecuAutrePays && (
-                            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
-                                    <input
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.formulaireVisa.residence.anterieure.pays}
-                                        onChange={e => handleChange('residence.anterieure.pays', e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-                                    <input
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.formulaireVisa.residence.anterieure.statut}
-                                        onChange={e => handleChange('residence.anterieure.statut', e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de début (MM/AAAA)</label>
-                                    <input
-                                        type="text"
-                                        placeholder="MM/AAAA"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.formulaireVisa.residence.anterieure.du}
-                                        onChange={e => handleChange('residence.anterieure.du', e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de fin (MM/AAAA)</label>
-                                    <input
-                                        type="text"
-                                        placeholder="MM/AAAA"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.formulaireVisa.residence.anterieure.au}
-                                        onChange={e => handleChange('residence.anterieure.au', e.target.value)}
-                                        required
-                                    />
-                                </div>
+                            <div className="mt-4 space-y-6">
+                                {(formData.formulaireVisa.residence.anterieure.sejours || []).map((sejour, index) => (
+                                    <div key={index} className="border border-gray-200 rounded-lg p-4 relative">
+                                        <button
+                                            type="button"
+                                            className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+                                            onClick={() => removeArrayEntry('formulaireVisa', 'residence.anterieure.sejours', index)}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                                <input
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                                    value={sejour.pays || ''}
+                                                    onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.pays`, e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                                                <select
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                                    value={sejour.statut || ''}
+                                                    onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.statut`, e.target.value)}
+                                                    required
+                                                >
+                                                    <option value="">Sélectionnez un statut</option>
+                                                    <option value="Citoyen">Citoyen</option>
+                                                    <option value="Résident permanent">Résident permanent</option>
+                                                    <option value="Personne Protégée">Personne Protégée</option>
+                                                    <option value="Résident temporaire">Demandeur d'asile</option>
+                                                    <option value="Étudiant">Étudiant</option>
+                                                    <option value="Travailleur">Travailleur</option>
+                                                    <option value="Touriste">Touriste</option>
+                                                    <option value="Autre">Autre</option>
+                                                </select>
+                                                {sejour.statut === "Autre" && (
+                                                    <div className="mt-2">
+                                                        <input
+                                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                                            placeholder="Précisez votre statut"
+                                                            value={sejour.statutAutre || ''}
+                                                            onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.statutAutre`, e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Date de début (MM/AAAA)</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="MM/AAAA"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                                    value={sejour.du || ''}
+                                                    onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.du`, e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Date de fin (MM/AAAA)</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="MM/AAAA"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                                    value={sejour.au || ''}
+                                                    onChange={e => handleArrayChange('formulaireVisa', `residence.anterieure.sejours.${index}.au`, e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <button
+                                    type="button"
+                                    className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    onClick={() => addArrayEntry('formulaireVisa', 'residence.anterieure.sejours', {
+                                        pays: '',
+                                        statut: '',
+                                        statutAutre: '',
+                                        du: '',
+                                        au: ''
+                                    })}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                                    </svg>
+                                    Ajouter un autre séjour
+                                </button>
                             </div>
                         )}
 
+                        {/* Section pays de demande */}
                         <div className="mt-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">Faites-vous la demande depuis un autre pays que votre pays de résidence actuelle ?</label>
                             <div className="flex gap-4 mt-1">
@@ -1330,14 +1445,72 @@ const CombinedApplicationForm = () => {
                         </div>
 
                         {!formData.formulaireVisa.residence.paysDemande.memeQueResidence && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays où vous faites la demande</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.residence.paysDemande.pays}
-                                    onChange={e => handleChange('residence.paysDemande.pays', e.target.value)}
-                                    required
-                                />
+                            <div className="mt-4 space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays où vous faites la demande</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.formulaireVisa.residence.paysDemande.pays || ''}
+                                        onChange={e => handleChange('residence.paysDemande.pays', e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Statut dans ce pays</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.formulaireVisa.residence.paysDemande.statut || ''}
+                                        onChange={e => handleChange('residence.paysDemande.statut', e.target.value)}
+                                        required
+                                    >
+                                        <option value="">Sélectionnez un statut</option>
+                                        <option value="Citoyen">Citoyen</option>
+                                        <option value="Résident permanent">Résident permanent</option>
+                                        <option value="Personne Protégée">Personne Protégée</option>
+                                        <option value="Résident temporaire">Demandeur d'asile</option>
+                                        <option value="Étudiant">Étudiant</option>
+                                        <option value="Travailleur">Travailleur</option>
+                                        <option value="Touriste">Touriste</option>
+                                        <option value="Autre">Autre</option>
+                                    </select>
+                                    {formData.formulaireVisa.residence.paysDemande.statut === "Autre" && (
+                                        <div className="mt-2">
+                                            <input
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="Précisez votre statut"
+                                                value={formData.formulaireVisa.residence.paysDemande.statutAutre || ''}
+                                                onChange={e => handleChange('residence.paysDemande.statutAutre', e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date de début (MM/AAAA)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="MM/AAAA"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.residence.paysDemande.du || ''}
+                                            onChange={e => handleChange('residence.paysDemande.du', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date de fin (MM/AAAA)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="MM/AAAA"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.residence.paysDemande.au || ''}
+                                            onChange={e => handleChange('residence.paysDemande.au', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -1356,11 +1529,13 @@ const CombinedApplicationForm = () => {
                             >
                                 <option value="">-- Sélectionnez --</option>
                                 <option value="celibataire">Célibataire</option>
+                                <option value="union">Conjoint (e) de fait</option>
                                 <option value="marie">Marié(e)</option>
-                                <option value="union">Union de fait</option>
+                                <option value="inconnu">Inconnu</option>
+                                <option value="annule">Mariage annulé</option>
                                 <option value="divorce">Divorcé(e)</option>
-                                <option value="separe">Séparé(e)</option>
-                                <option value="veuf">Veuf/Veuve</option>
+                                <option value="separe">Séparé (e) légalement</option>
+                                <option value="veuf">Veuf (ve)</option>
                             </select>
                         </div>
 
@@ -1377,7 +1552,7 @@ const CombinedApplicationForm = () => {
                                     />
                                 </div>
 
-                                <div className="mt-4">
+                                {/* <div className="mt-4">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous déjà été marié(e) ou en union de fait ?</label>
                                     <div className="flex gap-4 mt-1">
                                         <label className="flex items-center">
@@ -1400,7 +1575,7 @@ const CombinedApplicationForm = () => {
                                             <span className="ml-2">Oui</span>
                                         </label>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
@@ -1435,6 +1610,187 @@ const CombinedApplicationForm = () => {
                             </>
                         )}
                     </div>
+
+
+                    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        {/* Question principale */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Êtes-vous ou avez-vous déjà été marié(e) ou en union de fait ? *
+                            </label>
+                            <div className="flex gap-4">
+                                <label className="inline-flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="mariageEtat"
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                        checked={formData.formulaireVisa.mariage.etat === "oui"}
+                                        onChange={() => {
+                                            handleChange('mariage.etat', "oui");
+                                            // Réinitialisation des champs si on passe de non à oui
+                                            if (formData.formulaireVisa.mariage.etat !== "oui") {
+                                                handleChange('mariage.dateMariageOuUnion', "");
+                                                handleChange('mariage.conjoint', {
+                                                    nom: "",
+                                                    prenoms: "",
+                                                    dateNaissance: "",
+                                                    lienParenter: "",
+                                                    genreLienParente: "",
+                                                    du: "",
+                                                    au: ""
+                                                });
+                                            }
+                                        }}
+                                    />
+                                    <span className="ml-2">Oui</span>
+                                </label>
+                                <label className="inline-flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="mariageEtat"
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                        checked={formData.formulaireVisa.mariage.etat === "non"}
+                                        onChange={() => {
+                                            handleChange('mariage.etat', "non");
+                                            // Réinitialisation des champs si on passe de oui à non
+                                            if (formData.formulaireVisa.mariage.etat !== "non") {
+                                                handleChange('mariage.dateMariageOuUnion', "");
+                                                handleChange('mariage.conjoint', {
+                                                    nom: "",
+                                                    prenoms: "",
+                                                    dateNaissance: "",
+                                                    lienParenter: "",
+                                                    genreLienParente: "",
+                                                    du: "",
+                                                    au: ""
+                                                });
+                                            }
+                                        }}
+                                    />
+                                    <span className="ml-2">Non</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Champs conditionnels */}
+                        {formData.formulaireVisa.mariage.etat === "oui" && (
+                            <div className="space-y-4">
+                                {/* Nature et date de l'union */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Nature de l'union *
+                                        </label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.mariage.conjoint.genreLienParente}
+                                            onChange={e => handleChange('mariage.conjoint.genreLienParente', e.target.value)}
+                                            required
+                                        >
+                                            <option value="">-- Sélectionnez --</option>
+                                            <option value="mariage">Mariage</option>
+                                            <option value="union de fait">Union de fait</option>
+                                            <option value="divorce">Divorce</option>
+                                            <option value="separation">Séparation</option>
+                                            <option value="veuvage">Veuvage</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Date du mariage/début d'union
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.mariage.dateMariageOuUnion}
+                                            onChange={e => handleChange('mariage.dateMariageOuUnion', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Informations sur le conjoint */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Nom du conjoint
+                                        </label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.mariage.conjoint.nom}
+                                            onChange={e => handleChange('mariage.conjoint.nom', e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Prénom(s) du conjoint
+                                        </label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.mariage.conjoint.prenoms}
+                                            onChange={e => handleChange('mariage.conjoint.prenoms', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Lien et dates */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Lien de parenté
+                                        </label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.mariage.conjoint.lienParenter}
+                                            onChange={e => handleChange('mariage.conjoint.lienParenter', e.target.value)}
+                                        >
+                                            <option value="">-- Sélectionnez --</option>
+                                            <option value="conjoint">Conjoint</option>
+                                            <option value="conjoint de fait">Conjoint de fait</option>
+                                            <option value="ex-conjoint">Ex-conjoint</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Date de naissance du conjoint
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.mariage.conjoint.dateNaissance}
+                                            onChange={e => handleChange('mariage.conjoint.dateNaissance', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Période de l'union */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Date de début
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.mariage.conjoint.du}
+                                            onChange={e => handleChange('mariage.conjoint.du', e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Date de fin (le cas échéant)
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.formulaireVisa.mariage.conjoint.au}
+                                            onChange={e => handleChange('mariage.conjoint.au', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
 
                     {/* Section Langues */}
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
@@ -2075,6 +2431,9 @@ const CombinedApplicationForm = () => {
                             </div>
                         )}
                     </div>
+
+
+
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Antécédents</h3>
 
@@ -2108,17 +2467,44 @@ const CombinedApplicationForm = () => {
                                         </label>
                                     </div>
                                 </div>
-                                {formData.formulaireVisa.antecedents.sante.tuberculoseDernieresAnnees && (
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
-                                        <textarea
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={formData.formulaireVisa.antecedents.sante.details}
-                                            onChange={e => handleChange('antecedents.sante.details', e.target.value)}
-                                            required
-                                        />
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Avez-vous un trouble physique ou mental qui nécessite des soins sociaux ou médicaux au Canada ?
+                                    </label>
+                                    <div className="flex gap-4 mt-1">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.sante.troublePhysiqueMental === false}
+                                                onChange={() => handleChange('antecedents.sante.troublePhysiqueMental', false)}
+                                                required
+                                            />
+                                            <span className="ml-2">Non</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                                checked={formData.formulaireVisa.antecedents.sante.troublePhysiqueMental === true}
+                                                onChange={() => handleChange('antecedents.sante.troublePhysiqueMental', true)}
+                                            />
+                                            <span className="ml-2">Oui</span>
+                                        </label>
                                     </div>
-                                )}
+                                </div>
+                                {(formData.formulaireVisa.antecedents.sante.tuberculoseDernieresAnnees ||
+                                    formData.formulaireVisa.antecedents.sante.troublePhysiqueMental) && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Détails</label>
+                                            <textarea
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={formData.formulaireVisa.antecedents.sante.details}
+                                                onChange={e => handleChange('antecedents.sante.details', e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                    )}
                             </div>
                         </div>
 
@@ -3977,7 +4363,7 @@ const CombinedApplicationForm = () => {
                                     country: '',
                                     maritalStatus: '',
                                     coming: false,
-                                    profession: '',
+                                    occupation: '',
                                     address: ""
                                 })}
                                 className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
@@ -4043,8 +4429,8 @@ const CombinedApplicationForm = () => {
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
                                                 <input
                                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    value={child.profession || ''}
-                                                    onChange={(e) => handleArrayChange('familyInfo', 'children', index, 'profession', e.target.value)}
+                                                    value={child.occupation || ''}
+                                                    onChange={(e) => handleArrayChange('familyInfo', 'children', index, 'occupation', e.target.value)}
                                                     required
                                                 />
                                             </div>
@@ -4171,8 +4557,8 @@ const CombinedApplicationForm = () => {
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
                                                 <input
                                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    value={sibling.profession || ''}
-                                                    onChange={(e) => handleArrayChange('familyInfo', 'siblings', index, 'profession', e.target.value)}
+                                                    value={sibling.occupation || ''}
+                                                    onChange={(e) => handleArrayChange('familyInfo', 'siblings', index, 'occupation', e.target.value)}
                                                     required
                                                 />
                                             </div>
