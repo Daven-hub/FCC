@@ -743,7 +743,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             <option value="">-- Sélectionnez --</option>
                             <option value="francais">Français</option>
                             <option value="anglais">Anglais</option>
-                            <option value="lesDeux">Les deux</option>
+                            <option value="les Deux">Les deux</option>
                             <option value="aucun">Aucun</option>
                         </select>
                     </div>
@@ -1096,8 +1096,8 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             <input
                                 type="radio"
                                 className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === false}
-                                onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', false)}
+                                checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === true}
+                                onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', true)}
                                 required
                             />
                             <span className="ml-2">Oui</span>
@@ -1106,8 +1106,8 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             <input
                                 type="radio"
                                 className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === true}
-                                onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', true)}
+                                checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === false}
+                                onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', false)}
                             />
                             <span className="ml-2">Non</span>
                         </label>
