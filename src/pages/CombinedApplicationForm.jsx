@@ -437,7 +437,13 @@ const CombinedApplicationForme = () => {
     const steps = [
         {
             title: "Informations personnelles",
-            component: <PersonalInfoStep formData={formData} handleChange={handleChange} />
+            component: <PersonalInfoStep
+                formData={formData}
+                handleChange={handleChange}
+                handleArrayChange={handleArrayChange}
+                addArrayEntry={addArrayEntry}
+                removeArrayEntry={removeArrayEntry}
+            />
         },
         {
             title: "Antécédents et historique",

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const PersonalInfoStep = ({ formData, handleChange }) => {
+export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, addArrayEntry, removeArrayEntry }) => {
     return (
 
         <div className="space-y-6">
