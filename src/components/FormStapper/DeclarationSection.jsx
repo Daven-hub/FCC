@@ -1,7 +1,7 @@
 import React from 'react';
 import { FiPlus, FiX } from 'react-icons/fi';
 
-const DeclarationSection = ({
+export const DeclarationSection = ({
     declarationAgreed,
     onAgreementChange,
     showPreview,
@@ -158,5 +158,3 @@ const DeclarationSection = ({
         </div>
     );
 };
-
-export default DeclarationSection;
