@@ -4,7 +4,7 @@ import { FiPlus, FiX } from 'react-icons/fi';
 import MonPdfDocument from '../pdf/MonPdf';
 import prog from "../../datas/immigration.json"
 
-const DeclarationSection = ({
+export const DeclarationSection = ({
     declarationAgreed,
     onAgreementChange,
     showPreview,
@@ -87,5 +87,3 @@ const DeclarationSection = ({
         </div>
     );
 };
-
-export default DeclarationSection;

@@ -2805,7 +2805,14 @@ const CombinedApplicationForm = () => {
                     <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Service militaire ou paramilitaire</h3>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-me
+                            
+                            
+                            
+                            
+                            
+                            
+                            dium text-gray-700 mb-1">
                                 Avez-vous fait partie d'une armée, d'une milice, d'une unité de défense civile, d'un service de renseignement ou d'un corps de police (y compris le service national non obligatoire et les unités de réserve ou volontaires) ?
                             </label>
                             <div className="flex gap-4 mt-1">
