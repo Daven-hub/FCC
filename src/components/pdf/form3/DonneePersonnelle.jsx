@@ -73,7 +73,7 @@ const HeaderF = () => {
   );
 };
 
-const BodyF = () => {
+const BodyF = ({datas}) => {
   return (
     <View style={[styles.row, { borderTop: 1 }]} wrap={false}>
       <View
@@ -87,7 +87,7 @@ const BodyF = () => {
             borderRight: 1
           }
         ]}>
-        <Text style={[styles.form3_input, { fontWeight: "" }]}>Pays ou Territoire</Text>
+        <Text style={[styles.form3_input, { fontWeight: "" }]}>{datas?.pays}</Text>
       </View>
       <View
         style={[
@@ -101,7 +101,7 @@ const BodyF = () => {
             borderRight: 1
           }
         ]}>
-        <Text style={[styles.form2_text, { fontWeight: "" }]}>Statut</Text>
+        <Text style={[styles.form2_text, { fontWeight: "" }]}>{datas?.statut}</Text>
       </View>
       <View
         style={[
@@ -114,7 +114,7 @@ const BodyF = () => {
             textAlign: "center"
           }
         ]}>
-        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>Autre</Text>
+        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>{datas?.statutAutre}</Text>
       </View>
       <View
         style={[
@@ -127,7 +127,7 @@ const BodyF = () => {
             textAlign: "center"
           }
         ]}>
-        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>De</Text>
+        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>{datas?.du}</Text>
       </View>
       <View
         style={[
@@ -139,7 +139,7 @@ const BodyF = () => {
             textAlign: "center"
           }
         ]}>
-        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>A</Text>
+        <Text style={[styles.form2_text, { fontWeight: "", lineHeight: 1.4 }]}>{datas?.au}</Text>
       </View>
     </View>
   );
@@ -265,7 +265,7 @@ function DonneePersonnelle({ datas }) {
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateNaissance?.jour}</Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateNaissance}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "60%", borderColor: "black" }}>
@@ -328,7 +328,7 @@ function DonneePersonnelle({ datas }) {
           </View>
           <View style={{ flexDirection: "column" }} wrap={false}>
             <HeaderF />
-            <BodyF />
+            <BodyF datas={datas?.residence?.actuelle}/>
           </View>
         </View>
 
@@ -350,8 +350,10 @@ function DonneePersonnelle({ datas }) {
           </View>
           <View style={{ flexDirection: "column" }} wrap={false}>
             <HeaderF />
-            <BodyF />
-            <BodyF />
+            {datas?.residence?.anterieure?.sejours?.map((x,index)=>
+            <BodyF datas={x} key={index}/>
+          )}
+            {/* <BodyF /> */}
           </View>
         </View>
         <View style={{ borderWidth: 1, borderColor: "black" }}>
@@ -370,7 +372,7 @@ function DonneePersonnelle({ datas }) {
           </View>
           <View style={{ flexDirection: "column" }}>
             <HeaderF />
-            <BodyF />
+            <BodyF datas={datas?.residence?.paysDemande}/>
           </View>
         </View>
         <View>
@@ -391,7 +393,7 @@ function DonneePersonnelle({ datas }) {
                 </View>
               </View>
               <View style={[styles.row, { gap: 2 }]}>
-                <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.etat}</Text>
               </View>
             </View>
             <View style={[styles.row, { borderWidth: 1, width: "60%", borderColor: "black" }]} wrap={false}>
@@ -423,7 +425,7 @@ function DonneePersonnelle({ datas }) {
                 }}>
                 <Text>*Date</Text>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateMariageOuUnion}</Text>
                 </View>
               </View>
             </View>
@@ -452,7 +454,7 @@ function DonneePersonnelle({ datas }) {
                   gap: 2
                 }}>
                 <Text style={styles.form2_text}>* Nom de Famille</Text>
-                <Text style={styles.form3_input}>{datas?.nom}</Text>
+                <Text style={styles.form3_input}>{datas?.conjoint?.nom}</Text>
               </View>
               <View
                 style={{
@@ -462,7 +464,7 @@ function DonneePersonnelle({ datas }) {
                   gap: 2
                 }}>
                 <Text style={styles.form2_text}>* Prénom(s)</Text>
-                <Text style={styles.form3_input}>{datas?.prenom}</Text>
+                <Text style={styles.form3_input}>{datas?.conjoint?.prenoms}</Text>
               </View>
             </View>
           </View>
@@ -488,7 +490,7 @@ function DonneePersonnelle({ datas }) {
                   alignItems: "center"
                 }
               ]}>
-              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>a) Avez vous déjà été mariéou en union de fait?</Text>
+              <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>a) Avez vous déjà été marié ou en union de fait?</Text>
               <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
                 <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
                   <View
@@ -496,7 +498,8 @@ function DonneePersonnelle({ datas }) {
                       borderWidth: 1,
                       borderColor: "black",
                       width: 8,
-                      height: 8
+                      height: 8,
+                      backgroundColor:datas?.mariage?.etat?.toLowercase()==="oui".toLowerCase() && "black"
                     }}></View>
                   <Text style={styles.form2_text}>* OUI</Text>
                 </View>
@@ -506,7 +509,8 @@ function DonneePersonnelle({ datas }) {
                       borderWidth: 1,
                       borderColor: "black",
                       width: 8,
-                      height: 8
+                      height: 8,
+                      backgroundColor:datas?.mariage?.etat?.toLowercase()==="non" && "black"
                     }}></View>
                   <Text style={styles.form2_text}>* NON</Text>
                 </View>
@@ -534,7 +538,7 @@ function DonneePersonnelle({ datas }) {
                     gap: 2
                   }}>
                   <Text style={styles.form2_text}>* Nom de Famille</Text>
-                  <Text style={styles.form3_input}>{datas?.nom}</Text>
+                  <Text style={styles.form3_input}>{datas?.mariage?.conjoint?.nom}</Text>
                 </View>
                 <View
                   style={{
@@ -544,7 +548,7 @@ function DonneePersonnelle({ datas }) {
                     gap: 2
                   }}>
                   <Text style={styles.form2_text}>* Prénom(s)</Text>
-                  <Text style={styles.form3_input}>{datas?.prenom}</Text>
+                  <Text style={styles.form3_input}>{datas?.mariage?.conjoint?.prenoms}</Text>
                 </View>
               </View>
             </View>
@@ -558,7 +562,7 @@ function DonneePersonnelle({ datas }) {
                   gap: 2
                 }}>
                 <Text style={styles.form2_text}>c) Date de Naissance</Text>
-                <Text style={styles.form3_input}>{datas?.nom}</Text>
+                <Text style={styles.form3_input}>{datas?.mariage?.conjoint?.nom}</Text>
               </View>
               <View
                 style={{
@@ -569,7 +573,7 @@ function DonneePersonnelle({ datas }) {
                   borderRight: 1
                 }}>
                 <Text style={styles.form2_text}>d) Genre de lien parenté(s)</Text>
-                <Text style={styles.form3_input}>{datas?.prenom}</Text>
+                <Text style={styles.form3_input}>{datas?.mariage?.conjoint?.genreLienParente}</Text>
               </View>
               <View
                 style={{
@@ -580,7 +584,7 @@ function DonneePersonnelle({ datas }) {
                   borderRight: 1
                 }}>
                 <Text style={styles.form2_text}>De</Text>
-                <Text style={styles.form3_input}>{datas?.prenom}</Text>
+                <Text style={styles.form3_input}>{datas?.mariage?.conjoint?.du}</Text>
               </View>
               <View
                 style={{
@@ -590,7 +594,7 @@ function DonneePersonnelle({ datas }) {
                   gap: 2
                 }}>
                 <Text style={styles.form2_text}>À</Text>
-                <Text style={styles.form3_input}>{datas?.prenom}</Text>
+                <Text style={styles.form3_input}>{datas?.mariage?.conjoint?.au}</Text>
               </View>
             </View>
           </View>

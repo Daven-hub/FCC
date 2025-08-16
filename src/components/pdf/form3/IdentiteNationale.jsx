@@ -43,13 +43,13 @@ function IdentiteNationale({ datas }) {
               </View>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
                 <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  Numéro du passport
+                  Numéro de la pièce
                 </Text>
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
               <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
+                {datas?.numero}
               </Text>
             </View>
           </View>
@@ -73,7 +73,7 @@ function IdentiteNationale({ datas }) {
             </View>
             <View style={[styles.row, { gap: 2 }]}>
               <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
+                {datas?.paysDelivrance}
               </Text>
             </View>
           </View>
@@ -97,7 +97,7 @@ function IdentiteNationale({ datas }) {
             </View>
             <View style={[styles.row, { gap: 2 }]}>
               <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
+                {datas?.dateDelivrance}
               </Text>
             </View>
           </View>
@@ -121,7 +121,7 @@ function IdentiteNationale({ datas }) {
             </View>
             <View style={[styles.row, { gap: 2 }]}>
               <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
+                {datas?.dateExpiration}
               </Text>
             </View>
           </View>

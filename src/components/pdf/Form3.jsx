@@ -112,10 +112,10 @@ const Form3 = ({ datas }) => {
 
       <View style={{ flexDirection: "column", gap: 5 }}>
         <DonneePersonnelle datas={datas?.donneesPersonnelles} />
-        <Langue datas={datas} />
-        <Passport datas={datas} />
-        <IdentiteNationale datas={datas} />
-        <ResidentUSA datas={datas} />
+        <Langue datas={datas?.langues} />
+        <Passport datas={datas?.passeport} />
+        <IdentiteNationale datas={datas?.pieceIdentiteNationale} />
+        <ResidentUSA datas={datas?.carteResidentPermanentUSA} />
         <Coordonnee datas={datas} />
         <DetailVisa datas={datas} />
         <Scolarite datas={datas} />

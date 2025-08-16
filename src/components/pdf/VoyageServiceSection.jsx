@@ -85,7 +85,7 @@ export const BodyT=({item})=>(
         <Text style={[styles.form2_text]}>{item?.pays}</Text>
       </View>
       <View style={[styles.col,{width:"26%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
-        <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.endroit}</Text>
+        <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.Endroit}</Text>
       </View>
       {/* <View style={[styles.col,{width:"25%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
         <Text style={[styles.form2_text]}>Littoral</Text>

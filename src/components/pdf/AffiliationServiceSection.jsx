@@ -82,10 +82,10 @@ export const BodyT=({item})=>(
         </View>
       </View>
       <View style={[styles.col,{width:"26%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
-        <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.nom_org}</Text>
+        <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.nomOrganisation}</Text>
       </View>
       <View style={[styles.col,{width:"25%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
-        <Text style={[styles.form2_text]}>{item?.activite}</Text>
+        <Text style={[styles.form2_text]}>{item?.poste}</Text>
       </View>
       <View style={[styles.col,{width:"25%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
         <Text style={[styles.form2_text]}>{item?.Province}</Text>
