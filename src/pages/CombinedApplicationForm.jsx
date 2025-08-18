@@ -8,9 +8,9 @@ import { FamilyInfoStep } from '../components/visaComponent/FamilyInfoStep';
 import { DocumentsStep } from '../components/visaComponent/DocumentsStep';
 import Stepper from '../components/visaComponent/Stepper';
 import FormNavigation from '../components/visaComponent/FormNavigation';
-import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { DeclarationSection } from '../components/FormStapper/DeclarationSection';
 import { RecipientData } from '../components/visaComponent/RecipientData';
+import RecipientModal from '../components/visaComponent/RecipientModal';
 
 const CombinedApplicationForme = () => {
     const [activeStep, setActiveStep] = useState(0);
@@ -18,11 +18,13 @@ const CombinedApplicationForme = () => {
     const [formData, setFormData] = useState({
         ...initialFormData,
         declarationAgreed: false,
-        selectedRecipient: RecipientData.One.email // Valeur par défaut
+        selectedRecipient: RecipientData.One.email
     });
     const [submitStatus, setSubmitStatus] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({});
     const [submittedData, setSubmittedData] = useState(null);
+    const [showRecipientModal, setShowRecipientModal] = useState(false);
+
 
     useEffect(() => {
         const { nom, prenoms } = formData.formulaireVisa.donneesPersonnelles.nomComplet;
@@ -188,8 +190,9 @@ const CombinedApplicationForme = () => {
 
         // Récupérer le titre et le type du document
         const document = formData.documents[sectionIndex].corps[docIndex];
+        const doc = formData.formulaireVisa.donneesPersonnelles.nomComplet
         const titre = document.titre.replace(/[^a-zA-Z0-9]/g, '_'); // Nettoyer le titre pour le nom de fichier
-        const type = document.type.toLowerCase();
+        const type = doc.nom.toLowerCase();
 
         // Créer le nouveau nom de fichier
         const originalExtension = file.name.split('.').pop();
@@ -397,7 +400,6 @@ const CombinedApplicationForme = () => {
         try {
             const formDataToSend = new FormData();
 
-
             const filteredPersonalInfo = {
                 ...formData.formulaireVisa
             };
@@ -442,15 +444,33 @@ const CombinedApplicationForme = () => {
             });
 
             console.log(formData);
+            
 
             await submitCombinedApplication(formDataToSend);
             setSubmitStatus("success");
             setSubmittedData(applicationData);
+            setShowRecipientModal(false);
         } catch (error) {
             console.error("Erreur de soumission:", error);
             setSubmitStatus("error");
         }
     };
+
+    const handleRecipientChang = (email) => {
+        setFormData(prev => ({
+            ...prev,
+            selectedRecipient: email
+        }));
+    };
+
+    const handleOpenRecipientModal = () => {
+        if (!formData.declarationAgreed) {
+            showErrorToast("Veuillez accepter la déclaration avant de soumettre");
+            return;
+        }
+        setShowRecipientModal(true);
+    };
+
 
     const steps = [
         {
@@ -502,8 +522,6 @@ const CombinedApplicationForme = () => {
                     showPreview={showPreview}
                     onTogglePreview={() => setShowPreview(!showPreview)}
                     formData={formData}
-                    selectedRecipient={formData.selectedRecipient}
-                    onRecipientChange={handleRecipientChange}
                 />
             )
         }
@@ -576,8 +594,18 @@ const CombinedApplicationForme = () => {
                             validateCurrentStep={validateCurrentStep}
                             submitStatus={submitStatus}
                             formData={formData}
+                            onOpenRecipientModal={handleOpenRecipientModal}
                         />
                     </form>
+
+                    <RecipientModal
+                        isOpen={showRecipientModal}
+                        onClose={() => setShowRecipientModal(false)}
+                        selectedRecipient={formData.selectedRecipient}
+                        onRecipientChange={handleRecipientChange}
+                        onSubmit={handleSubmit}
+                        formData={formData}
+                    />
                 </div>
 
                 <div className="mt-8 text-center">

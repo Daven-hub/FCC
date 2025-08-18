@@ -8,7 +8,8 @@ const FormNavigation = ({
     nextStep,
     validateCurrentStep,
     submitStatus,
-    formData
+    formData,
+    onOpenRecipientModal
 }) => {
     return (
         <div className="px-6 py-5 bg-gray-50 sm:px-8">
@@ -41,7 +42,8 @@ const FormNavigation = ({
                     </button>
                 ) : (
                     <button
-                        type="submit"
+                        type="button"
+                        onClick={onOpenRecipientModal}
                         disabled={submitStatus === "loading" || !formData.declarationAgreed}
                         className={`ml-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${submitStatus === "loading" || !formData.declarationAgreed
                             ? "bg-gray-400 cursor-not-allowed"
