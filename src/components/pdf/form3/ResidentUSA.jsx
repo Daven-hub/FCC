@@ -35,7 +35,7 @@ function ResidentUSA({ datas }) {
             </View>
             <View style={[styles.row, { gap: 2 }]}>
                 <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
+                {datas?.numero}
                 </Text>
             </View>
             </View>
@@ -61,7 +61,7 @@ function ResidentUSA({ datas }) {
             </View>
             <View style={[styles.row, { gap: 2 }]}>
                 <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.nom}
+                {datas?.dateExpiration}
                 </Text>
             </View>
             </View>

@@ -77,7 +77,7 @@ const MainForm = ({datas}) => {
             </View>
             <View style={{width:"50%",padding:3,flexDirection:"column",gap:2}}>
               <Text style={styles.form2_text}>* Prénom(s)</Text>
-              <Text style={styles.form2_input}>lione</Text>
+              <Text style={styles.form2_input}>{datas?.prenom}</Text>
             </View>
           </View>
         </View>
@@ -107,11 +107,11 @@ const MainForm = ({datas}) => {
             </View>
           </View>
         </View>
-        <MilitaryServiceSection datas={datas?.military}/>
-        <TemoinServiceSection datas={datas?.temoin}/>
-        <AffiliationServiceSection datas={datas?.affiliation}/>
-        <ChargesServiceSection datas={datas?.charges}/>
-        <VoyageServiceSection  datas={datas?.voyages}/>
+        <MilitaryServiceSection datas={datas?.body?.military}/>
+        <TemoinServiceSection datas={datas?.body?.temoin}/>
+        <AffiliationServiceSection datas={datas?.body?.affiliation}/>
+        <ChargesServiceSection datas={datas?.body?.charges}/>
+        <VoyageServiceSection  datas={datas?.body?.voyages}/>
       </>
 )
 

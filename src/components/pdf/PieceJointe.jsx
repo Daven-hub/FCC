@@ -46,7 +46,7 @@ import PieceServiceSection from "./PieceServiceSection";
 
 const PieceJointe = ({ datas }) => {
   
-  return datas.map((x, ind) => <PieceServiceSection  index={ind+1} key={ind} datas={x} />);
+  return datas?.map((x, ind) => <PieceServiceSection  index={ind+1} key={ind} datas={x} />);
 };
 
 export default PieceJointe;

@@ -89,7 +89,7 @@ export const BodyT=({item})=>(
         <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.sphere}</Text>
       </View>
       <View style={[styles.col,{width:"20%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
-        <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.ministere}</Text>
+        <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.direction}</Text>
       </View>
       <View style={[styles.col,{width:"20%",alignItems:"center",justifyContent:"center"}]}>
         <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.activite}</Text>
@@ -98,7 +98,7 @@ export const BodyT=({item})=>(
 )
 
 const ChargesServiceSection = ({datas}) => (
-  <View style={{ borderWidth: 1, borderColor: "black"}}>
+  <View style={{ borderWidth: 1, borderColor: "black"}} wrap={false}>
     <View style={[styles.row, {}]}>
       <View
         style={{
@@ -127,7 +127,7 @@ const ChargesServiceSection = ({datas}) => (
             </View>
           </View>
     </View>
-    <View style={{borderTop:1}}>
+    <View style={{borderTop:1}} wrap={false}>
         <HeaderT />
         {datas?.dev?.map((item,index)=>
         <BodyT key={index} item={item}/>

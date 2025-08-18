@@ -5,6 +5,9 @@ import Passport from "./form3/Passport";
 import IdentiteNationale from "./form3/IdentiteNationale";
 import ResidentUSA from "./form3/ResidentUSA";
 import Coordonnee from "./form3/Coordonnee";
+import DetailVisa from "./form3/DetailVisa";
+import Scolarite from "./form3/Scolarite";
+import Emploi from "./form3/Emploi";
 
 export const styles = StyleSheet.create({
   page: {
@@ -37,6 +40,10 @@ export const styles = StyleSheet.create({
   col: {
     paddingVertical: 3,
     paddingHorizontal: 5
+  },
+  coll: {
+    paddingVertical: 1,
+    paddingHorizontal: 3
   }
 });
 
@@ -60,7 +67,7 @@ const Form3 = ({ datas }) => {
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.informationsGenerales?.IUC}</Text>
           </View>
         </View>
         <View style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}>
@@ -79,7 +86,7 @@ const Form3 = ({ datas }) => {
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.informationsGenerales?.servi}</Text>
           </View>
         </View>
         <View style={{ borderWidth: 1, width: "33.333%", borderColor: "black" }}>
@@ -98,18 +105,21 @@ const Form3 = ({ datas }) => {
             </View>
           </View>
           <View style={[styles.row, { gap: 2 }]}>
-            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+            <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.informationsGenerales?.visa}</Text>
           </View>
         </View>
       </View>
 
       <View style={{ flexDirection: "column", gap: 5 }}>
-        <DonneePersonnelle datas={datas} />
-        <Langue datas={datas} />
-        <Passport datas={datas} />
-        <IdentiteNationale datas={datas} />
-        <ResidentUSA datas={datas} />
-        <Coordonnee datas={datas} />
+        <DonneePersonnelle datas={{pers:datas?.donneesPersonnelles,marie:datas?.mariage,resid:datas?.residence,etatm:datas?.etatMatrimonial}} />
+        <Langue datas={datas?.langues} />
+        <Passport datas={datas?.passeport} />
+        <IdentiteNationale datas={datas?.pieceIdentiteNationale} />
+        <ResidentUSA datas={datas?.carteResidentPermanentUSA} />
+        <Coordonnee datas={datas?.coordonnees}/>
+        <DetailVisa datas={datas} />
+        <Scolarite datas={datas} />
+        <Emploi datas={datas} />
       </View>
     </>
   );
