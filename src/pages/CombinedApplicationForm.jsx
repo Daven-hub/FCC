@@ -10,12 +10,16 @@ import Stepper from '../components/visaComponent/Stepper';
 import FormNavigation from '../components/visaComponent/FormNavigation';
 import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { DeclarationSection } from '../components/FormStapper/DeclarationSection';
-
+import { RecipientData } from '../components/visaComponent/RecipientData';
 
 const CombinedApplicationForme = () => {
     const [activeStep, setActiveStep] = useState(0);
     const [showPreview, setShowPreview] = useState(false);
-    const [formData, setFormData] = useState(initialFormData);
+    const [formData, setFormData] = useState({
+        ...initialFormData,
+        declarationAgreed: false,
+        selectedRecipient: RecipientData.One.email // Valeur par défaut
+    });
     const [submitStatus, setSubmitStatus] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({});
     const [submittedData, setSubmittedData] = useState(null);
@@ -25,29 +29,22 @@ const CombinedApplicationForme = () => {
         const dateNaissance = formData.formulaireVisa.donneesPersonnelles.dateNaissance;
         const iuc = formData.formulaireVisa.informationsGenerales.IUC;
 
-        const dateNais = dateNaissance;
-
         setFormData(prev => ({
             ...prev,
             resident: {
                 ...prev.resident,
                 nom: nom || prev.resident.nom,
                 prenom: prenoms || prev.resident.prenom,
-                dateNais: dateNais || prev.resident.dateNais,
+                dateNais: dateNaissance || prev.resident.dateNais,
                 iuc: iuc || prev.resident.iuc
-            }
-        }));
-
-        // Mettre à jour l'étape 4 (Documents)
-        setFormData(prev => ({
-            ...prev,
+            },
             documents: prev.documents.map((section, index) => {
-                if (index === 0) { // Seulement la première section contient les infos personnelles
+                if (index === 0) {
                     return {
                         ...section,
                         nom: nom || section.nom,
                         prenom: prenoms || section.prenom,
-                        dateNais: dateNais || section.dateNais,
+                        dateNais: dateNaissance || section.dateNais,
                         iuc: iuc || section.iuc
                     };
                 }
@@ -60,6 +57,13 @@ const CombinedApplicationForme = () => {
         formData.formulaireVisa.donneesPersonnelles.dateNaissance,
         formData.formulaireVisa.informationsGenerales.IUC
     ]);
+
+    const handleRecipientChange = (email) => {
+        setFormData(prev => ({
+            ...prev,
+            selectedRecipient: email
+        }));
+    };
 
     // Fonctions de gestion des changements
     const handleChange = (path, value) => {
@@ -381,6 +385,7 @@ const CombinedApplicationForme = () => {
         try {
             const formDataToSend = new FormData();
 
+
             const filteredPersonalInfo = {
                 ...formData.formulaireVisa
             };
@@ -397,6 +402,7 @@ const CombinedApplicationForme = () => {
             };
 
             const applicationData = {
+                recipientEmail: formData.selectedRecipient,
                 formulaireVisa: filteredPersonalInfo,
                 resident: filteredResident,
                 familyInfo: formData.familyInfo,
@@ -484,6 +490,8 @@ const CombinedApplicationForme = () => {
                     showPreview={showPreview}
                     onTogglePreview={() => setShowPreview(!showPreview)}
                     formData={formData}
+                    selectedRecipient={formData.selectedRecipient}
+                    onRecipientChange={handleRecipientChange}
                 />
             )
         }
