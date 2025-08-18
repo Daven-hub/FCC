@@ -186,6 +186,18 @@ const CombinedApplicationForme = () => {
             return;
         }
 
+        // Récupérer le titre et le type du document
+        const document = formData.documents[sectionIndex].corps[docIndex];
+        const titre = document.titre.replace(/[^a-zA-Z0-9]/g, '_'); // Nettoyer le titre pour le nom de fichier
+        const type = document.type.toLowerCase();
+
+        // Créer le nouveau nom de fichier
+        const originalExtension = file.name.split('.').pop();
+        const newFileName = `${titre}_${type}.${originalExtension}`;
+
+        // Créer un nouveau fichier avec le nom modifié
+        const renamedFile = new File([file], newFileName, { type: file.type });
+
         if (file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -201,9 +213,9 @@ const CombinedApplicationForme = () => {
                     newDocuments[sectionIndex].corps[docIndex] = {
                         ...newDocuments[sectionIndex].corps[docIndex],
                         provided: true,
-                        file: file,
+                        file: renamedFile, // Utiliser le fichier renommé
                         imageData: imageData,
-                        name: file.name,
+                        name: newFileName, // Utiliser le nouveau nom
                         size: file.size,
                         type: file.type,
                         uploadDate: new Date().toISOString()
@@ -215,7 +227,7 @@ const CombinedApplicationForme = () => {
                     };
                 });
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(renamedFile);
         } else {
             setFormData(prev => {
                 const newDocuments = [...prev.documents];
@@ -227,8 +239,8 @@ const CombinedApplicationForme = () => {
                 newDocuments[sectionIndex].corps[docIndex] = {
                     ...newDocuments[sectionIndex].corps[docIndex],
                     provided: true,
-                    file: file,
-                    name: file.name,
+                    file: renamedFile, // Utiliser le fichier renommé
+                    name: newFileName, // Utiliser le nouveau nom
                     size: file.size,
                     type: file.type,
                     uploadDate: new Date().toISOString()
@@ -245,7 +257,7 @@ const CombinedApplicationForme = () => {
             ...prev,
             [`${sectionIndex}-${docIndex}`]: {
                 progress: 0,
-                fileName: file.name
+                fileName: newFileName // Afficher le nouveau nom dans la progression
             }
         }));
 
