@@ -8,8 +8,6 @@ import prog from "../../datas/immigration.json"
 export const DeclarationSection = ({
     declarationAgreed,
     onAgreementChange,
-    showPreview,
-    onTogglePreview,
     formData,
     selectedRecipient,
     onRecipientChange
