@@ -35,7 +35,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adressePostaleActuelle?.casePostale}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { borderRight: 1, width: "15%", borderColor: "black" }]}>
@@ -45,7 +45,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adressePostaleActuelle?.noAppUnite}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { borderRight: 1, width: "15%", borderColor: "black" }]}>
@@ -55,7 +55,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adressePostaleActuelle?.numeroRue}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { width: "55%", borderColor: "black" }]}>
@@ -65,7 +65,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adressePostaleActuelle?.nomRue}</Text>
                 </View>
               </View>
             </View>
@@ -77,7 +77,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adressePostaleActuelle?.villeVillage}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { borderRight: 1, width: "30%", borderColor: "black" }]}>
@@ -87,7 +87,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adressePostaleActuelle?.pays}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { borderRight: 1, width: "15%", borderColor: "black" }]}>
@@ -97,7 +97,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adressePostaleActuelle?.provinceEtat}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { width: "17%", borderColor: "black" }]}>
@@ -107,7 +107,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adressePostaleActuelle?.codePostal}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { width: "18%", borderColor: "black" }]}>
@@ -117,7 +117,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adressePostaleActuelle?.district}</Text>
                 </View>
               </View>
             </View>
@@ -135,7 +135,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adresseDomicile?.noAppUnite}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { borderRight: 1, width: "15%", borderColor: "black" }]}>
@@ -145,7 +145,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adresseDomicile?.numeroRue}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { borderRight: 1, width: "55%", borderColor: "black" }]}>
@@ -155,7 +155,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adresseDomicile?.nomRue}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { width: "15%", borderColor: "black" }]}>
@@ -165,7 +165,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adresseDomicile?.villeVillage}</Text>
                 </View>
               </View>
             </View>
@@ -177,7 +177,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adresseDomicile?.pays}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { borderRight: 1, width: "15%", borderColor: "black" }]}>
@@ -187,7 +187,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adresseDomicile?.provinceEtat}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { borderRight: 1, width: "17%", borderColor: "black" }]}>
@@ -197,7 +197,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adresseDomicile?.codePostal}</Text>
                 </View>
               </View>
               <View style={[styles.coll, { width: "28%", borderColor: "black" }]}>
@@ -207,7 +207,7 @@ function Coordonnee({ datas }) {
                   </View>
                 </View>
                 <View style={[styles.row, { gap: 2 }]}>
-                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                  <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adresseDomicile?.district}</Text>
                 </View>
               </View>
             </View>
@@ -226,7 +226,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephone?.type}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "20%", borderColor: "black" }]}>
@@ -236,7 +236,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>+237</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephone?.indicatifPays}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "40%", borderColor: "black" }]}>
@@ -246,7 +246,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephone?.numero}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { width: "15%", borderColor: "black" }]}>
@@ -256,7 +256,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>01</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephone?.poste}</Text>
                   </View>
                 </View>
               </View>
@@ -273,7 +273,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephone?.type}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "20%", borderColor: "black" }]}>
@@ -283,7 +283,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>+237</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephone?.indicatifPays}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "40%", borderColor: "black" }]}>
@@ -293,7 +293,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephone?.numero}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { width: "15%", borderColor: "black" }]}>
@@ -303,7 +303,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>02</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephone?.poste}</Text>
                   </View>
                 </View>
               </View>
@@ -323,7 +323,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>+237</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.indicatifPays}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "60%", borderColor: "black" }]}>
@@ -333,7 +333,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.numero}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { width: "20%", borderColor: "black" }]}>
@@ -343,7 +343,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>01</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.poste}</Text>
                   </View>
                 </View>
               </View>
@@ -360,7 +360,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.adresseElectronique}</Text>
                   </View>
                 </View>
               </View>

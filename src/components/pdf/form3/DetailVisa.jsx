@@ -15,20 +15,20 @@ function DetailVisa({ datas }) {
           <View style={{ padding: 3.5, flexDirection: "column", gap: 2, borderBottom:1 }}>
             <Text style={styles.form2_text}>* Nom</Text>
             <View style={[styles.form3_input, { }]}>
-              <Text style={styles.form3_text}>2025-03-10</Text>
+              <Text style={styles.form3_text}> </Text>
             </View>
           </View>
           <View style={styles.row}>
             <View style={{ width: "40%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
               <Text style={styles.form2_text}>Lien de parenté</Text>
               <View style={[styles.form3_input, { }]}>
-                <Text style={styles.form3_text}>2025-03-10</Text>
+                <Text style={styles.form3_text}> </Text>
               </View>
             </View>
             <View style={{ width: "60%", padding: 3.5, flexDirection: "column", gap: 2 }}>
               <Text style={styles.form2_text}>* Adresse au Canada</Text>
               <View style={[styles.form3_input, {  }]}>
-                <Text style={styles.form3_text}>2025-03-10</Text>
+                <Text style={styles.form3_text}> </Text>
               </View>
             </View>
           </View>
@@ -51,12 +51,12 @@ function DetailVisa({ datas }) {
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}> </Text>
             </View>
           </View>
           <View style={{ width: "50%", padding: 3, flexDirection: "column", gap: 2 }}>
             <Text style={styles.form2_text}>*b) Autre</Text>
-            <Text style={styles.form3_input}>{datas?.prenom}</Text>
+            <Text style={styles.form3_input}> </Text>
           </View>
         </View>
 
@@ -81,13 +81,13 @@ function DetailVisa({ datas }) {
             <View style={{ width: "25%", padding: 4, flexDirection: "column", gap: 2, borderRight: 1 }}>
               <Text style={styles.form2_text}>* De</Text>
               <View style={[styles.form3_input, { height: 23.9 }]}>
-                <Text style={styles.form3_text}>2025-03-10</Text>
+                <Text style={styles.form3_text}> </Text>
               </View>
             </View>
             <View style={{ width: "25%", padding: 4, flexDirection: "column", gap: 2 }}>
               <Text style={styles.form2_text}>* À</Text>
               <View style={[styles.form3_input, { height: 23.9 }]}>
-                <Text style={styles.form3_text}>2025-03-10</Text>
+                <Text style={styles.form3_text}> </Text>
               </View>
             </View>
           </View>
@@ -102,7 +102,7 @@ function DetailVisa({ datas }) {
             </View>
             {/* <View style={[styles.row, { gap: 2 }]}> */}
             <View style={[styles.form3_input, { height: 23.9 }]}>
-              <Text style={styles.form3_text}>{datas?.nom}</Text>
+              <Text style={styles.form3_text}> </Text>
             </View>
             {/* </View> */}
           </View>
@@ -119,7 +119,7 @@ function DetailVisa({ datas }) {
               </Text>
             </View>
           </View>
-          <View wrap={false}>
+          <View>
             <BodyD />
             <BodyD />
           </View>

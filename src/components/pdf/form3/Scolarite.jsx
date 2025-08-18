@@ -23,19 +23,19 @@ const BodyD = ({ datas }) => {
           <View style={{ width: "20%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>De</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}>{datas?.nom}</Text>
+              <Text style={styles.form3_text}> </Text>
             </View>
           </View>
           <View style={{ width: "30%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>Domaines d'études</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}>{datas?.nom}</Text>
+              <Text style={styles.form3_text}> </Text>
             </View>
           </View>
           <View style={{ width: "50%", padding: 3.5, flexDirection: "column", gap: 2 }}>
-            <Text style={styles.form2_text}>Ecole/ Nom del'établissement</Text>
+            <Text style={styles.form2_text}>Ecole/ Nom de l'établissement</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}>2025-03-10</Text>
+              <Text style={styles.form3_text}> </Text>
             </View>
           </View>
         </View>
@@ -43,25 +43,25 @@ const BodyD = ({ datas }) => {
           <View style={{ width: "20%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>À</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}>{datas?.nom}</Text>
+              <Text style={styles.form3_text}> </Text>
             </View>
           </View>
           <View style={{ width: "25%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>* Ville/ Village</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}>2025-03-10</Text>
+              <Text style={styles.form3_text}> </Text>
             </View>
           </View>
           <View style={{ width: "40%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>* Pays ou Térritoire</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}>2025-03-10</Text>
+              <Text style={styles.form3_text}> </Text>
             </View>
           </View>
           <View style={{ width: "15%", padding: 3.5, flexDirection: "column", gap: 2 }}>
             <Text style={styles.form2_text}>Province/ État</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}>2025-03-10</Text>
+              <Text style={styles.form3_text}> </Text>
             </View>
           </View>
         </View>

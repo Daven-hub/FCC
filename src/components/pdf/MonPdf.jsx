@@ -551,37 +551,37 @@ const MonPdfDocument = ({ datas, datac, forme3, dataa, documents }) => {
     ]
   };
 
-  console.log(familes);
+  // console.log(familes);
   return (
     <Document>
       <PageTemplate
-        nom={datas?.nom}
-        type={datas?.type}
-        email={datas?.email}
+        nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        type={datas?.formulaireVisa?.informationsGenerales?.visa}
+        email={datas?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
         datas={{ titre: "Demande de visa de visiteur (visa de résident temporaire)" }}
         Custom={<Form3 datas={datac?.formulaireVisa} />}
       />
       <PageTemplate
-        nom={datas?.nom}
-        type={datas?.type}
-        email={datas?.email}
+         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        type={datas?.formulaireVisa?.informationsGenerales?.visa}
+        email={datas?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
         datas={{ titre: "INFORMATION SUR LA FAMILLE" }}
         Custom={<PageFamille datas={familes} />}
       />
       <PageTemplate
-        nom={datas?.nom}
-        type={datas?.type}
-        email={datas?.email}
+         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        type={datas?.formulaireVisa?.informationsGenerales?.visa}
+        email={datas?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
         datas={{ titre: "Demande de statut de résident temporaire" }}
         Custom={<MainForm datas={datac?.resident} />}
       />
       <PageTemplate
-        nom={datas?.nom}
-        type={datas?.type}
-        email={datas?.email}
+         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        type={datas?.formulaireVisa?.informationsGenerales?.visa}
+        email={datas?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
         datas={{ titre: "PIÈCES JOINTES" }}
         Custom={<PieceJointe datas={documents} />}

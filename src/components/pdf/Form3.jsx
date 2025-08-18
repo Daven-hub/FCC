@@ -111,12 +111,12 @@ const Form3 = ({ datas }) => {
       </View>
 
       <View style={{ flexDirection: "column", gap: 5 }}>
-        <DonneePersonnelle datas={datas?.donneesPersonnelles} />
+        <DonneePersonnelle datas={{pers:datas?.donneesPersonnelles,marie:datas?.mariage,resid:datas?.residence,etatm:datas?.etatMatrimonial}} />
         <Langue datas={datas?.langues} />
         <Passport datas={datas?.passeport} />
         <IdentiteNationale datas={datas?.pieceIdentiteNationale} />
         <ResidentUSA datas={datas?.carteResidentPermanentUSA} />
-        <Coordonnee datas={datas} />
+        <Coordonnee datas={datas?.coordonnees}/>
         <DetailVisa datas={datas} />
         <Scolarite datas={datas} />
         <Emploi datas={datas} />
