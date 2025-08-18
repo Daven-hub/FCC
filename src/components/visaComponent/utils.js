@@ -108,30 +108,29 @@ export const initialFormData = {
                 district: ""
             },
             adresseDomicile: {
-                identiqueAdressePostale: false,
-                noAppUnite: "",
-                numeroRue: "",
-                nomRue: "",
+                identiqueAdressePostale: false, // Nouveau champ pour la case à cocher
+                nomRue1: "",
+                nomRue2: "",
                 villeVillage: "",
                 pays: "",
                 provinceEtat: "",
                 codePostal: "",
                 district: ""
             },
-            telephone: {
-                type: "",
-                indicatifPays: "",
-                numero: "",
-                poste: ""
-            },
-            autreTelephone: {
-                type: "",
-                indicatifPays: "",
-                numero: "",
-                poste: ""
-            },
+            telephones: [
+                {
+                    type: "", // "Résidence", "Cellulaire", "Au travail"
+                    isCanada: false,
+                    autre: false,
+                    indicatifPays: "",
+                    numero: "",
+                    poste: ""
+                }
+            ],
             telecopieur: {
-                type: "",
+                type: "", // "Résidence", "Cellulaire", "Au travail"
+                isCanada: false,
+                autre: false,
                 indicatifPays: "",
                 numero: "",
                 poste: ""
