@@ -154,6 +154,27 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                     />
                 </div>
 
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village de naissance</label>
+                        <input
+                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={formData.formulaireVisa.donneesPersonnelles.lieuNaissance.villeVillage}
+                            onChange={e => handleChange('donneesPersonnelles.lieuNaissance.villeVillage', e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance</label>
+                        <input
+                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={formData.formulaireVisa.donneesPersonnelles.lieuNaissance.pays}
+                            onChange={e => handleChange('donneesPersonnelles.lieuNaissance.pays', e.target.value)}
+                            required
+                        />
+                    </div>
+                </div>
+
                 <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Citoyenneté</label>
                     <input
