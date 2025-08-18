@@ -36,7 +36,7 @@ import { styles } from "./MainForm";
 // });
 
 export const HeaderT=()=>(
-  <View style={[styles.row,{backgroundColor:"#80808065"}]}>
+  <View style={[styles.row,{backgroundColor:"#80808065"}]} wrap={false}>
       <View style={[styles.col,{width:"12%",flexDirection:"column",gap:2,alignItems:"center",borderRight:1}]}>
         <Text style={[styles.form2_text,{fontWeight:"bold"}]}>Du</Text>
         <View style={[styles.row,{justifyContent:"space-between",alignItems:"center"}]}>
@@ -64,7 +64,7 @@ export const HeaderT=()=>(
 )
 
 export const BodyT=({item})=>(
-  <View style={[styles.row,{borderTop:1}]}>
+  <View style={[styles.row,{borderTop:1}]} wrap={false}>
       <View style={[styles.col,{width:"12%",flexDirection:"column",gap:2,alignItems:"center",borderRight:1}]}>
         <View style={[styles.row,{justifyContent:"space-between",alignItems:"center",flex:1}]}>
           <View style={{width:"65%",justifyContent:"center",alignItems:"center",borderRight:1}}><Text style={styles.form2_text}>{item?.du.split("-")[0]}</Text></View>
@@ -78,10 +78,10 @@ export const BodyT=({item})=>(
         </View>
       </View>
       <View style={[styles.col,{width:"26%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
-        <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.endroit}</Text>
+        <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.Endroit}</Text>
       </View>
       <View style={[styles.col,{width:"25%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
-        <Text style={[styles.form2_text]}>{item?.province}</Text>
+        <Text style={[styles.form2_text]}>{item?.Province}</Text>
       </View>
       <View style={[styles.col,{width:"25%",alignItems:"center",justifyContent:"center"}]}>
         <Text style={[styles.form2_text]}>{item?.pays}</Text>
@@ -90,7 +90,7 @@ export const BodyT=({item})=>(
 )
 
 const MilitaryServiceSection = ({datas}) => (
-  <View style={{ borderWidth: 1, borderColor: "black"}}>
+  <View style={{ borderWidth: 1, borderColor: "black"}} wrap={false}>
     <View style={[styles.row, {}]}>
       <View
         style={{
@@ -119,7 +119,7 @@ const MilitaryServiceSection = ({datas}) => (
             </View>
           </View>
     </View>
-    <View style={{borderTop:1}}>
+    <View style={{borderTop:1}} wrap={false}>
         <HeaderT />
         {datas?.dev?.map((item,index)=>
           <BodyT item={item} key={index}/>

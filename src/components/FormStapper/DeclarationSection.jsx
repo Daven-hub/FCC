@@ -1,5 +1,9 @@
+import { BlobProvider,pdf } from '@react-pdf/renderer';
 import React from 'react';
 import { RecipientData } from '../visaComponent/RecipientData';
+import { FiPlus, FiX } from 'react-icons/fi';
+import MonPdfDocument from '../pdf/MonPdf';
+import prog from "../../datas/immigration.json"
 
 export const DeclarationSection = ({
     declarationAgreed,
@@ -10,6 +14,32 @@ export const DeclarationSection = ({
     selectedRecipient,
     onRecipientChange
 }) => {
+    const dataa=formData.documents[0].corps[3].imageData;
+    const previewPDF =  () => {
+        const newWindow = window.open("", "_blank");
+    newWindow.document.write(`
+      <html>
+        <head>
+          <title>Prévisualisation PDF</title>
+        </head>
+        <body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">
+          <h2>📄 Chargement du PDF...</h2>
+        </body>
+      </html>
+    `);
+
+    // 3. Générer le PDF
+    pdf(<MonPdfDocument datas={prog} datac={formData} forme3={formData?.personalInfo} dataa={dataa} documents={formData.documents} />)
+      .toBlob()
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        newWindow.location.href = url;
+      })
+      .catch((err) => {
+        console.error("Erreur génération PDF:", err);
+        newWindow.document.body.innerHTML = "<p>Erreur lors de la génération du PDF.</p>";
+      });
+      };
     return (
         <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
@@ -41,6 +71,7 @@ export const DeclarationSection = ({
                                 </div>
                             ))}
                         </div>
+
                     </div>
                 </div>
 
@@ -88,6 +119,9 @@ export const DeclarationSection = ({
                     </div>
                 </div>
             </div>
+            <button className='p-2 bg-primary' onClick={previewPDF}>preview pdf</button>
+      
+
         </div>
     );
 };

@@ -18,12 +18,12 @@ function Langue({ datas }) {
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.langueMaternelle}</Text>
             </View>
           </View>
           <View style={{ width: "45%", padding: 3, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>*b) Pouvez vous communiquer en anglais français ou dans les deux langues?</Text>
-            <Text style={styles.form3_input}>{datas?.prenom}</Text>
+            <Text style={styles.form3_input}>{datas?.communiqueFrancaisAnglaisDeuxLangues}</Text>
           </View>
           <View
             style={{
@@ -33,7 +33,7 @@ function Langue({ datas }) {
               gap: 2
             }}>
             <Text style={styles.form2_text}>c) Dans quelle langue êtes vous le plus à l'aise?</Text>
-            <Text style={styles.form3_input}>{datas?.prenom}</Text>
+            <Text style={styles.form3_input}>{datas?.languePlusAise}</Text>
           </View>
         </View>
         <View style={[styles.row, { gap: 4, padding: 3, alignItems: "center", borderBottom: 1, borderRight: 1, borderLeft: 1 }]}>

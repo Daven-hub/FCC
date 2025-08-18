@@ -24,7 +24,7 @@ function Passport({ datas }) {
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.numero}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "30%", borderColor: "black" }}>
@@ -43,7 +43,7 @@ function Passport({ datas }) {
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.paysDelivrance}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "20%", borderColor: "black" }}>
@@ -62,7 +62,7 @@ function Passport({ datas }) {
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateDelivrance}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "20%", borderColor: "black" }}>
@@ -81,7 +81,7 @@ function Passport({ datas }) {
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.nom}</Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateExpiration}</Text>
             </View>
           </View>
         </View>

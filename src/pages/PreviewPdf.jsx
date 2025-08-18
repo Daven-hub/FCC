@@ -56,12 +56,12 @@ const PdfPreviewer = () => {
           <button disabled>Chargement...</button>
         ) : (
           // <button onClick={() => window.open(url)}>Voir le PDF</button>
-          <iframe src={url} width="100%" height="600" title="Aperçu PDF" />
+          <iframe src={url} width="100%" className="h-[100vh]" title="Aperçu PDF" />
         )
       }
     </BlobProvider>
 
-      <button onClick={sendPdfByEmail}>Envoyer par email</button>
+      {/* <button onClick={sendPdfByEmail}>Envoyer par email</button> */}
     </div>
   );
 };
