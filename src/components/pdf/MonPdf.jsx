@@ -385,7 +385,7 @@ const PageTemplate = ({ datas, image, type, nom, email, Custom }) => (
   </Page>
 );
 
-const MonPdfDocument = ({ datas, datac, forme3, dataa, documents }) => {
+const MonPdfDocument = ({ datac, dataa, documents }) => {
   // console.log("dataaa",dataa)
   const fam = datac?.familyInfo;
   const familes = {
@@ -555,33 +555,33 @@ const MonPdfDocument = ({ datas, datac, forme3, dataa, documents }) => {
   return (
     <Document>
       <PageTemplate
-        nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
-        type={datas?.formulaireVisa?.informationsGenerales?.visa}
-        email={datas?.formulaireVisa?.coordonnees?.adresseElectronique}
+        nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        type={datac?.formulaireVisa?.informationsGenerales?.visa}
+        email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
         datas={{ titre: "Demande de visa de visiteur (visa de résident temporaire)" }}
         Custom={<Form3 datas={datac?.formulaireVisa} />}
       />
       <PageTemplate
-         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
-        type={datas?.formulaireVisa?.informationsGenerales?.visa}
-        email={datas?.formulaireVisa?.coordonnees?.adresseElectronique}
+         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        type={datac?.formulaireVisa?.informationsGenerales?.visa}
+        email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
         datas={{ titre: "INFORMATION SUR LA FAMILLE" }}
         Custom={<PageFamille datas={familes} />}
       />
       <PageTemplate
-         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
-        type={datas?.formulaireVisa?.informationsGenerales?.visa}
-        email={datas?.formulaireVisa?.coordonnees?.adresseElectronique}
+         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        type={datac?.formulaireVisa?.informationsGenerales?.visa}
+        email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
         datas={{ titre: "Demande de statut de résident temporaire" }}
         Custom={<MainForm datas={datac?.resident} />}
       />
       <PageTemplate
-         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
-        type={datas?.formulaireVisa?.informationsGenerales?.visa}
-        email={datas?.formulaireVisa?.coordonnees?.adresseElectronique}
+         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        type={datac?.formulaireVisa?.informationsGenerales?.visa}
+        email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
         datas={{ titre: "PIÈCES JOINTES" }}
         Custom={<PieceJointe datas={documents} />}

@@ -17,6 +17,7 @@ export const submitCanadianForm = async (formData) => {
   }
 };
 
+ 
 
 
 
@@ -33,17 +34,12 @@ export const submitCombinedApplication = async (formData) => {
       },
     };
 
-    // const response = await axios.post(
-    //   'http://localhost:84/',
-    //   formData,
-    //   config
-    // );
-
-    await axios.post(
+    const response= await axios.post(
       'http://localhost:84/',
       formData,
       config
     );
+    
 
     // if (!response.data) {
     //     throw new Error("Pas de réponse du serveur");
@@ -55,6 +51,7 @@ export const submitCombinedApplication = async (formData) => {
     // } else {
     //   showErrorToast("Erreur inconnue du serveur");
     // }
+    console.log(response);
   } catch (error) {
     showErrorToast(error.message || "Erreur lors de la soumission");
     throw error;
