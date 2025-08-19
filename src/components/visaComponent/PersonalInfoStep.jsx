@@ -1029,11 +1029,13 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
             </div>
 
             {/* Section Coordonnées */}
+            {/* Section Coordonnées */}
             <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Coordonnées</h3>
 
-                <h4 className="text-md font-medium text-gray-800 mb-2">Adresse postale actuelle</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Adresse postale actuelle */}
+                <h4 className="text-md font-medium text-gray-800 mb-2">1. Adresse postale actuelle</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Case postale</label>
                         <input
@@ -1043,7 +1045,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Appartement/Unité</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">No d'app/unité</label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.noAppUnite}
@@ -1076,7 +1078,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire</label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.pays}
@@ -1110,216 +1112,235 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                     </div>
                 </div>
 
-                <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Votre adresse domicile est-elle identique à votre adresse postale ?</label>
-                    <div className="flex gap-4 mt-1">
-                        <label className="flex items-center">
-                            <input
-                                type="radio"
-                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === true}
-                                onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', true)}
-                                required
-                            />
-                            <span className="ml-2">Oui</span>
-                        </label>
-                        <label className="flex items-center">
-                            <input
-                                type="radio"
-                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === false}
-                                onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', false)}
-                            />
-                            <span className="ml-2">Non</span>
-                        </label>
-                    </div>
+                {/* Adresse du domicile */}
+                <h4 className="text-md font-medium text-gray-800 mb-2">2. Adresse du domicile</h4>
+                <div className="flex items-center mb-4">
+                    <input
+                        type="checkbox"
+                        id="identiqueAdressePostale"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale}
+                        onChange={e => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', e.target.checked)}
+                    />
+                    <label htmlFor="identiqueAdressePostale" className="ml-2 block text-sm text-gray-700">
+                        Identique à l'adresse postale actuelle
+                    </label>
                 </div>
 
                 {!formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale && (
-                    <>
-                        <h4 className="text-md font-medium text-gray-800 mt-4 mb-2">Adresse domicile</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Appartement/Unité</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.coordonnees.adresseDomicile.noAppUnite}
-                                    onChange={e => handleChange('coordonnees.adresseDomicile.noAppUnite', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de rue</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.coordonnees.adresseDomicile.numeroRue}
-                                    onChange={e => handleChange('coordonnees.adresseDomicile.numeroRue', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nom de rue</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.coordonnees.adresseDomicile.nomRue}
-                                    onChange={e => handleChange('coordonnees.adresseDomicile.nomRue', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.coordonnees.adresseDomicile.villeVillage}
-                                    onChange={e => handleChange('coordonnees.adresseDomicile.villeVillage', e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.coordonnees.adresseDomicile.pays}
-                                    onChange={e => handleChange('coordonnees.adresseDomicile.pays', e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Province/État</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.coordonnees.adresseDomicile.provinceEtat}
-                                    onChange={e => handleChange('coordonnees.adresseDomicile.provinceEtat', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Code postal</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.coordonnees.adresseDomicile.codePostal}
-                                    onChange={e => handleChange('coordonnees.adresseDomicile.codePostal', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">District</label>
-                                <input
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.formulaireVisa.coordonnees.adresseDomicile.district}
-                                    onChange={e => handleChange('coordonnees.adresseDomicile.district', e.target.value)}
-                                />
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Nom de rue</label>
+                            <input
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.formulaireVisa.coordonnees.adresseDomicile.nomRue1}
+                                onChange={e => handleChange('coordonnees.adresseDomicile.nomRue1', e.target.value)}
+                            />
                         </div>
-                    </>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Nom de rue (suite)</label>
+                            <input
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.formulaireVisa.coordonnees.adresseDomicile.nomRue2}
+                                onChange={e => handleChange('coordonnees.adresseDomicile.nomRue2', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village</label>
+                            <input
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.formulaireVisa.coordonnees.adresseDomicile.villeVillage}
+                                onChange={e => handleChange('coordonnees.adresseDomicile.villeVillage', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire</label>
+                            <input
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.formulaireVisa.coordonnees.adresseDomicile.pays}
+                                onChange={e => handleChange('coordonnees.adresseDomicile.pays', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Province/État</label>
+                            <input
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.formulaireVisa.coordonnees.adresseDomicile.provinceEtat}
+                                onChange={e => handleChange('coordonnees.adresseDomicile.provinceEtat', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Code postal</label>
+                            <input
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.formulaireVisa.coordonnees.adresseDomicile.codePostal}
+                                onChange={e => handleChange('coordonnees.adresseDomicile.codePostal', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">District</label>
+                            <input
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.formulaireVisa.coordonnees.adresseDomicile.district}
+                                onChange={e => handleChange('coordonnees.adresseDomicile.district', e.target.value)}
+                            />
+                        </div>
+                    </div>
                 )}
 
-                <h4 className="text-md font-medium text-gray-800 mt-6 mb-2">Coordonnées téléphoniques</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Type de téléphone</label>
-                        <select
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.formulaireVisa.coordonnees.telephone.type}
-                            onChange={e => handleChange('coordonnees.telephone.type', e.target.value)}
-                            required
-                        >
-                            <option value="">-- Sélectionnez --</option>
-                            <option value="domicile">Domicile</option>
-                            <option value="mobile">Mobile</option>
-                            <option value="bureau">Bureau</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Indicatif du pays</label>
-                        <input
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.formulaireVisa.coordonnees.telephone.indicatifPays}
-                            onChange={e => handleChange('coordonnees.telephone.indicatifPays', e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label>
-                        <input
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.formulaireVisa.coordonnees.telephone.numero}
-                            onChange={e => handleChange('coordonnees.telephone.numero', e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Poste (si applicable)</label>
-                        <input
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.formulaireVisa.coordonnees.telephone.poste}
-                            onChange={e => handleChange('coordonnees.telephone.poste', e.target.value)}
-                        />
-                    </div>
+                {/* Numéros de téléphone */}
+                <h4 className="text-md font-medium text-gray-800 mb-2">3. Numéro de téléphone</h4>
+                <div className="space-y-4 mb-4">
+                    {formData.formulaireVisa.coordonnees.telephones.map((phone, index) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={phone.type}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'type', e.target.value)}
+                                    >
+                                        <option value="">-- Sélectionnez --</option>
+                                        <option value="Résidence">Résidence</option>
+                                        <option value="Cellulaire">Cellulaire</option>
+                                        <option value="Au travail">Au travail</option>
+                                    </select>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id={`isCanada-${index}`}
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                        checked={phone.isCanada}
+                                        onChange={(e) => {
+                                            handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'isCanada', e.target.checked);
+                                            // Si isCanada est coché, on met l'indicatif à "1"
+                                            if (e.target.checked) {
+                                                handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "1");
+                                            } else {
+                                                handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "");
+                                            }
+                                        }}
+                                    />
+                                    <label htmlFor={`isCanada-${index}`} className="ml-2 block text-sm text-gray-700">
+                                        Canada/États-Unis
+                                    </label>
+                                </div>
+                                {!phone.isCanada && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Indicatif de pays</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={phone.indicatifPays}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', e.target.value)}
+                                            placeholder="Ex: 33 pour la France"
+                                        />
+                                    </div>
+                                )}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Numéro</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={phone.numero}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'numero', e.target.value)}
+                                        placeholder="Ex: 612345678"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Poste (si applicable)</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={phone.poste}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'poste', e.target.value)}
+                                        placeholder="Extension"
+                                    />
+                                </div>
+                            </div>
+                            {index > 0 && (
+                                <button
+                                    type="button"
+                                    className="mt-2 text-red-600 text-sm"
+                                    onClick={() => removeArrayEntry('formulaireVisa', 'coordonnees.telephones', index)}
+                                >
+                                    Supprimer ce numéro
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        onClick={() => addArrayEntry('formulaireVisa', 'coordonnees.telephones', {
+                            type: "",
+                            isCanada: false,
+                            autre: "",
+                            indicatifPays: "",
+                            numero: "",
+                            poste: ""
+                        })}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        Ajouter un autre numéro
+                    </button>
                 </div>
 
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Télécopieur */}
+                <h4 className="text-md font-medium text-gray-800 mb-2">4. Numéro de télécopieur</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Type d'autre téléphone</label>
-                        <select
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.formulaireVisa.coordonnees.autreTelephone.type}
-                            onChange={e => handleChange('coordonnees.autreTelephone.type', e.target.value)}
-                        >
-                            <option value="">-- Sélectionnez --</option>
-                            <option value="domicile">Domicile</option>
-                            <option value="mobile">Mobile</option>
-                            <option value="bureau">Bureau</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Indicatif du pays</label>
-                        <input
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.formulaireVisa.coordonnees.autreTelephone.indicatifPays}
-                            onChange={e => handleChange('coordonnees.autreTelephone.indicatifPays', e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label>
-                        <input
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.formulaireVisa.coordonnees.autreTelephone.numero}
-                            onChange={e => handleChange('coordonnees.autreTelephone.numero', e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Poste (si applicable)</label>
-                        <input
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.formulaireVisa.coordonnees.autreTelephone.poste}
-                            onChange={e => handleChange('coordonnees.autreTelephone.poste', e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Type de télécopieur</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
                         <select
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.telecopieur.type}
                             onChange={e => handleChange('coordonnees.telecopieur.type', e.target.value)}
                         >
                             <option value="">-- Sélectionnez --</option>
-                            <option value="domicile">Domicile</option>
-                            <option value="bureau">Bureau</option>
+                            <option value="Résidence">Résidence</option>
+                            <option value="Cellulaire">Cellulaire</option>
+                            <option value="Au travail">Au travail</option>
                         </select>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Indicatif du pays</label>
+                    <div className="flex items-center">
                         <input
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.formulaireVisa.coordonnees.telecopieur.indicatifPays}
-                            onChange={e => handleChange('coordonnees.telecopieur.indicatifPays', e.target.value)}
+                            type="checkbox"
+                            id="isCanadaFax"
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            checked={formData.formulaireVisa.coordonnees.telecopieur.isCanada}
+                            onChange={(e) => {
+                                handleChange('coordonnees.telecopieur.isCanada', e.target.checked);
+                                // Si isCanada est coché, on met l'indicatif à "1"
+                                if (e.target.checked) {
+                                    handleChange('coordonnees.telecopieur.indicatifPays', "1");
+                                } else {
+                                    handleChange('coordonnees.telecopieur.indicatifPays', "");
+                                }
+                            }}
                         />
+                        <label htmlFor="isCanadaFax" className="ml-2 block text-sm text-gray-700">
+                            Canada/États-Unis
+                        </label>
                     </div>
+                    {!formData.formulaireVisa.coordonnees.telecopieur.isCanada && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Indicatif de pays</label>
+                            <input
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.formulaireVisa.coordonnees.telecopieur.indicatifPays}
+                                onChange={e => handleChange('coordonnees.telecopieur.indicatifPays', e.target.value)}
+                                placeholder="Ex: 33 pour la France"
+                            />
+                        </div>
+                    )}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de télécopieur</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro</label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.telecopieur.numero}
                             onChange={e => handleChange('coordonnees.telecopieur.numero', e.target.value)}
+                            placeholder="Ex: 612345678"
                         />
                     </div>
                     <div>
@@ -1328,24 +1349,26 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.telecopieur.poste}
                             onChange={e => handleChange('coordonnees.telecopieur.poste', e.target.value)}
+                            placeholder="Extension"
                         />
                     </div>
                 </div>
 
-                <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Adresse électronique</label>
+                {/* Adresse électronique */}
+                <h4 className="text-md font-medium text-gray-800 mb-2">5. Adresse électronique</h4>
+                <div className="mb-4">
                     <input
                         type="email"
                         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={formData.formulaireVisa.coordonnees.adresseElectronique}
                         onChange={e => handleChange('coordonnees.adresseElectronique', e.target.value)}
+                        placeholder="exemple@domaine.com"
                         required
                     />
                 </div>
             </div>
-
             {/* Section Visite au Canada */}
-            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+            {/* <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Visite au Canada</h3>
 
                 <div>
@@ -1377,7 +1400,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                 )}
-            </div>
+            </div> */}
 
 
 

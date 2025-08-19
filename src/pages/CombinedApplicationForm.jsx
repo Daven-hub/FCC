@@ -8,9 +8,9 @@ import { FamilyInfoStep } from '../components/visaComponent/FamilyInfoStep';
 import { DocumentsStep } from '../components/visaComponent/DocumentsStep';
 import Stepper from '../components/visaComponent/Stepper';
 import FormNavigation from '../components/visaComponent/FormNavigation';
-import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 import { DeclarationSection } from '../components/FormStapper/DeclarationSection';
 import { RecipientData } from '../components/visaComponent/RecipientData';
+import RecipientModal from '../components/visaComponent/RecipientModal';
 import { pdf } from '@react-pdf/renderer';
 import MonPdfDocument from '../components/pdf/MonPdf';
 
@@ -20,11 +20,13 @@ const CombinedApplicationForme = () => {
     const [formData, setFormData] = useState({
         ...initialFormData,
         declarationAgreed: false,
-        selectedRecipient: RecipientData.One.email // Valeur par défaut
+        selectedRecipient: RecipientData.One.email
     });
     const [submitStatus, setSubmitStatus] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({});
     const [submittedData, setSubmittedData] = useState(null);
+    const [showRecipientModal, setShowRecipientModal] = useState(false);
+
 
     useEffect(() => {
         const { nom, prenoms } = formData.formulaireVisa.donneesPersonnelles.nomComplet;
@@ -188,6 +190,19 @@ const CombinedApplicationForme = () => {
             return;
         }
 
+        // Récupérer le titre et le type du document
+        const document = formData.documents[sectionIndex].corps[docIndex];
+        const doc = formData.formulaireVisa.donneesPersonnelles.nomComplet
+        const titre = document.titre.replace(/[^a-zA-Z0-9]/g, '_'); // Nettoyer le titre pour le nom de fichier
+        const type = doc.nom.toLowerCase();
+
+        // Créer le nouveau nom de fichier
+        const originalExtension = file.name.split('.').pop();
+        const newFileName = `${titre}_${type}.${originalExtension}`;
+
+        // Créer un nouveau fichier avec le nom modifié
+        const renamedFile = new File([file], newFileName, { type: file.type });
+
         if (file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -203,9 +218,9 @@ const CombinedApplicationForme = () => {
                     newDocuments[sectionIndex].corps[docIndex] = {
                         ...newDocuments[sectionIndex].corps[docIndex],
                         provided: true,
-                        file: file,
+                        file: renamedFile, // Utiliser le fichier renommé
                         imageData: imageData,
-                        name: file.name,
+                        name: newFileName, // Utiliser le nouveau nom
                         size: file.size,
                         type: file.type,
                         uploadDate: new Date().toISOString()
@@ -217,7 +232,7 @@ const CombinedApplicationForme = () => {
                     };
                 });
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(renamedFile);
         } else {
             setFormData(prev => {
                 const newDocuments = [...prev.documents];
@@ -229,8 +244,8 @@ const CombinedApplicationForme = () => {
                 newDocuments[sectionIndex].corps[docIndex] = {
                     ...newDocuments[sectionIndex].corps[docIndex],
                     provided: true,
-                    file: file,
-                    name: file.name,
+                    file: renamedFile, // Utiliser le fichier renommé
+                    name: newFileName, // Utiliser le nouveau nom
                     size: file.size,
                     type: file.type,
                     uploadDate: new Date().toISOString()
@@ -247,7 +262,7 @@ const CombinedApplicationForme = () => {
             ...prev,
             [`${sectionIndex}-${docIndex}`]: {
                 progress: 0,
-                fileName: file.name
+                fileName: newFileName // Afficher le nouveau nom dans la progression
             }
         }));
 
@@ -381,10 +396,15 @@ const CombinedApplicationForme = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e?.preventDefault();
         setSubmitStatus("loading");
     
         try {
+            const formDataToSend = new FormData();
+
+            const filteredPersonalInfo = {
+                ...formData.formulaireVisa
+            };
 
           const dataa = formData.documents[0].corps[3].imageData;
  
@@ -418,11 +438,28 @@ const CombinedApplicationForme = () => {
           await submitCombinedApplication(formDataToSend);
         //   setSubmitStatus("success");
         //   setSubmittedData(applicationData);
+      setShowRecipientModal(false);
         } catch (error) {
           console.error("Erreur de soumission:", error);
           setSubmitStatus("error");
         }
       };
+
+    const handleRecipientChang = (email) => {
+        setFormData(prev => ({
+            ...prev,
+            selectedRecipient: email
+        }));
+    };
+
+    const handleOpenRecipientModal = () => {
+        if (!formData.declarationAgreed) {
+            showErrorToast("Veuillez accepter la déclaration avant de soumettre");
+            return;
+        }
+        setShowRecipientModal(true);
+    };
+
 
     const steps = [
         {
@@ -474,8 +511,6 @@ const CombinedApplicationForme = () => {
                     showPreview={showPreview}
                     onTogglePreview={() => setShowPreview(!showPreview)}
                     formData={formData}
-                    selectedRecipient={formData.selectedRecipient}
-                    onRecipientChange={handleRecipientChange}
                 />
             )
         }
@@ -548,8 +583,18 @@ const CombinedApplicationForme = () => {
                             validateCurrentStep={validateCurrentStep}
                             submitStatus={submitStatus}
                             formData={formData}
+                            onOpenRecipientModal={handleOpenRecipientModal}
                         />
                     </form>
+
+                    <RecipientModal
+                        isOpen={showRecipientModal}
+                        onClose={() => setShowRecipientModal(false)}
+                        selectedRecipient={formData.selectedRecipient}
+                        onRecipientChange={handleRecipientChange}
+                        onSubmit={handleSubmit} // On passe directement la fonction
+                        formData={formData}
+                    />
                 </div>
 
                 <div className="mt-8 text-center">

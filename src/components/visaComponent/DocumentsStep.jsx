@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { FiCheck, FiX, FiPlus, FiTrash2, FiUpload, FiChevronLeft, FiChevronRight, FiInfo } from 'react-icons/fi';
 
-
-
 export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, handleRemoveFile, handleConditionChange }) => {
-
     const FileUpload = ({ sectionIndex, docIndex, label, required, specifications, period, condition, onConditionChange }) => {
         const docState = formData.documents[sectionIndex].corps[docIndex];
         const uploadState = uploadProgress[`${sectionIndex}-${docIndex}`];
@@ -24,7 +21,7 @@ export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, hand
                 : "Formats PDF, JPG, JPEG ou PNG";
 
         return (
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="mb-4 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
                 {condition && (
                     <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-100">
                         <p className="text-sm font-medium text-gray-700 mb-2">{condition.question}</p>
@@ -51,8 +48,8 @@ export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, hand
                     </div>
                 )}
 
-                <div className="flex justify-between items-start mb-2">
-                    <div>
+                <div className="flex flex-col sm:flex-row justify-between items-start mb-2 gap-2">
+                    <div className="flex-1">
                         <label className="font-medium text-gray-700">
                             {label} {required && <span className="text-red-500">*</span>}
                         </label>
@@ -61,19 +58,19 @@ export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, hand
                         <p className="text-xs text-primary mt-1">{formatDescription}</p>
                     </div>
                     {docState.provided ? (
-                        <span className="flex items-center text-green-600">
+                        <span className="flex items-center text-green-600 whitespace-nowrap">
                             <FiCheck className="mr-1" /> Fourni
                         </span>
                     ) : (
-                        <span className="text-gray-500">Manquant</span>
+                        <span className="text-gray-500 whitespace-nowrap">Manquant</span>
                     )}
                 </div>
 
                 {docState.provided ? (
                     <div className="space-y-2">
                         {docState.type === 'IMAGE' && docState.imageData ? (
-                            <div className="flex flex-col items-center bg-white p-3 rounded border border-green-100">
-                                <div className="relative mb-2">
+                            <div className="flex flex-col sm:flex-row items-center bg-white p-3 rounded border border-green-100">
+                                <div className="relative mb-2 sm:mb-0 sm:mr-4 flex-shrink-0">
                                     <img
                                         src={docState.imageData}
                                         alt="Document visuel"
@@ -85,7 +82,7 @@ export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, hand
                                         </div>
                                     )}
                                 </div>
-                                <div className="w-full text-center">
+                                <div className="w-full text-center sm:text-left">
                                     <p className="text-sm font-medium truncate">{docState.name}</p>
                                     <p className="text-xs text-gray-500">
                                         {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1]?.toUpperCase() || 'IMAGE'}
@@ -94,14 +91,14 @@ export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, hand
                                 <button
                                     type="button"
                                     onClick={() => handleRemoveFile(sectionIndex, docIndex)}
-                                    className="mt-2 text-red-500 hover:text-red-700 p-1"
+                                    className="mt-2 sm:mt-0 text-red-500 hover:text-red-700 p-1 self-end sm:self-center"
                                 >
                                     <FiTrash2 />
                                 </button>
                             </div>
                         ) : (
-                            <div className="flex justify-between items-center bg-white p-3 rounded border border-green-100">
-                                <div>
+                            <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-3 rounded border border-green-100">
+                                <div className="mb-2 sm:mb-0">
                                     <p className="font-medium">{docState.name}</p>
                                     <p className="text-sm text-gray-500">
                                         {(docState.size / 1024).toFixed(1)} KB - {docState.type.split('/')[1]?.toUpperCase() || 'PDF'}
@@ -126,19 +123,19 @@ export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, hand
                                     className="bg-primary h-2.5 rounded-full"
                                     style={{ width: `${uploadState.progress}%` }}
                                 ></div>
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-xs text-gray-500 mt-1 truncate">
                                     Téléversement: {uploadState.progress}% - {uploadState.fileName}
                                 </p>
                             </div>
                         )}
                     </div>
                 ) : (
-                    <label className="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <label className="flex flex-col items-center justify-center w-full py-6 px-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
                         <FiUpload className="w-8 h-8 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 text-center">
                             <span className="font-medium text-primary">Cliquer pour uploader</span> ou glisser-déposer
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-gray-400 mt-1 text-center">
                             Formats acceptés: {getAcceptedFormats()} (max 3.8MB)
                         </p>
                         <input
@@ -153,9 +150,10 @@ export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, hand
             </div>
         );
     };
+
     return (
-        <div className="space-y-8">
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="space-y-6 sm:space-y-8">
+            <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex items-start">
                     <div className="flex-shrink-0 mt-1">
                         <FiInfo className="h-5 w-5 text-primary" />
@@ -183,16 +181,14 @@ export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, hand
             </div>
 
             {formData.documents.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="bg-white p-4 rounded-lg shadow border border-gray-200">
+                <div key={sectionIndex} className="bg-white p-3 sm:p-4 rounded-lg shadow border border-gray-200">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">{section.titre}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         {section.corps.map((doc, docIndex) => {
-                            // Ne pas afficher si le document a une condition et que la réponse est 'non'
                             if (doc.condition && doc.condition.response === 'non') {
                                 return null;
                             }
 
-                            // Afficher tous les autres documents (sans condition ou avec condition 'oui')
                             return (
                                 <FileUpload
                                     key={docIndex}
@@ -211,5 +207,5 @@ export const DocumentsStep = ({ formData, uploadProgress, handleFileUpload, hand
                 </div>
             ))}
         </div>
-    )
-}
+    );
+};
