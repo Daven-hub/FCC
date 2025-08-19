@@ -1,15 +1,24 @@
 import React from 'react';
 import { RecipientData } from './RecipientData';
 
-const RecipientModal = ({ 
-  isOpen, 
-  onClose, 
-  selectedRecipient, 
-  onRecipientChange, 
+const RecipientModal = ({
+  isOpen,
+  onClose,
+  selectedRecipient,
+  onRecipientChange,
   onSubmit,
   formData
 }) => {
   if (!isOpen) return null;
+
+  const handleSubmitAndClose = async () => {
+    try {
+      await onSubmit();
+      onClose(); // Fermer la modal seulement après une soumission réussie
+    } catch (error) {
+      console.error("Erreur lors de la soumission", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -67,7 +76,7 @@ const RecipientModal = ({
             </button>
             <button
               type="button"
-              onClick={onSubmit}
+              onClick={handleSubmitAndClose}
               disabled={!formData.declarationAgreed}
               className={`px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white ${formData.declarationAgreed ? 'bg-primary hover:bg-primary-600' : 'bg-gray-400 cursor-not-allowed'}`}
             >

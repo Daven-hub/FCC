@@ -394,7 +394,7 @@ const CombinedApplicationForme = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e?.preventDefault();
         setSubmitStatus("loading");
 
         try {
@@ -444,7 +444,7 @@ const CombinedApplicationForme = () => {
             });
 
             console.log(formData);
-            
+
 
             await submitCombinedApplication(formDataToSend);
             setSubmitStatus("success");
@@ -603,7 +603,7 @@ const CombinedApplicationForme = () => {
                         onClose={() => setShowRecipientModal(false)}
                         selectedRecipient={formData.selectedRecipient}
                         onRecipientChange={handleRecipientChange}
-                        onSubmit={handleSubmit}
+                        onSubmit={handleSubmit} // On passe directement la fonction
                         formData={formData}
                     />
                 </div>
