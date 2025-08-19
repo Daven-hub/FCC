@@ -84,7 +84,7 @@ export const DeclarationSection = ({
                     </div>
                 </div>
             </div>
-            <button className='p-2 bg-primary' onClick={previewPDF}>preview pdf</button>
+            <button type='button' className='p-2 bg-primary' onClick={previewPDF}>preview pdf</button>
         </div>
     );
 };
