@@ -407,8 +407,7 @@ const CombinedApplicationForme = () => {
             };
 
           const dataa = formData.documents[0].corps[3].imageData;
- 
-          const formDataToSend = new FormData();
+          
         
         formData?.documents.forEach((section, sIndex) => {
             section?.corps.forEach((item, cIndex) => {
