@@ -6,5 +6,9 @@ export const RecipientData = {
     two: {
         nom: "Mme Marthe Epossi",
         email: "m.epossi@franchiseconseils.com"
+    },
+    three: {
+        nom: "Lionel",
+        email: "lionelfotso413@gmail.com"
     }
 };

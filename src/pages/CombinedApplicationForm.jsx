@@ -401,11 +401,6 @@ const CombinedApplicationForme = () => {
     
         try {
             const formDataToSend = new FormData();
-
-            const filteredPersonalInfo = {
-                ...formData.formulaireVisa
-            };
-
           const dataa = formData.documents[0].corps[3].imageData;
           
         
@@ -417,25 +412,26 @@ const CombinedApplicationForme = () => {
               }
             });
           });
-        // await Promise.resolve();    
-          const blob = await pdf(<MonPdfDocument datas={formData} dataa={dataa} documents={formData.documents}/>).toBlob();
+        await Promise.resolve();    
+          const blob = await pdf(<MonPdfDocument datas={formData} dataa={dataa} documents={formData?.documents}/>).toBlob();
     
           formDataToSend.append(
             "pdf",
             blob,
             `${
-              formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet?.nom +
+              "doc_de_"+formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
               "_" +
               formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
             }.pdf`
           );
-          formDataToSend.append("to", "lionelfotso4130@gmail.com");
-          formDataToSend.append("name", "lionel");
+          formDataToSend.append("to", formData?.selectedRecipient);
+          formDataToSend.append("name", `${formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+"_"+formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}`);
     
           console.log([...formDataToSend.entries()]);
+          console.log(formData)
     
           await submitCombinedApplication(formDataToSend);
-        //   setSubmitStatus("success");
+          setSubmitStatus("success");
         //   setSubmittedData(applicationData);
       setShowRecipientModal(false);
         } catch (error) {

@@ -555,7 +555,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
   return (
     <Document>
       <PageTemplate
-        nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
         type={datac?.formulaireVisa?.informationsGenerales?.visa}
         email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
@@ -563,7 +563,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
         Custom={<Form3 datas={datac?.formulaireVisa} />}
       />
       <PageTemplate
-         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
         type={datac?.formulaireVisa?.informationsGenerales?.visa}
         email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
@@ -571,7 +571,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
         Custom={<PageFamille datas={familes} />}
       />
       <PageTemplate
-         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
         type={datac?.formulaireVisa?.informationsGenerales?.visa}
         email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
@@ -579,7 +579,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
         Custom={<MainForm datas={datac?.resident} />}
       />
       <PageTemplate
-         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
         type={datac?.formulaireVisa?.informationsGenerales?.visa}
         email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}

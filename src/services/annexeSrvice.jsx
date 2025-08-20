@@ -35,23 +35,24 @@ export const submitCombinedApplication = async (formData) => {
     };
 
     const response= await axios.post(
-      'http://localhost:84/',
+      '/api/index.php',
       formData,
       config
     );
     
 
-    // if (!response.data) {
-    //     throw new Error("Pas de réponse du serveur");
-    // }
-
-    // if (response.data.status === 'success') {
-    //   showSuccessToast("Soumission réussie");
-    //   return response.data;
-    // } else {
-    //   showErrorToast("Erreur inconnue du serveur");
-    // }
     console.log(response);
+    if (!response.data) {
+        throw new Error("Pas de réponse du serveur");
+    }
+
+    if (response.data.status === 'success') {
+      showSuccessToast("Soumission réussie");
+      return response.data;
+    } else {
+      showErrorToast("Erreur inconnue du serveur");
+    }
+    
   } catch (error) {
     showErrorToast(error.message || "Erreur lors de la soumission");
     throw error;
