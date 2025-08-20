@@ -8,6 +8,8 @@ import prog from "../../datas/immigration.json"
 export const DeclarationSection = ({
     declarationAgreed,
     onAgreementChange,
+    showPreview,
+    onTogglePreview,
     formData
 }) => {
     const dataa = formData.documents[0].corps[3].imageData;

@@ -232,7 +232,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Du</label>
                             <input
@@ -251,7 +251,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                 onChange={e => handleChange('residence.actuelle.au', e.target.value)}
                             />
                         </div>
-                    </div>
+                    </div> */}
 
                 </div>
 
@@ -561,7 +561,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                     required
                                 />
                             </div>
-                            <div>
+                            {/* <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance du conjoint</label>
                                 <input
                                     type="date"
@@ -570,7 +570,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                     onChange={e => handleChange('etatMatrimonial.conjoint.dateNaissance', e.target.value)}
                                     required
                                 />
-                            </div>
+                            </div> */}
                         </div>
                     </>
                 )}
@@ -1029,21 +1029,20 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
             </div>
 
             {/* Section Coordonnées */}
-            {/* Section Coordonnées */}
             <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Coordonnées</h3>
 
                 {/* Adresse postale actuelle */}
                 <h4 className="text-md font-medium text-gray-800 mb-2">1. Adresse postale actuelle</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
+                    {/* <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Case postale</label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.casePostale}
                             onChange={e => handleChange('coordonnees.adressePostaleActuelle.casePostale', e.target.value)}
                         />
-                    </div>
+                    </div> */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">No d'app/unité</label>
                         <input
@@ -1113,20 +1112,37 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 </div>
 
                 {/* Adresse du domicile */}
+                {/* Adresse du domicile */}
                 <h4 className="text-md font-medium text-gray-800 mb-2">2. Adresse du domicile</h4>
-                <div className="flex items-center mb-4">
-                    <input
-                        type="checkbox"
-                        id="identiqueAdressePostale"
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale}
-                        onChange={e => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', e.target.checked)}
-                    />
-                    <label htmlFor="identiqueAdressePostale" className="ml-2 block text-sm text-gray-700">
-                        Identique à l'adresse postale actuelle
+
+                {/* Nouvelle question avec checkbox Oui/Non */}
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        L'adresse du domicile est-elle identique à l'adresse postale actuelle ?
                     </label>
+                    <div className="flex gap-4 mt-1">
+                        <label className="flex items-center">
+                            <input
+                                type="radio"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === true}
+                                onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', true)}
+                            />
+                            <span className="ml-2">Oui</span>
+                        </label>
+                        <label className="flex items-center">
+                            <input
+                                type="radio"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                checked={formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale === false}
+                                onChange={() => handleChange('coordonnees.adresseDomicile.identiqueAdressePostale', false)}
+                            />
+                            <span className="ml-2">Non</span>
+                        </label>
+                    </div>
                 </div>
 
+                {/* Condition pour afficher les champs d'adresse si "Non" est sélectionné */}
                 {!formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
@@ -1247,7 +1263,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                         placeholder="Ex: 612345678"
                                     />
                                 </div>
-                                <div>
+                                {/* <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Poste (si applicable)</label>
                                     <input
                                         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1255,7 +1271,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                         onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'poste', e.target.value)}
                                         placeholder="Extension"
                                     />
-                                </div>
+                                </div> */}
                             </div>
                             {index > 0 && (
                                 <button
@@ -1288,7 +1304,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 </div>
 
                 {/* Télécopieur */}
-                <h4 className="text-md font-medium text-gray-800 mb-2">4. Numéro de télécopieur</h4>
+                {/* <h4 className="text-md font-medium text-gray-800 mb-2">4. Numéro de télécopieur</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
@@ -1352,7 +1368,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             placeholder="Extension"
                         />
                     </div>
-                </div>
+                </div> */}
 
                 {/* Adresse électronique */}
                 <h4 className="text-md font-medium text-gray-800 mb-2">5. Adresse électronique</h4>
@@ -1365,6 +1381,351 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         placeholder="exemple@domaine.com"
                         required
                     />
+                </div>
+            </div>
+            {/* Section Scolarité */}
+            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Scolarité</h3>
+
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Avez-vous reçu une éducation postsecondaire (y compris l'université, le collège ou une formation en apprentissage)?
+                    </label>
+                    <div className="flex gap-4 mt-1">
+                        <label className="flex items-center">
+                            <input
+                                type="radio"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                checked={formData.formulaireVisa.scolarite.educationPostsecondaire === false}
+                                onChange={() => handleChange('scolarite.educationPostsecondaire', false)}
+                            />
+                            <span className="ml-2">Non</span>
+                        </label>
+                        <label className="flex items-center">
+                            <input
+                                type="radio"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                checked={formData.formulaireVisa.scolarite.educationPostsecondaire === true}
+                                onChange={() => handleChange('scolarite.educationPostsecondaire', true)}
+                            />
+                            <span className="ml-2">Oui</span>
+                        </label>
+                    </div>
+                </div>
+
+                {formData.formulaireVisa.scolarite.educationPostsecondaire && (
+                    <div className="space-y-4">
+                        <h4 className="text-md font-medium text-gray-800 mb-2">
+                            Si vous avez répondu "oui", veuillez fournir tous les détails sur vos études postsecondaires les plus récentes.
+                        </h4>
+
+                        {(formData.formulaireVisa.scolarite.etudes || []).map((etude, index) => (
+                            <div key={index} className="border border-gray-200 rounded-lg p-4 relative">
+                                <button
+                                    type="button"
+                                    className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+                                    onClick={() => removeArrayEntry('formulaireVisa', 'scolarite.etudes', index)}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">De (Année)</label>
+                                        <input
+                                            type="number"
+                                            placeholder="AAAA"
+                                            min="1900"
+                                            max="2100"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            value={etude.deAnnee || ''}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'scolarite.etudes', index, 'deAnnee', e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">De (Mois)</label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            value={etude.deMois || ''}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'scolarite.etudes', index, 'deMois', e.target.value)}
+                                        >
+                                            <option value="">Mois</option>
+                                            <option value="01">Janvier</option>
+                                            <option value="02">Février</option>
+                                            <option value="03">Mars</option>
+                                            <option value="04">Avril</option>
+                                            <option value="05">Mai</option>
+                                            <option value="06">Juin</option>
+                                            <option value="07">Juillet</option>
+                                            <option value="08">Août</option>
+                                            <option value="09">Septembre</option>
+                                            <option value="10">Octobre</option>
+                                            <option value="11">Novembre</option>
+                                            <option value="12">Décembre</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">À (Année)</label>
+                                        <input
+                                            type="number"
+                                            placeholder="AAAA"
+                                            min="1900"
+                                            max="2100"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            value={etude.aAnnee || ''}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'scolarite.etudes', index, 'aAnnee', e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">À (Mois)</label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            value={etude.aMois || ''}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'scolarite.etudes', index, 'aMois', e.target.value)}
+                                        >
+                                            <option value="">Mois</option>
+                                            <option value="01">Janvier</option>
+                                            <option value="02">Février</option>
+                                            <option value="03">Mars</option>
+                                            <option value="04">Avril</option>
+                                            <option value="05">Mai</option>
+                                            <option value="06">Juin</option>
+                                            <option value="07">Juillet</option>
+                                            <option value="08">Août</option>
+                                            <option value="09">Septembre</option>
+                                            <option value="10">Octobre</option>
+                                            <option value="11">Novembre</option>
+                                            <option value="12">Décembre</option>
+                                        </select>
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Domaine d'études</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            value={etude.domaine || ''}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'scolarite.etudes', index, 'domaine', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">École/Nom de l'établissement</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            value={etude.ecole || ''}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'scolarite.etudes', index, 'ecole', e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            value={etude.ville || ''}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'scolarite.etudes', index, 'ville', e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            value={etude.pays || ''}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'scolarite.etudes', index, 'pays', e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Province/État</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            value={etude.province || ''}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'scolarite.etudes', index, 'province', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+
+                        <button
+                            type="button"
+                            className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            onClick={() => addArrayEntry('formulaireVisa', 'scolarite.etudes', {
+                                deAnnee: '',
+                                deMois: '',
+                                aAnnee: '',
+                                aMois: '',
+                                domaine: '',
+                                ecole: '',
+                                ville: '',
+                                pays: '',
+                                province: ''
+                            })}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                            </svg>
+                            Ajouter une autre étude
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* Section Emploi */}
+            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Emploi</h3>
+
+                <p className="text-sm text-gray-600 mb-4">
+                    Fournir des détails sur les emplois que vous avez occupés au cours des 10 dernières années,
+                    y compris si vous avez occupé des postes gouvernementaux (par exemple fonctionnaire, juge,
+                    agent de police, maire, député, administrateur d'hôpital, employé d'une agence de sécurité).
+                    Ne pas laisser de lacunes. Si vous êtes à la retraite, sans travail ou non aux études, veuillez l'indiquer.
+                    Dans le cas des retraités, veuillez fournir des détails sur les 10 années précédant votre retraite.
+                </p>
+
+                <div className="space-y-4">
+                    {(formData.formulaireVisa.emploi.emplois || []).map((emploi, index) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4 relative">
+                            <button
+                                type="button"
+                                className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+                                onClick={() => removeArrayEntry('formulaireVisa', 'emploi.emplois', index)}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">De (Année)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="AAAA"
+                                        min="1900"
+                                        max="2100"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={emploi.deAnnee || ''}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'emploi.emplois', index, 'deAnnee', e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">De (Mois)</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={emploi.deMois || ''}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'emploi.emplois', index, 'deMois', e.target.value)}
+                                    >
+                                        <option value="">Mois</option>
+                                        <option value="01">Janvier</option>
+                                        <option value="02">Février</option>
+                                        <option value="03">Mars</option>
+                                        <option value="04">Avril</option>
+                                        <option value="05">Mai</option>
+                                        <option value="06">Juin</option>
+                                        <option value="07">Juillet</option>
+                                        <option value="08">Août</option>
+                                        <option value="09">Septembre</option>
+                                        <option value="10">Octobre</option>
+                                        <option value="11">Novembre</option>
+                                        <option value="12">Décembre</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">À (Année)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="AAAA"
+                                        min="1900"
+                                        max="2100"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={emploi.aAnnee || ''}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'emploi.emplois', index, 'aAnnee', e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">À (Mois)</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={emploi.aMois || ''}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'emploi.emplois', index, 'aMois', e.target.value)}
+                                    >
+                                        <option value="">Mois</option>
+                                        <option value="01">Janvier</option>
+                                        <option value="02">Février</option>
+                                        <option value="03">Mars</option>
+                                        <option value="04">Avril</option>
+                                        <option value="05">Mai</option>
+                                        <option value="06">Juin</option>
+                                        <option value="07">Juillet</option>
+                                        <option value="08">Août</option>
+                                        <option value="09">Septembre</option>
+                                        <option value="10">Octobre</option>
+                                        <option value="11">Novembre</option>
+                                        <option value="12">Décembre</option>
+                                    </select>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Activité/Profession</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={emploi.activite || ''}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'emploi.emplois', index, 'activite', e.target.value)}
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Entreprise/Employeur/Nom de l'établissement</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={emploi.employeur || ''}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'emploi.emplois', index, 'employeur', e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={emploi.ville || ''}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'emploi.emplois', index, 'ville', e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={emploi.pays || ''}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'emploi.emplois', index, 'pays', e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Province/État</label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={emploi.province || ''}
+                                        onChange={e => handleArrayChange('formulaireVisa', 'emploi.emplois', index, 'province', e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    <button
+                        type="button"
+                        className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        onClick={() => addArrayEntry('formulaireVisa', 'emploi.emplois', {
+                            deAnnee: '',
+                            deMois: '',
+                            aAnnee: '',
+                            aMois: '',
+                            activite: '',
+                            employeur: '',
+                            ville: '',
+                            pays: '',
+                            province: ''
+                        })}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        Ajouter un autre emploi
+                    </button>
                 </div>
             </div>
             {/* Section Visite au Canada */}

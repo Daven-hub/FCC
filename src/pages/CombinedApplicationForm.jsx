@@ -11,8 +11,6 @@ import FormNavigation from '../components/visaComponent/FormNavigation';
 import { DeclarationSection } from '../components/FormStapper/DeclarationSection';
 import { RecipientData } from '../components/visaComponent/RecipientData';
 import RecipientModal from '../components/visaComponent/RecipientModal';
-import { pdf } from '@react-pdf/renderer';
-import MonPdfDocument from '../components/pdf/MonPdf';
 
 const CombinedApplicationForme = () => {
     const [activeStep, setActiveStep] = useState(0);
@@ -398,21 +396,44 @@ const CombinedApplicationForme = () => {
     const handleSubmit = async (e) => {
         e?.preventDefault();
         setSubmitStatus("loading");
-    
+
         try {
             const formDataToSend = new FormData();
-          const dataa = formData.documents[0].corps[3].imageData;
-          
-        
-        formData?.documents.forEach((section, sIndex) => {
-            section?.corps.forEach((item, cIndex) => {
-              if (item?.file) {
-                // const key = item?.titre?.replace(/\s+/g, "_")?.replace(/[^a-zA-Z0-9_]/g, "");
-                formDataToSend.append(`docs[]`, item?.file);
-              }
-            });
-          });
-        await Promise.resolve();    
+      const dataa = formData.documents[0].corps[3].imageData;
+            const filteredPersonalInfo = {
+                ...formData.formulaireVisa
+            };
+
+            const filteredResident = {
+                ...formData.resident,
+                body: {
+                    military: formData.resident.body.military.isOk === "oui" ? formData.resident.body.military : { isOk: "non", dev: [] },
+                    temoin: formData.resident.body.temoin.isOk === "oui" ? formData.resident.body.temoin : { isOk: "non", dev: [] },
+                    affiliation: formData.resident.body.affiliation.isOk === "oui" ? formData.resident.body.affiliation : { isOk: "non", dev: [] },
+                    charges: formData.resident.body.charges.isOk === "oui" ? formData.resident.body.charges : { isOk: "non", dev: [] },
+                    voyages: formData.resident.body.voyages.isOk === "oui" ? formData.resident.body.voyages : { isOk: "non", dev: [] }
+                }
+            };
+
+            const applicationData = {
+                recipientEmail: formData.selectedRecipient,
+                formulaireVisa: filteredPersonalInfo,
+                resident: filteredResident,
+                familyInfo: formData.familyInfo,
+                declarationAgreed: formData.declarationAgreed,
+                documents: formData.documents.map(section => ({
+                    id: section.id,
+                    titre: section.titre,
+                    corps: section.corps.map(doc => ({
+                        id: doc.id,
+                        titre: doc.titre,
+                        provided: doc.provided,
+                        required: doc.required
+                    }))
+                }))
+            };
+
+            await Promise.resolve();    
           const blob = await pdf(<MonPdfDocument datas={formData} dataa={dataa} documents={formData?.documents}/>).toBlob();
     
           formDataToSend.append(
@@ -431,14 +452,17 @@ const CombinedApplicationForme = () => {
           console.log(formData)
     
           await submitCombinedApplication(formDataToSend);
-          setSubmitStatus("success");
-        //   setSubmittedData(applicationData);
-      setShowRecipientModal(false);
+
+
+            await submitCombinedApplication(formDataToSend);
+            setSubmitStatus("success");
+            setSubmittedData(applicationData);
+            setShowRecipientModal(false);
         } catch (error) {
-          console.error("Erreur de soumission:", error);
-          setSubmitStatus("error");
+            console.error("Erreur de soumission:", error);
+            setSubmitStatus("error");
         }
-      };
+    };
 
     const handleRecipientChang = (email) => {
         setFormData(prev => ({

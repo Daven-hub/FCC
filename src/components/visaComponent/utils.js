@@ -28,8 +28,8 @@ export const initialFormData = {
                 pays: "",
                 statut: "",
                 statutAutre: "",
-                du: "",
-                au: ""
+                // du: "",
+                // au: ""
 
             },
             anterieure: {
@@ -52,7 +52,7 @@ export const initialFormData = {
             conjoint: {
                 nom: "",
                 prenoms: "",
-                dateNaissance: "",
+                // dateNaissance: "",
             }
         },
         mariage: {
@@ -97,7 +97,7 @@ export const initialFormData = {
         },
         coordonnees: {
             adressePostaleActuelle: {
-                casePostale: "",
+                // casePostale: "",
                 noAppUnite: "",
                 numeroRue: "",
                 nomRue: "",
@@ -124,18 +124,45 @@ export const initialFormData = {
                     autre: false,
                     indicatifPays: "",
                     numero: "",
-                    poste: ""
+                    // poste: ""
                 }
             ],
-            telecopieur: {
-                type: "", // "Résidence", "Cellulaire", "Au travail"
-                isCanada: false,
-                autre: false,
-                indicatifPays: "",
-                numero: "",
-                poste: ""
-            },
+            // telecopieur: {
+            //     type: "", // "Résidence", "Cellulaire", "Au travail"
+            //     isCanada: false,
+            //     autre: false,
+            //     indicatifPays: "",
+            //     numero: "",
+            //     poste: ""
+            // },
             adresseElectronique: ""
+        },
+        scolarite: {
+            educationPostsecondaire: false,
+            etudes: [{
+                deAnnee: '',
+                deMois: '',
+                aAnnee: '',
+                aMois: '',
+                domaine: '',
+                ecole: '',
+                ville: '',
+                pays: '',
+                province: ''
+            }]
+        },
+        emploi: {
+            emplois: [{
+                deAnnee: '',
+                deMois: '',
+                aAnnee: '',
+                aMois: '',
+                activite: '',
+                employeur: '',
+                ville: '',
+                pays: '',
+                province: ''
+            }]
         },
         visiteCanada: {
             objetVisite: "",
