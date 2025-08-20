@@ -11,6 +11,7 @@ import FormNavigation from '../components/visaComponent/FormNavigation';
 import { DeclarationSection } from '../components/FormStapper/DeclarationSection';
 import { RecipientData } from '../components/visaComponent/RecipientData';
 import RecipientModal from '../components/visaComponent/RecipientModal';
+import { pdf } from '@react-pdf/renderer';
 
 const CombinedApplicationForme = () => {
     const [activeStep, setActiveStep] = useState(0);
