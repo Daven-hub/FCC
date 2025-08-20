@@ -360,7 +360,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.adresseElectronique}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.adresseElectronique}</Text>
                   </View>
                 </View>
               </View>
