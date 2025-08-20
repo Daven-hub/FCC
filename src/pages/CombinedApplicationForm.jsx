@@ -399,7 +399,7 @@ const CombinedApplicationForme = () => {
 
         try {
             const formDataToSend = new FormData();
-
+      const dataa = formData.documents[0].corps[3].imageData;
             const filteredPersonalInfo = {
                 ...formData.formulaireVisa
             };
@@ -433,17 +433,25 @@ const CombinedApplicationForme = () => {
                 }))
             };
 
-            formDataToSend.append('applicationData', JSON.stringify(applicationData));
-
-            formData.documents.forEach((section, sectionIndex) => {
-                section.corps.forEach((doc, docIndex) => {
-                    if (doc.provided && doc.file) {
-                        formDataToSend.append(`documents[${section.id}][${doc.id}]`, doc.file);
-                    }
-                });
-            });
-
-            console.log(formData);
+            await Promise.resolve();    
+          const blob = await pdf(<MonPdfDocument datas={formData} dataa={dataa} documents={formData?.documents}/>).toBlob();
+    
+          formDataToSend.append(
+            "pdf",
+            blob,
+            `${
+              "doc_de_"+formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
+              "_" +
+              formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
+            }.pdf`
+          );
+          formDataToSend.append("to", formData?.selectedRecipient);
+          formDataToSend.append("name", `${formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+"_"+formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}`);
+    
+          console.log([...formDataToSend.entries()]);
+          console.log(formData)
+    
+          await submitCombinedApplication(formDataToSend);
 
 
             await submitCombinedApplication(formDataToSend);
