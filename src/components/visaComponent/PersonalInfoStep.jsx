@@ -452,7 +452,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             )}
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Date de début (MM/AAAA)</label>
                                 <input
@@ -475,7 +475,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                     required
                                 />
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 )}
             </div>
