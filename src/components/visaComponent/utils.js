@@ -196,8 +196,7 @@ export const initialFormData = {
             }
         },
         consentement: {
-            // communicationCIC: "", 
-            divulgationCICASFC: false
+            divulgationCICASFC: ""
         }
     },
 
@@ -242,7 +241,7 @@ export const initialFormData = {
             occupation: '',
             maritalStatus: '',
             address: '',
-            coming: false
+            // coming: false
         },
         epouse: {
             name: '',

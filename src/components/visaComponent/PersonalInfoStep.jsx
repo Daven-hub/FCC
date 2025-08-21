@@ -385,7 +385,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 {/* Section pays de demande */}
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Faites-vous la demande depuis un autre pays que votre pays de résidence actuelle ?</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire où vous effectuez la demande : Même que votre pays ou territoire de résidence actuel ?</label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
                             <input
@@ -1238,6 +1238,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                                     handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'isCanada', e.target.checked);
                                                     if (e.target.checked) {
                                                         handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "1");
+                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'autre', false);
                                                     } else {
                                                         handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "");
                                                     }
@@ -1256,6 +1257,10 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                                 checked={phone.autre}
                                                 onChange={(e) => {
                                                     handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'autre', e.target.checked);
+                                                    if (e.target.checked) {
+                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'isCanada', false);
+                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "");
+                                                    }
                                                 }}
                                             />
                                             <label htmlFor={`autre-${index}`} className="ml-2 block text-sm text-gray-700">
@@ -1276,6 +1281,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                                 value={phone.indicatifPays}
                                                 onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', e.target.value)}
                                                 placeholder="Ex: 33 pour la France"
+                                                disabled={!phone.autre}
                                             />
                                         </div>
                                     )}
@@ -1338,8 +1344,6 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             </button>
                         </div>
                     )}
-
-
                 </div>
 
                 {/* Télécopieur */}
@@ -2134,46 +2138,37 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
 
             {/* Section Consentement et Signature */}
-            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Consentement et Signature</h3>
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-700 mb-4">
+                    <strong>SIGNATURE</strong><br /><br />
+                    Citoyenneté et immigration Canada (CIC), ou un organisme mandaté par CIC, pourrait vouloir communiquer avec vous dans l'avenir dans le but de vous poser des questions au sujet des services que vous avez reçus de la part de CIC avant la présentation de votre demande (tel que la participation à une séance d'information), pendant le traitement de votre demande (y compris au sujet du traitement de votre demande et des services d'orientation ou de certification) ainsi qu'après votre arrivée au Canada (notamment les services d'établissement, d'intégration et de citoyenneté). CIC utilisera cette information ainsi que les informations fournies par d'autres personnes à des fins de recherche, de mesure du rendement ou d'évaluation. CIC ne se servira pas de cette information pour prendre une décision vous concernant personnellement.
+                </p>
 
-                {/* Premier paragraphe de consentement */}
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <p className="text-sm text-gray-700 mb-4">
-                        <strong>SIGNATURE</strong><br /><br />
-                        Citoyenneté et immigration Canada (CIC), ou un organisme mandaté par CIC, pourrait vouloir communiquer avec vous dans l'avenir dans le but de vous poser des questions au sujet des services que vous avez reçus de la part de CIC avant la présentation de votre demande (tel que la participation à une séance d'information), pendant le traitement de votre demande (y compris au sujet du traitement de votre demande et des services d'orientation ou de certification) ainsi qu'après votre arrivée au Canada (notamment les services d'établissement, d'intégration et de citoyenneté). CIC utilisera cette information ainsi que les informations fournies par d'autres personnes à des fins de recherche, de mesure du rendement ou d'évaluation. CIC ne se servira pas de cette information pour prendre une décision vous concernant personnellement.
-                    </p>
+                <p className="text-sm font-medium text-gray-700 mb-3">
+                    Acceptez-vous que CIC, ou un organisme mandaté par CIC, communique avec vous dans l'avenir? (O/N)
+                </p>
 
-                    <p className="text-sm font-medium text-gray-700 mb-3">
-                        Acceptez-vous que CIC, ou un organisme mandaté par CIC, communique avec vous dans l'avenir? (O/N)
-                    </p>
-
-                    <div className="flex gap-6">
-                        <label className="flex items-center">
-                            <input
-                                type="radio"
-                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                checked={formData.formulaireVisa.consentement.communicationCIC === "O"}
-                                onChange={() => handleChange('consentement.communicationCIC', "O")}
-                                required
-                            />
-                            <span className="ml-2">Oui</span>
-                        </label>
-                        <label className="flex items-center">
-                            <input
-                                type="radio"
-                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                checked={formData.formulaireVisa.consentement.communicationCIC === "N"}
-                                onChange={() => handleChange('consentement.communicationCIC', "N")}
-                            />
-                            <span className="ml-2">Non</span>
-                        </label>
-                    </div>
+                <div className="flex gap-6">
+                    <label className="flex items-center">
+                        <input
+                            type="radio"
+                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                            checked={formData.formulaireVisa.consentement.divulgationCICASFC === true}
+                            onChange={() => handleChange('consentement.divulgationCICASFC', true)}
+                            required
+                        />
+                        <span className="ml-2">Oui</span>
+                    </label>
+                    <label className="flex items-center">
+                        <input
+                            type="radio"
+                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                            checked={formData.formulaireVisa.consentement.divulgationCICASFC === false}
+                            onChange={() => handleChange('consentement.divulgationCICASFC', false)}
+                        />
+                        <span className="ml-2">Non</span>
+                    </label>
                 </div>
-
-                
-
-                
             </div>
         </div>
 
