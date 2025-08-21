@@ -23,19 +23,19 @@ const BodyD = ({ datas,num}) => {
           <View style={{ width: "20%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>De</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}> </Text>
+              <Text style={styles.form2_text}>{datas?.deAnnee+" - "+datas?.deMois}</Text>
             </View>
           </View>
           <View style={{ width: "30%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>*Activité/ Profession</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}> </Text>
+              <Text style={styles.form2_text}>{datas?.activite}</Text>
             </View>
           </View>
           <View style={{ width: "50%", padding: 3.5, flexDirection: "column", gap: 2 }}>
             <Text style={styles.form2_text}>*Entreprises/Employeur/Nom de l'Établissement</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}> </Text>
+              <Text style={styles.form2_text}>{datas?.employeur}</Text>
             </View>
           </View>
         </View>
@@ -43,25 +43,25 @@ const BodyD = ({ datas,num}) => {
           <View style={{ width: "20%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>À</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}> </Text>
+              <Text style={styles.form2_text}>{datas?.aAnnee+" - "+datas?.aMois}</Text>
             </View>
           </View>
           <View style={{ width: "25%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>* Ville/ Village</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}> </Text>
+              <Text style={styles.form2_text}>{datas?.ville}</Text>
             </View>
           </View>
           <View style={{ width: "40%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
             <Text style={styles.form2_text}>* Pays ou Térritoire</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}> </Text>
+              <Text style={styles.form2_text}>{datas?.pays}</Text>
             </View>
           </View>
           <View style={{ width: "15%", padding: 3.5, flexDirection: "column", gap: 2 }}>
             <Text style={styles.form2_text}>Province/ État</Text>
             <View style={[styles.form3_input, {}]}>
-              <Text style={styles.form3_text}> </Text>
+              <Text style={styles.form2_text}>{datas?.province}</Text>
             </View>
           </View>
         </View>
@@ -78,13 +78,13 @@ function Emploi({ datas }) {
         <View style={[styles.row, { borderWidth: 1 }]}>
           <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
             <Text style={[styles.form2_titre, {}]}>
-              * Nom adresse et lien de toute(s) personne(s) ou institution(s) que je visiterai:
+              Fournir les details sur les emplois que vous avez occupés au courses des 10 dernières années, y compris si vous avez occupé des postes gouvernementaux (par exemple: fonctionnaire, juge, maire). Ne pas laisser de lacunes.
             </Text>
           </View>
         </View>
-        <BodyD datas={datas} num={1}/>
-        <BodyD datas={datas} num={2}/>
-        <BodyD datas={datas} num={3}/>
+        {datas?.emplois?.map((x,ind)=>
+          <BodyD datas={x} key={ind} num={ind+1}/>
+        )}
       </View>
     </View>
   );

@@ -87,7 +87,7 @@ const BodyF = ({ datas }) => {
             borderRight: 1
           }
         ]}>
-        <Text style={[styles.form3_input, { fontWeight: "" }]}>{datas?.pays}</Text>
+        <Text style={[styles.form2_text, { fontWeight: "" }]}>{datas?.pays}</Text>
       </View>
       <View
         style={[
@@ -201,8 +201,32 @@ function DonneePersonnelle({ datas }) {
               }}>
               <Text style={styles.form2_titre}>2</Text>
             </View>
-            <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
+            <View style={[styles.row,{gap:20, paddingHorizontal: 5, paddingVertical: 2 }]}>
               <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Avez vous déjà utilisé un autre nom ?</Text>
+              <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+                <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "black",
+                      width: 6,
+                      height: 6,
+                      backgroundColor: datas?.educationPostsecondaire && "black"
+                    }}></View>
+                  <Text style={styles.form2_text}>* OUI</Text>
+                </View>
+                <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "black",
+                      width: 6,
+                      height: 6,
+                      backgroundColor: !datas?.educationPostsecondaire && "black"
+                    }}></View>
+                  <Text style={styles.form2_text}>* NON</Text>
+                </View>
+              </View>
             </View>
           </View>
           <View style={[styles.row]}>

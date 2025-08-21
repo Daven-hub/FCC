@@ -5,7 +5,7 @@ import Passport from "./form3/Passport";
 import IdentiteNationale from "./form3/IdentiteNationale";
 import ResidentUSA from "./form3/ResidentUSA";
 import Coordonnee from "./form3/Coordonnee";
-import DetailVisa from "./form3/DetailVisa";
+// import DetailVisa from "./form3/DetailVisa";
 import Scolarite from "./form3/Scolarite";
 import Emploi from "./form3/Emploi";
 
@@ -117,9 +117,9 @@ const Form3 = ({ datas }) => {
         <IdentiteNationale datas={datas?.pieceIdentiteNationale} />
         <ResidentUSA datas={datas?.carteResidentPermanentUSA} />
         <Coordonnee datas={datas?.coordonnees}/>
-        <DetailVisa datas={datas} />
-        <Scolarite datas={datas} />
-        <Emploi datas={datas} />
+        {/* <DetailVisa datas={datas} /> */}
+        <Scolarite datas={datas?.scolarite} />
+        <Emploi datas={datas?.emploi} />
       </View>
     </>
   );

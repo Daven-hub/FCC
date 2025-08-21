@@ -1,5 +1,67 @@
 import React from 'react';
 import { RecipientData } from './RecipientData';
+import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+
+// export default function SubmitButton({ status, onClick }) {
+//   let content;
+
+//   switch (status) {
+//     case "Préparation...":
+//     case "Génération du PDF...":
+//     case "Ajout des informations principales...":
+//     case "Préparation des autres documents...":
+//     case "Envoi en cours...":
+//       content = (
+//         <>
+//           <Loader2 className="animate-spin w-5 h-5 mr-2" />
+//           {status}
+//         </>
+//       );
+//       break;
+
+//     case "Succès ✅":
+//       content = (
+//         <>
+//           <CheckCircle2 className="text-green-500 w-5 h-5 mr-2" />
+//           Succès
+//         </>
+//       );
+//       break;
+
+//     case "Erreur ❌":
+//     case "Erreur lors de l’envoi":
+//       content = (
+//         <>
+//           <XCircle className="text-red-500 w-5 h-5 mr-2" />
+//           Erreur
+//         </>
+//       );
+//       break;
+
+//     default:
+//       content = "Soumettre";
+//       break;
+//   }
+
+//   return (
+//     <button
+//       onClick={onClick}
+//       disabled={status?.includes("...") || status === "Envoi en cours..."}
+//       className={`flex items-center justify-center px-4 py-2 rounded-xl font-semibold text-white transition-colors
+//         ${
+//           status === "Succès ✅"
+//             ? "bg-green-600 hover:bg-green-700"
+//             : status?.includes("Erreur")
+//             ? "bg-red-600 hover:bg-red-700"
+//             : "bg-blue-600 hover:bg-blue-700"
+//         }
+//         disabled:opacity-70 disabled:cursor-not-allowed
+//       `}
+//     >
+//       {content}
+//     </button>
+//   );
+// }
 
 const RecipientModal = ({
   isOpen,
