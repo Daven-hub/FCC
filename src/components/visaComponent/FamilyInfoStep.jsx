@@ -211,7 +211,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                             required
                         />
                     </div>
-                    <div>
+                    {/* <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ?</label>
                         <div className="flex gap-4 mt-1">
                             <label className="flex items-center">
@@ -251,7 +251,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 <span className="ml-2">Non</span>
                             </label>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
