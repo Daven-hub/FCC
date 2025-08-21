@@ -203,13 +203,13 @@ const PersonRow = ({ relation }) => (
             style={[
               styles.checkbox,
               {
-                backgroundColor: relation?.case_gauche ? "green" : "transparent"
+                backgroundColor: relation?.coming && "black"
               }
             ]}></View>
         </View>
         <View style={[{ flex: 1 }, styles.row]}>
           <Text style={{ fontSize: 7 }}>Non</Text>
-          <View style={[styles.checkbox, { backgroundColor: relation?.case_droite ? "red" : "transparent" }]} />
+          <View style={[styles.checkbox, { backgroundColor: !relation?.coming && "black"}]} />
         </View>
       </View>
     </View>
@@ -428,8 +428,6 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
             adresse: fam?.applicant?.address,
             pays_naissance: fam?.applicant?.country,
             profession: fam?.applicant?.occupation,
-            case_gauche: true,
-            case_droite: false
           },
           {
             role: "ÉPOUX OU CONJOINT DE FAIT",
@@ -439,8 +437,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
             adresse: fam?.epouse?.address,
             pays_naissance: fam?.epouse?.country,
             profession: fam?.epouse?.occupation,
-            case_gauche: true,
-            case_droite: false
+            coming: fam?.coming,
           },
           {
             role: "MÈRE",
@@ -450,8 +447,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
             adresse: fam?.mother?.address,
             pays_naissance: fam?.mother?.country,
             profession: fam?.mother?.occupation,
-            case_gauche: false,
-            case_droite: true
+            coming: fam?.coming,
           },
           {
             role: "PÈRE",
@@ -461,8 +457,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
             adresse: fam?.father?.address,
             pays_naissance: fam?.father?.country,
             profession: fam?.father?.occupation,
-            case_gauche: false,
-            case_droite: true
+            coming: fam?.coming,
           }
         ]
       },
@@ -502,8 +497,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
           adresse: item?.address,
           pays_naissance: item?.country,
           profession: item?.occupation,
-          case_gauche: item?.coming,
-          case_droite: item?.coming,
+          coming: item?.coming,
           role: ""
         }))
       },
@@ -543,8 +537,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
           adresse: item?.address,
           pays_naissance: item?.country,
           profession: item?.occupation,
-          case_gauche: item?.coming,
-          case_droite: item?.coming,
+          coming: item?.coming,
           role: ""
         }))
       }
