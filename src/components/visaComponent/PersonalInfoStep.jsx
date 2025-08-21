@@ -391,8 +391,8 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             <input
                                 type="radio"
                                 className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                checked={formData.formulaireVisa.residence.paysDemande.memeQueResidence === true}
-                                onChange={() => handleChange('residence.paysDemande.memeQueResidence', true)}
+                                checked={formData.formulaireVisa.residence.paysDemande.memeQueResidence === false}
+                                onChange={() => handleChange('residence.paysDemande.memeQueResidence', false)}
                                 required
                             />
                             <span className="ml-2">Non</span>
@@ -401,8 +401,8 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             <input
                                 type="radio"
                                 className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                                checked={formData.formulaireVisa.residence.paysDemande.memeQueResidence === false}
-                                onChange={() => handleChange('residence.paysDemande.memeQueResidence', false)}
+                                checked={formData.formulaireVisa.residence.paysDemande.memeQueResidence === true}
+                                onChange={() => handleChange('residence.paysDemande.memeQueResidence', true)}
                             />
                             <span className="ml-2">Oui</span>
                         </label>
@@ -1112,7 +1112,6 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 </div>
 
                 {/* Adresse du domicile */}
-                {/* Adresse du domicile */}
                 <h4 className="text-md font-medium text-gray-800 mb-2">2. Adresse du domicile</h4>
 
                 {/* Nouvelle question avec checkbox Oui/Non */}
@@ -1208,99 +1207,139 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 <h4 className="text-md font-medium text-gray-800 mb-2">3. Numéro de téléphone</h4>
                 <div className="space-y-4 mb-4">
                     {formData.formulaireVisa.coordonnees.telephones.map((phone, index) => (
-                        <div key={index} className="border border-gray-200 rounded-lg p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                                    <select
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={phone.type}
-                                        onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'type', e.target.value)}
-                                    >
-                                        <option value="">-- Sélectionnez --</option>
-                                        <option value="Résidence">Résidence</option>
-                                        <option value="Cellulaire">Cellulaire</option>
-                                        <option value="Au travail">Au travail</option>
-                                    </select>
-                                </div>
-                                <div className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id={`isCanada-${index}`}
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                        checked={phone.isCanada}
-                                        onChange={(e) => {
-                                            handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'isCanada', e.target.checked);
-                                            // Si isCanada est coché, on met l'indicatif à "1"
-                                            if (e.target.checked) {
-                                                handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "1");
-                                            } else {
-                                                handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "");
-                                            }
-                                        }}
-                                    />
-                                    <label htmlFor={`isCanada-${index}`} className="ml-2 block text-sm text-gray-700">
-                                        Canada/États-Unis
-                                    </label>
-                                </div>
-                                {!phone.isCanada && (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                                {/* Première colonne - Type et checkboxes */}
+                                <div className="space-y-4">
+                                    {/* Type de téléphone */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Indicatif de pays</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Type de téléphone</label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            value={phone.type}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'type', e.target.value)}
+                                        >
+                                            <option value="">-- Sélectionnez le type --</option>
+                                            <option value="Résidence">Résidence</option>
+                                            <option value="Cellulaire">Cellulaire</option>
+                                            <option value="Au travail">Au travail</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Checkboxes group */}
+                                    <div className="space-y-3">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                id={`isCanada-${index}`}
+                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                checked={phone.isCanada}
+                                                onChange={(e) => {
+                                                    handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'isCanada', e.target.checked);
+                                                    if (e.target.checked) {
+                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "1");
+                                                    } else {
+                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "");
+                                                    }
+                                                }}
+                                            />
+                                            <label htmlFor={`isCanada-${index}`} className="ml-2 block text-sm text-gray-700">
+                                                Canada/États-Unis
+                                            </label>
+                                        </div>
+
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                id={`autre-${index}`}
+                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                checked={phone.autre}
+                                                onChange={(e) => {
+                                                    handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'autre', e.target.checked);
+                                                }}
+                                            />
+                                            <label htmlFor={`autre-${index}`} className="ml-2 block text-sm text-gray-700">
+                                                Autre
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Deuxième colonne - Indicatif et Numéro */}
+                                <div className="space-y-4">
+                                    {/* Indicatif de pays (conditionnel) */}
+                                    {!phone.isCanada && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Indicatif de pays</label>
+                                            <input
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                                value={phone.indicatifPays}
+                                                onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', e.target.value)}
+                                                placeholder="Ex: 33 pour la France"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Numéro de téléphone */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Numéro de téléphone
+                                            {phone.isCanada && (
+                                                <span className="text-xs text-gray-500 ml-1">(sans indicatif)</span>
+                                            )}
+                                        </label>
                                         <input
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={phone.indicatifPays}
-                                            onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', e.target.value)}
-                                            placeholder="Ex: 33 pour la France"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            value={phone.numero}
+                                            onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'numero', e.target.value)}
+                                            placeholder={phone.isCanada ? "Ex: 612345678" : "Ex: 612345678"}
                                         />
                                     </div>
-                                )}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Numéro</label>
-                                    <input
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={phone.numero}
-                                        onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'numero', e.target.value)}
-                                        placeholder="Ex: 612345678"
-                                    />
                                 </div>
-                                {/* <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Poste (si applicable)</label>
-                                    <input
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={phone.poste}
-                                        onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'poste', e.target.value)}
-                                        placeholder="Extension"
-                                    />
-                                </div> */}
                             </div>
+
+                            {/* Bouton Supprimer */}
                             {index > 0 && (
-                                <button
-                                    type="button"
-                                    className="mt-2 text-red-600 text-sm"
-                                    onClick={() => removeArrayEntry('formulaireVisa', 'coordonnees.telephones', index)}
-                                >
-                                    Supprimer ce numéro
-                                </button>
+                                <div className="mt-4 pt-3 border-t border-gray-100">
+                                    <button
+                                        type="button"
+                                        className="text-red-600 text-sm hover:text-red-800 transition-colors flex items-center"
+                                        onClick={() => removeArrayEntry('formulaireVisa', 'coordonnees.telephones', index)}
+                                    >
+                                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Supprimer ce numéro
+                                    </button>
+                                </div>
                             )}
                         </div>
                     ))}
-                    <button
-                        type="button"
-                        className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        onClick={() => addArrayEntry('formulaireVisa', 'coordonnees.telephones', {
-                            type: "",
-                            isCanada: false,
-                            autre: "",
-                            indicatifPays: "",
-                            numero: "",
-                            poste: ""
-                        })}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-                        </svg>
-                        Ajouter un autre numéro
-                    </button>
+
+                    {/* Bouton Ajouter */}
+                    {formData.formulaireVisa.coordonnees.telephones.length < 2 && (
+                        <div className="text-center">
+                            <button
+                                type="button"
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+                                onClick={() => addArrayEntry('formulaireVisa', 'coordonnees.telephones', {
+                                    type: "",
+                                    isCanada: false,
+                                    autre: false,
+                                    indicatifPays: "",
+                                    numero: "",
+                                    poste: ""
+                                })}
+                            >
+                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Ajouter un autre numéro
+                            </button>
+                        </div>
+                    )}
+
+
                 </div>
 
                 {/* Télécopieur */}
@@ -2090,6 +2129,51 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         </div>
                     </div>
                 </div>
+            </div>
+
+
+
+            {/* Section Consentement et Signature */}
+            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Consentement et Signature</h3>
+
+                {/* Premier paragraphe de consentement */}
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <p className="text-sm text-gray-700 mb-4">
+                        <strong>SIGNATURE</strong><br /><br />
+                        Citoyenneté et immigration Canada (CIC), ou un organisme mandaté par CIC, pourrait vouloir communiquer avec vous dans l'avenir dans le but de vous poser des questions au sujet des services que vous avez reçus de la part de CIC avant la présentation de votre demande (tel que la participation à une séance d'information), pendant le traitement de votre demande (y compris au sujet du traitement de votre demande et des services d'orientation ou de certification) ainsi qu'après votre arrivée au Canada (notamment les services d'établissement, d'intégration et de citoyenneté). CIC utilisera cette information ainsi que les informations fournies par d'autres personnes à des fins de recherche, de mesure du rendement ou d'évaluation. CIC ne se servira pas de cette information pour prendre une décision vous concernant personnellement.
+                    </p>
+
+                    <p className="text-sm font-medium text-gray-700 mb-3">
+                        Acceptez-vous que CIC, ou un organisme mandaté par CIC, communique avec vous dans l'avenir? (O/N)
+                    </p>
+
+                    <div className="flex gap-6">
+                        <label className="flex items-center">
+                            <input
+                                type="radio"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                checked={formData.formulaireVisa.consentement.communicationCIC === "O"}
+                                onChange={() => handleChange('consentement.communicationCIC', "O")}
+                                required
+                            />
+                            <span className="ml-2">Oui</span>
+                        </label>
+                        <label className="flex items-center">
+                            <input
+                                type="radio"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                checked={formData.formulaireVisa.consentement.communicationCIC === "N"}
+                                onChange={() => handleChange('consentement.communicationCIC', "N")}
+                            />
+                            <span className="ml-2">Non</span>
+                        </label>
+                    </div>
+                </div>
+
+                
+
+                
             </div>
         </div>
 

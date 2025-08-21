@@ -194,6 +194,10 @@ export const initialFormData = {
             temoignageMauvaisTraitements: {
                 aEteTemoinOuParticipe: false
             }
+        },
+        consentement: {
+            // communicationCIC: "", 
+            divulgationCICASFC: false
         }
     },
 
