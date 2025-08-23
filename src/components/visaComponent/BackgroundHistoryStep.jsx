@@ -7,23 +7,21 @@ export const BackgroundHistoryStep = ({ formData, setFormData, handleArrayChange
             {/* Champ Demandeur */}
             <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Qui est le demandeur principal ? (cochez toutes les cases applicables)
+                    Qui est le demandeur principal ? (sélectionnez une seule option)
                 </label>
                 <div className="space-y-2">
                     <label className="flex items-center">
                         <input
-                            type="checkbox"
-                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                            type="radio"
+                            name="demandeurPrincipal"
+                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                             checked={formData.resident.Demandeur.includes('principal')}
-                            onChange={(e) => {
-                                const isChecked = e.target.checked;
+                            onChange={() => {
                                 setFormData(prev => ({
                                     ...prev,
                                     resident: {
                                         ...prev.resident,
-                                        Demandeur: isChecked
-                                            ? [...prev.resident.Demandeur, 'principal']
-                                            : prev.resident.Demandeur.filter(item => item !== 'principal')
+                                        Demandeur: ['principal'] // Remplace complètement le tableau
                                     }
                                 }));
                             }}
@@ -32,25 +30,22 @@ export const BackgroundHistoryStep = ({ formData, setFormData, handleArrayChange
                     </label>
                     <label className="flex items-center">
                         <input
-                            type="checkbox"
-                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                            type="radio"
+                            name="demandeurPrincipal"
+                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                             checked={formData.resident.Demandeur.includes('conjoint')}
-                            onChange={(e) => {
-                                const isChecked = e.target.checked;
+                            onChange={() => {
                                 setFormData(prev => ({
                                     ...prev,
                                     resident: {
                                         ...prev.resident,
-                                        Demandeur: isChecked
-                                            ? [...prev.resident.Demandeur, 'conjoint']
-                                            : prev.resident.Demandeur.filter(item => item !== 'conjoint')
+                                        Demandeur: ['conjoint'] // Remplace complètement le tableau
                                     }
                                 }));
                             }}
                         />
-                        <span className="ml-2">Époux/Conjoint ou Enfant (+18 ans) </span>
+                        <span className="ml-2">Époux/Conjoint ou Enfant (+18 ans)</span>
                     </label>
-
                 </div>
             </div>
 

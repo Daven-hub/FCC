@@ -117,16 +117,21 @@ export const initialFormData = {
                 codePostal: "",
                 district: ""
             },
-            telephones: [
-                {
-                    type: "", // "Résidence", "Cellulaire", "Au travail"
-                    isCanada: false,
-                    autre: false,
-                    indicatifPays: "",
-                    numero: "",
-                    // poste: ""
-                }
-            ],
+            telephones: {
+                type: "", // "Résidence", "Cellulaire", "Au travail"
+                isCanada: false,
+                autre: false,
+                indicatifPays: "",
+                numero: "",
+                // poste: ""
+            },
+            autreTelephones: {
+                type: "", // "Résidence", "Cellulaire", "Au travail"
+                isCanada: false,
+                autre: false,
+                indicatifPays: "",
+                numero: "",
+            },
             // telecopieur: {
             //     type: "", // "Résidence", "Cellulaire", "Au travail"
             //     isCanada: false,
