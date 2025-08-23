@@ -1206,144 +1206,201 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 {/* Numéros de téléphone */}
                 <h4 className="text-md font-medium text-gray-800 mb-2">3. Numéro de téléphone</h4>
                 <div className="space-y-4 mb-4">
-                    {formData.formulaireVisa.coordonnees.telephones.map((phone, index) => (
-                        <div key={index} className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                                {/* Première colonne - Type et checkboxes */}
-                                <div className="space-y-4">
-                                    {/* Type de téléphone */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Type de téléphone</label>
-                                        <select
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                            value={phone.type}
-                                            onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'type', e.target.value)}
-                                        >
-                                            <option value="">-- Sélectionnez le type --</option>
-                                            <option value="Résidence">Résidence</option>
-                                            <option value="Cellulaire">Cellulaire</option>
-                                            <option value="Au travail">Au travail</option>
-                                        </select>
-                                    </div>
-
-                                    {/* Checkboxes group */}
-                                    <div className="space-y-3">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                id={`isCanada-${index}`}
-                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                                checked={phone.isCanada}
-                                                onChange={(e) => {
-                                                    handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'isCanada', e.target.checked);
-                                                    if (e.target.checked) {
-                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "1");
-                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'autre', false);
-                                                    } else {
-                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "");
-                                                    }
-                                                }}
-                                            />
-                                            <label htmlFor={`isCanada-${index}`} className="ml-2 block text-sm text-gray-700">
-                                                Canada/États-Unis
-                                            </label>
-                                        </div>
-
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                id={`autre-${index}`}
-                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                                checked={phone.autre}
-                                                onChange={(e) => {
-                                                    handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'autre', e.target.checked);
-                                                    if (e.target.checked) {
-                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'isCanada', false);
-                                                        handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', "");
-                                                    }
-                                                }}
-                                            />
-                                            <label htmlFor={`autre-${index}`} className="ml-2 block text-sm text-gray-700">
-                                                Autre
-                                            </label>
-                                        </div>
-                                    </div>
+                    {/* Téléphone Principal */}
+                    <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+                        <h5 className="text-sm font-medium text-gray-700 mb-3">Téléphone Principal</h5>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                            {/* Première colonne - Type et checkboxes */}
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Type de téléphone</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        value={formData.formulaireVisa.coordonnees.telephones.type}
+                                        onChange={e => handleChange('coordonnees.telephones.type', e.target.value)}
+                                    >
+                                        <option value="">-- Sélectionnez le type --</option>
+                                        <option value="Résidence">Résidence</option>
+                                        <option value="Cellulaire">Cellulaire</option>
+                                        <option value="Au travail">Au travail</option>
+                                    </select>
                                 </div>
 
-                                {/* Deuxième colonne - Indicatif et Numéro */}
-                                <div className="space-y-4">
-                                    {/* Indicatif de pays (conditionnel) */}
-                                    {!phone.isCanada && (
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Indicatif de pays</label>
-                                            <input
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                                value={phone.indicatifPays}
-                                                onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'indicatifPays', e.target.value)}
-                                                placeholder="Ex: 33 pour la France"
-                                                disabled={!phone.autre}
-                                            />
-                                        </div>
-                                    )}
-
-                                    {/* Numéro de téléphone */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Numéro de téléphone
-                                            {phone.isCanada && (
-                                                <span className="text-xs text-gray-500 ml-1">(sans indicatif)</span>
-                                            )}
-                                        </label>
+                                <div className="space-y-3">
+                                    <div className="flex items-center">
                                         <input
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                            value={phone.numero}
-                                            onChange={e => handleArrayChange('formulaireVisa', 'coordonnees.telephones', index, 'numero', e.target.value)}
-                                            placeholder={phone.isCanada ? "Ex: 612345678" : "Ex: 612345678"}
+                                            type="checkbox"
+                                            id="isCanadaPrincipal"
+                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                            checked={formData.formulaireVisa.coordonnees.telephones.isCanada}
+                                            onChange={(e) => {
+                                                handleChange('coordonnees.telephones.isCanada', e.target.checked);
+                                                if (e.target.checked) {
+                                                    handleChange('coordonnees.telephones.indicatifPays', "1");
+                                                    handleChange('coordonnees.telephones.autre', false);
+                                                } else {
+                                                    handleChange('coordonnees.telephones.indicatifPays', "");
+                                                }
+                                            }}
                                         />
+                                        <label htmlFor="isCanadaPrincipal" className="ml-2 block text-sm text-gray-700">
+                                            Canada/États-Unis
+                                        </label>
+                                    </div>
+
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="autrePrincipal"
+                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                            checked={formData.formulaireVisa.coordonnees.telephones.autre}
+                                            onChange={(e) => {
+                                                handleChange('coordonnees.telephones.autre', e.target.checked);
+                                                if (e.target.checked) {
+                                                    handleChange('coordonnees.telephones.isCanada', false);
+                                                    handleChange('coordonnees.telephones.indicatifPays', "");
+                                                }
+                                            }}
+                                        />
+                                        <label htmlFor="autrePrincipal" className="ml-2 block text-sm text-gray-700">
+                                            Autre
+                                        </label>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Bouton Supprimer */}
-                            {index > 0 && (
-                                <div className="mt-4 pt-3 border-t border-gray-100">
-                                    <button
-                                        type="button"
-                                        className="text-red-600 text-sm hover:text-red-800 transition-colors flex items-center"
-                                        onClick={() => removeArrayEntry('formulaireVisa', 'coordonnees.telephones', index)}
-                                    >
-                                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                        Supprimer ce numéro
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                            {/* Deuxième colonne - Indicatif et Numéro */}
+                            <div className="space-y-4">
+                                {/* Indicatif de pays (conditionnel) */}
+                                {!formData.formulaireVisa.coordonnees.telephones.isCanada && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Indicatif de pays</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            value={formData.formulaireVisa.coordonnees.telephones.indicatifPays}
+                                            onChange={e => handleChange('coordonnees.telephones.indicatifPays', e.target.value)}
+                                            placeholder="Ex: 33 pour la France"
+                                            disabled={!formData.formulaireVisa.coordonnees.telephones.autre}
+                                        />
+                                    </div>
+                                )}
 
-                    {/* Bouton Ajouter */}
-                    {formData.formulaireVisa.coordonnees.telephones.length < 2 && (
-                        <div className="text-center">
-                            <button
-                                type="button"
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
-                                onClick={() => addArrayEntry('formulaireVisa', 'coordonnees.telephones', {
-                                    type: "",
-                                    isCanada: false,
-                                    autre: false,
-                                    indicatifPays: "",
-                                    numero: "",
-                                    poste: ""
-                                })}
-                            >
-                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Ajouter un autre numéro
-                            </button>
+                                {/* Numéro de téléphone */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Numéro de téléphone
+                                        {formData.formulaireVisa.coordonnees.telephones.isCanada && (
+                                            <span className="text-xs text-gray-500 ml-1">(sans indicatif)</span>
+                                        )}
+                                    </label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        value={formData.formulaireVisa.coordonnees.telephones.numero}
+                                        onChange={e => handleChange('coordonnees.telephones.numero', e.target.value)}
+                                        placeholder={formData.formulaireVisa.coordonnees.telephones.isCanada ? "Ex: 612345678" : "Ex: 612345678"}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    )}
+                    </div>
+
+                    {/* Autre Téléphone */}
+                    <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+                        <h5 className="text-sm font-medium text-gray-700 mb-3">Autre Téléphone (Optionnel)</h5>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                            {/* Première colonne - Type et checkboxes */}
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Type de téléphone</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        value={formData.formulaireVisa.coordonnees.autreTelephones.type}
+                                        onChange={e => handleChange('coordonnees.autreTelephones.type', e.target.value)}
+                                    >
+                                        <option value="">-- Sélectionnez le type --</option>
+                                        <option value="Résidence">Résidence</option>
+                                        <option value="Cellulaire">Cellulaire</option>
+                                        <option value="Au travail">Au travail</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="isCanadaAutre"
+                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                            checked={formData.formulaireVisa.coordonnees.autreTelephones.isCanada}
+                                            onChange={(e) => {
+                                                handleChange('coordonnees.autreTelephones.isCanada', e.target.checked);
+                                                if (e.target.checked) {
+                                                    handleChange('coordonnees.autreTelephones.indicatifPays', "1");
+                                                    handleChange('coordonnees.autreTelephones.autre', false);
+                                                } else {
+                                                    handleChange('coordonnees.autreTelephones.indicatifPays', "");
+                                                }
+                                            }}
+                                        />
+                                        <label htmlFor="isCanadaAutre" className="ml-2 block text-sm text-gray-700">
+                                            Canada/États-Unis
+                                        </label>
+                                    </div>
+
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="autreAutre"
+                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                            checked={formData.formulaireVisa.coordonnees.autreTelephones.autre}
+                                            onChange={(e) => {
+                                                handleChange('coordonnees.autreTelephones.autre', e.target.checked);
+                                                if (e.target.checked) {
+                                                    handleChange('coordonnees.autreTelephones.isCanada', false);
+                                                    handleChange('coordonnees.autreTelephones.indicatifPays', "");
+                                                }
+                                            }}
+                                        />
+                                        <label htmlFor="autreAutre" className="ml-2 block text-sm text-gray-700">
+                                            Autre
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Deuxième colonne - Indicatif et Numéro */}
+                            <div className="space-y-4">
+                                {/* Indicatif de pays (conditionnel) */}
+                                {!formData.formulaireVisa.coordonnees.autreTelephones.isCanada && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Indicatif de pays</label>
+                                        <input
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            value={formData.formulaireVisa.coordonnees.autreTelephones.indicatifPays}
+                                            onChange={e => handleChange('coordonnees.autreTelephones.indicatifPays', e.target.value)}
+                                            placeholder="Ex: 33 pour la France"
+                                            disabled={!formData.formulaireVisa.coordonnees.autreTelephones.autre}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Numéro de téléphone */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Numéro de téléphone
+                                        {formData.formulaireVisa.coordonnees.autreTelephones.isCanada && (
+                                            <span className="text-xs text-gray-500 ml-1">(sans indicatif)</span>
+                                        )}
+                                    </label>
+                                    <input
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        value={formData.formulaireVisa.coordonnees.autreTelephones.numero}
+                                        onChange={e => handleChange('coordonnees.autreTelephones.numero', e.target.value)}
+                                        placeholder={formData.formulaireVisa.coordonnees.autreTelephones.isCanada ? "Ex: 612345678" : "Ex: 612345678"}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Télécopieur */}
