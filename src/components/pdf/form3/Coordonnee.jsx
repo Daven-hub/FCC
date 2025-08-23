@@ -3,7 +3,7 @@ import { styles } from "../Form3";
 import { Page, Text, View, Image } from "@react-pdf/renderer";
 
 function Coordonnee({ datas }) {
-  const HeaderC = ({ titre, num }) => (
+  const HeaderC = ({ titre, num, question = null,resp }) => (
     <View style={[styles.row, { borderWidth: 1, borderBottom: 0 }]}>
       <View
         style={{
@@ -13,8 +13,35 @@ function Coordonnee({ datas }) {
         }}>
         <Text style={styles.form2_titre}>{num}</Text>
       </View>
-      <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
+      <View style={[styles.row, { gap: 20, paddingHorizontal: 5, paddingVertical: 2 }]}>
         <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>{titre}</Text>
+        {question!==null && <View style={[styles.row, { gap: 10 }]}>
+          <Text style={styles.form2_text}>{question}</Text>
+          <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: resp && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* OUI</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: !resp && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* NON</Text>
+            </View>
+          </View>
+        </View>}
       </View>
     </View>
   );
@@ -125,7 +152,7 @@ function Coordonnee({ datas }) {
         </View>
 
         <View style={{ flexDirection: "column" }}>
-          <HeaderC titre={"Adresse du domicile"} num={2} />
+          <HeaderC titre={"Adresse du domicile"} question={"Identique à l'adresse postale?"} resp={true} num={2} />
           <View style={{ flexDirection: "column", borderWidth: 1 }}>
             <View style={[styles.row]}>
               <View style={[styles.coll, { borderRight: 1, width: "15%", borderColor: "black" }]}>
@@ -323,7 +350,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.indicatifPays}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}> </Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "60%", borderColor: "black" }]}>
@@ -333,7 +360,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.numero}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}> </Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { width: "20%", borderColor: "black" }]}>
@@ -343,7 +370,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.poste}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}> </Text>
                   </View>
                 </View>
               </View>
@@ -353,7 +380,7 @@ function Coordonnee({ datas }) {
             <HeaderC titre={"Adresse électronique"} num={6} />
             <View style={{ flexDirection: "column", borderWidth: 1 }}>
               <View style={[styles.row]}>
-                <View style={[styles.coll, {borderColor: "black" }]}>
+                <View style={[styles.coll, { borderColor: "black" }]}>
                   <View style={[styles.row, {}]}>
                     <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
                       <Text style={[styles.form2_text, {}]}> </Text>

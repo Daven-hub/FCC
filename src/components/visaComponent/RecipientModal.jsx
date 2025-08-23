@@ -138,7 +138,7 @@ const RecipientModal = ({
             </button>
             <button
               type="button"
-              onClick={handleSubmitAndClose}
+              onClick={()=>handleSubmitAndClose()}
               disabled={!formData.declarationAgreed}
               className={`px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white ${formData.declarationAgreed ? 'bg-primary hover:bg-primary-600' : 'bg-gray-400 cursor-not-allowed'}`}
             >

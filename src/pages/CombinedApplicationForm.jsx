@@ -196,12 +196,12 @@ const CombinedApplicationForme = () => {
     // Récupérer le titre et le type du document
     const document = formData.documents[sectionIndex].corps[docIndex];
     const doc = formData.formulaireVisa.donneesPersonnelles.nomComplet;
-    const titre = document.titre.replace(/[^a-zA-Z0-9]/g, "_"); // Nettoyer le titre pour le nom de fichier
-    const type = doc.nom.toLowerCase();
+    const titre = document.titre.toLowerCase().replace(/[' ]/g, "_"); // Nettoyer le titre pour le nom de fichier
+    const type = doc.nom.toLowerCase()+"_"+doc.prenoms.toLowerCase();
 
     // Créer le nouveau nom de fichier
     const originalExtension = file.name.split(".").pop();
-    const newFileName = `${titre}_${type}.${originalExtension}`;
+    const newFileName = `${titre}_de_${type}.${originalExtension}`;
 
     // Créer un nouveau fichier avec le nom modifié
     const renamedFile = new File([file], newFileName, { type: file.type });

@@ -13,7 +13,7 @@ function IdentiteNationale({ datas }) {
           style={[
             styles.row,
             {
-              gap: 4,
+              gap: 10,
               padding: 3,
               alignItems: "center",
               borderTop: 1,
@@ -23,10 +23,32 @@ function IdentiteNationale({ datas }) {
           ]}
         >
           <Text style={styles.form2_text}>
-            d) Pour ce voyage, utiliserez vous un passeport délivré par le
-            ministre des affaires étrangères à Taiwan dans lequel figure votre
-            identification personnel?
+            d) Avez vous une pièce d'identité nationale ?
           </Text>
+          <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: datas?.possede && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* OUI</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: !datas?.possede && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* NON</Text>
+            </View>
+          </View>
         </View>
         <View style={[styles.row]}>
           <View style={{ borderWidth: 1, width: "30%", borderColor: "black" }}>

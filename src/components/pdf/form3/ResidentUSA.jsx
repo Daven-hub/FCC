@@ -9,8 +9,32 @@ function ResidentUSA({ datas }) {
       <View style={{ flexDirection: "column" }}>
         <View style={[styles.row, { gap: 4,padding:3, alignItems: "center",borderTop:1,borderRight:1,borderLeft:1 }]}>
           <Text style={styles.form2_text}>
-            a) Avez vous le statut de resident permanenten règle des États-Uniset avez-vous votre certificat d'inscription au registre des étrangers (carte verte)?
+            a) Avez vous le statut de resident permanent en règle des États-Uniset avez-vous votre certificat d'inscription au registre des étrangers (carte verte)?
           </Text>
+          <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: datas?.possede && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* OUI</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: !datas?.possede && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* NON</Text>
+            </View>
+          </View>
         </View>
         <View style={[styles.row]}>
             <View

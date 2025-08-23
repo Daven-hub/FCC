@@ -1,6 +1,7 @@
 // components/MilitaryServiceSection.js
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
 import { styles } from "./MainForm";
+import { CheckForm } from "./MilitaryServiceSection";
 
 // const styles = StyleSheet.create({
 //   row: {
@@ -115,17 +116,8 @@ const ChargesServiceSection = ({datas}) => (
       </View>
     </View>
     <View style={[styles.row,{ paddingVertical: 6,paddingHorizontal: 12, width: "100%", flexDirection: "column", gap: 6 }]}>
-        <Text style={[styles.form2_text,{lineHeight:1.4}]}>Depuis l'âge de 18ans ou au cours des cinqs dernières années, selon la plus recente, avez vous voyagé vers un pays ou territoire autre que le pays de votre nationalité ou votre pays ou votre territoire de residence actuelle ?</Text>
-        <View style={[[styles.row,{gap:15,alignItems:"center"}]]}>
-            <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-              <View style={{borderWidth:1,borderColor:"black", width:8, height:8}}></View>
-              <Text style={styles.form2_text}>* OUI</Text>
-            </View>
-            <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-              <View style={{borderWidth:1,borderColor:"black", width:8, height:8}}></View>
-              <Text style={styles.form2_text}>* NON</Text>
-            </View>
-          </View>
+        <Text style={[styles.form2_text,{lineHeight:1.4}]}>Avez-vous déjà occupé une charge publique (telle que fonctionnaire, juge, policier, maire, député, administrateur d’hôpital) ? N’utilisez pas d’abréviations.</Text>
+        <CheckForm value={datas?.isOk} />
     </View>
     <View style={{borderTop:1}} wrap={false}>
         <HeaderT />

@@ -5,7 +5,7 @@ import { Image, Text, View } from "@react-pdf/renderer";
 
 const BodyD = ({ datas }) => {
   return (
-    <View style={styles.row}>
+    <View style={styles.row} wrap={false}>
       <View
         style={{
           flex: 1,
