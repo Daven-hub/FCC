@@ -447,7 +447,6 @@ const PageTemplate = ({ datas, image, type, nom, email, Custom }) => (
 );
 
 const MonPdfDocument = ({ datac, dataa, documents }) => {
-  // console.log("dataaa",dataa)
   const fam = datac?.familyInfo;
   const familes = {
     typeDemande: fam.typeDemande,
