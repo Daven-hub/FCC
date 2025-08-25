@@ -8,6 +8,7 @@ import Coordonnee from "./form3/Coordonnee";
 // import DetailVisa from "./form3/DetailVisa";
 import Scolarite from "./form3/Scolarite";
 import Emploi from "./form3/Emploi";
+import Antecedent from "./form3/Antecedent";
 
 export const styles = StyleSheet.create({
   page: {
@@ -111,15 +112,56 @@ const Form3 = ({ datas }) => {
       </View>
 
       <View style={{ flexDirection: "column", gap: 5 }}>
-        <DonneePersonnelle datas={{pers:datas?.donneesPersonnelles,marie:datas?.mariage,resid:datas?.residence,etatm:datas?.etatMatrimonial}} />
+        <DonneePersonnelle
+          datas={{
+            pers: datas?.donneesPersonnelles,
+            marie: datas?.mariage,
+            resid: datas?.residence,
+            etatm: datas?.etatMatrimonial
+          }}
+        />
         <Langue datas={datas?.langues} />
         <Passport datas={datas?.passeport} />
         <IdentiteNationale datas={datas?.pieceIdentiteNationale} />
         <ResidentUSA datas={datas?.carteResidentPermanentUSA} />
-        <Coordonnee datas={datas?.coordonnees}/>
+        <Coordonnee datas={datas?.coordonnees} />
         {/* <DetailVisa datas={datas} /> */}
         <Scolarite datas={datas?.scolarite} />
         <Emploi datas={datas?.emploi} />
+        <Antecedent datas={datas?.antecedents} />
+
+        <View style={{ flexDirection: "column", gap: 2.5 }}>
+          <Text style={{ fontSize: 9, fontWeight: "bold" }}>SIGNATURE</Text>
+          <View style={{ flexDirection: "row",gap:10, borderWidth: 1, padding:6 }} wrap={false}>
+            <Text style={styles.form2_text}>
+            Acceptez-vous que CIC, ou un organisme mandaté par CIC, communique avec vous dans l'avenir? (O/N)
+            </Text>
+            <View style={[[styles.row, { gap: 10, alignItems: "center" }]]}>
+              <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: "black",
+                    width: 6,
+                    height: 6,
+                    backgroundColor: datas?.consentement?.divulgationCICASFC && "black"
+                  }}></View>
+                <Text style={styles.form2_text}>* OUI</Text>
+              </View>
+              <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: "black",
+                    width: 6,
+                    height: 6,
+                    backgroundColor: !datas?.consentement?.divulgationCICASFC && "black"
+                  }}></View>
+                <Text style={styles.form2_text}>* NON</Text>
+              </View>
+            </View>
+          </View>
+        </View>
       </View>
     </>
   );

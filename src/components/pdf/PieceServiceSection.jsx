@@ -1,4 +1,3 @@
-// components/MilitaryServiceSection.js
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
 import { styles } from "./MainForm";
 

@@ -85,11 +85,25 @@ function Passport({ datas }) {
             </View>
           </View>
         </View>
-        <View style={[styles.row, { gap: 4, padding: 3, alignItems: "center", borderBottom: 1, borderRight: 1, borderLeft: 1 }]}>
-          <Text style={styles.form2_text}>
-            d) Pour ce voyage, utiliserez vous un passeport délivré par le ministre des affaires étrangères à Taiwan dans lequel figure votre identification personnel?
-          </Text>
-          <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+        <View style={[styles.row, { gap: 4, alignItems: "center", borderBottom: 1, borderRight: 1, borderLeft: 1 }]}>
+          <View style={[styles.row, {}]}>
+            <View
+              style={{
+                paddingHorizontal: 5,
+                paddingVertical: 2,
+                borderRight: 1,
+                borderBottom: 0
+              }}>
+              <Text style={styles.form2_titre}>5</Text>
+            </View>
+            <View style={{ paddingHorizontal: 3, paddingVertical: 3 }}>
+              <Text style={styles.form2_text}>
+                Pour ce voyage, utiliserez vous un passeport délivré par le ministre des affaires étrangères à Taiwan dans lequel
+                figure votre identification personnel?
+              </Text>
+            </View>
+          </View>
+          <View style={[[styles.row, { gap: 10, alignItems: "center" }]]}>
             <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
               <View
                 style={{
@@ -114,9 +128,22 @@ function Passport({ datas }) {
             </View>
           </View>
         </View>
-        <View style={[styles.row, { gap: 10, padding: 3, alignItems: "center", borderBottom: 1, borderRight: 1, borderLeft: 1 }]}>
-          <Text style={styles.form2_text}>e) Pour ce voyage, utilisez vous un passport israélien?</Text>
-          <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+        <View style={[styles.row, { gap: 10, alignItems: "center", borderBottom: 1, borderRight: 1, borderLeft: 1 }]}>
+        <View style={[styles.row, {}]}>
+            <View
+              style={{
+                paddingHorizontal: 5,
+                paddingVertical: 2,
+                borderRight: 1,
+                borderBottom: 0
+              }}>
+              <Text style={styles.form2_titre}>6</Text>
+            </View>
+            <View style={{ paddingHorizontal: 3, paddingVertical: 3 }}>
+            <Text style={styles.form2_text}> Pour ce voyage, utilisez vous un passport israélien?</Text>
+            </View>
+          </View>
+          <View style={[[styles.row, { gap: 10, alignItems: "center" }]]}>
             <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
               <View
                 style={{

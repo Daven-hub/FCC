@@ -1,7 +1,6 @@
 import React from "react";
 import { Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import { styles } from "../Form3";
-import { style } from "framer-motion/client";
 
 const HeaderF = () => {
   return (
@@ -416,7 +415,7 @@ function DonneePersonnelle({ datas }) {
             </View>
             <View style={[styles.row, { gap: 20, paddingHorizontal: 5, paddingVertical: 2 }]}>
               <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>* Pays ou Territoire ou vous éffectuez la demande:</Text>
-              <View style={[styles.row, { gap: 8,alignItems:"center" }]}>
+              <View style={[styles.row, { gap: 8, alignItems: "center" }]}>
                 <Text style={styles.form2_text}>Même que votre pays ou residence actuelle ?</Text>
                 <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
                   <View style={[styles.row, { gap: 3, alignItems: "center" }]}>

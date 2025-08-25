@@ -1,4 +1,3 @@
-// components/MilitaryServiceSection.js
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
 import { styles } from "./MainForm";
 import { CheckForm } from "./MilitaryServiceSection";
@@ -59,9 +58,6 @@ export const HeaderT=()=>(
       <View style={[styles.col,{width:"26%",alignItems:"center",justifyContent:"center",borderRight:1,textAlign:"center"}]}>
         <Text style={[styles.form2_text,{fontWeight:"bold",lineHeight:1.4}]}>Endroit</Text>
       </View>
-      {/* <View style={[styles.col,{width:"25%",alignItems:"center",justifyContent:"center",borderRight:1,textAlign:"center"}]}>
-        <Text style={[styles.form2_text,{fontWeight:"bold",lineHeight:1.4}]}>Activités et/ou poste occupés au sein de l'organisation</Text>
-      </View> */}
       <View style={[styles.col,{width:"25%",alignItems:"center",justifyContent:"center",textAlign:"center"}]}>
         <Text style={[styles.form2_text,{fontWeight:"bold",lineHeight:1.4}]}>But du voyage</Text>
       </View>
@@ -88,9 +84,6 @@ export const BodyT=({item})=>(
       <View style={[styles.col,{width:"26%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
         <Text style={[styles.form2_text,{lineHeight:1.4}]}>{item?.Endroit}</Text>
       </View>
-      {/* <View style={[styles.col,{width:"25%",alignItems:"center",justifyContent:"center",borderRight:1}]}>
-        <Text style={[styles.form2_text]}>Littoral</Text>
-      </View> */}
       <View style={[styles.col,{width:"25%",alignItems:"center",justifyContent:"center"}]}>
         <Text style={[styles.form2_text]}>{item?.but}</Text>
       </View>

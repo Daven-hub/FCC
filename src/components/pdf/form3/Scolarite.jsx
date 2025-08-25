@@ -3,7 +3,7 @@ import { styles } from "../Form3";
 import { Image, Text, View } from "@react-pdf/renderer";
 // import iconArrow from "/icon/caret-square-right.png";
 
-const BodyD = ({ datas }) => {
+const BodyD = ({ datas,num }) => {
   return (
     <View style={styles.row} wrap={false}>
       <View
@@ -16,7 +16,7 @@ const BodyD = ({ datas }) => {
           borderTop: 0,
           borderRight: 0
         }}>
-        <Text style={styles.form2_titre}>1</Text>
+        <Text style={styles.form2_titre}>{num}</Text>
       </View>
       <View style={{ flexDirection: "column", width: "97.2%", borderWidth: 1, borderTop: 0 }}>
         <View style={[styles.row, { borderBottom: 1 }]}>
@@ -80,7 +80,7 @@ function Scolarite({ datas }) {
             <Text style={[styles.form2_titre, {}]}>
               * Avez vous reçu une éducation postsécondaire? 
             </Text>
-            <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+            <View style={[[styles.row, { gap: 10, alignItems: "center" }]]}>
                 <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
                   <View
                     style={{
@@ -108,7 +108,7 @@ function Scolarite({ datas }) {
         </View>
         <View>
           {datas?.etudes?.map((x,ind)=>
-            <BodyD key={ind} datas={x} />
+            <BodyD key={ind} num={ind+1} datas={x} />
           )}
         </View>
       </View>

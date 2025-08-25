@@ -69,7 +69,8 @@ const RecipientModal = ({
   selectedRecipient,
   onRecipientChange,
   onSubmit,
-  formData
+  formData,
+  submitStatus
 }) => {
   if (!isOpen) return null;
 
@@ -142,7 +143,7 @@ const RecipientModal = ({
               disabled={!formData.declarationAgreed}
               className={`px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white ${formData.declarationAgreed ? 'bg-primary hover:bg-primary-600' : 'bg-gray-400 cursor-not-allowed'}`}
             >
-              Confirmer et soumettre
+              {submitStatus}
             </button>
           </div>
         </div>

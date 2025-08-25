@@ -22,7 +22,7 @@ const CombinedApplicationForme = () => {
     declarationAgreed: false,
     selectedRecipient: RecipientData.One.email
   });
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState("Confirmer et soumettre");
   const [uploadProgress, setUploadProgress] = useState({});
 //   const [submittedData, setSubmittedData] = useState(null);
   const [showRecipientModal, setShowRecipientModal] = useState(false);
@@ -61,9 +61,9 @@ const CombinedApplicationForme = () => {
     formData.formulaireVisa.informationsGenerales.IUC
   ]);
 
-  useEffect(()=>{
-    console.log("submitStatus",submitStatus)
-  },[submitStatus])
+  // useEffect(()=>{
+  //   console.log("submitStatus",submitStatus)
+  // },[submitStatus])
 
   const handleRecipientChange = (email) => {
     setFormData((prev) => ({
@@ -396,12 +396,12 @@ const CombinedApplicationForme = () => {
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
-    setSubmitStatus("loading");
+    // setSubmitStatus("loading");
 
     try {
+      setSubmitStatus("generation pdf...");
       const formDataToSend = new FormData();
       const dataa = formData.documents[0].corps[3].imageData;
-      setSubmitStatus("generation pdf...");
       const blob = await pdf(<MonPdfDocument datac={formData} dataa={dataa} documents={formData?.documents} />).toBlob();
       formDataToSend.append(
         "pdf",
@@ -432,18 +432,22 @@ const CombinedApplicationForme = () => {
     });
 
     //   console.log([...formDataToSend.entries()]);
-      console.log(formData);
+      // console.log(formData);
 
       setSubmitStatus("envoi des documents");
       const result= await submitCombinedApplication(formDataToSend);
-      console.log(result)
+      // console.log(result)
       if(result.status==="success"){
-        setSubmitStatus("success");
         setShowRecipientModal(false);
         showSuccessToast("Soumission réussie");
+        setSubmitStatus("Confirmer et soumettre");
+      }else{
+        showErrorToast("Soumission échouée");
+        setSubmitStatus("Confirmer et soumettre");
       }
       // setSubmittedData(applicationData);
     } catch (error) {
+      showErrorToast("Soumission échouée");
       console.error("Erreur de soumission:", error);
       setSubmitStatus("error");
     }
@@ -599,6 +603,7 @@ const CombinedApplicationForme = () => {
             onRecipientChange={handleRecipientChange}
             onSubmit={handleSubmit} // On passe directement la fonction
             formData={formData}
+            submitStatus={submitStatus}
           />
         </div>
 
