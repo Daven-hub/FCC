@@ -35,7 +35,7 @@ export const submitCombinedApplication = async (formData) => {
     };
 
     const response= await axios.post(
-      'http://localhost:84/',
+      '/api/index.php',
       formData,
       config
     );
