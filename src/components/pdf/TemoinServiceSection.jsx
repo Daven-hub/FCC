@@ -1,6 +1,5 @@
-// components/MilitaryServiceSection.js
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
-import { BodyT, HeaderT } from "./MilitaryServiceSection";
+import { BodyT, CheckForm, HeaderT } from "./MilitaryServiceSection";
 import { styles } from "./MainForm";
 
 // const styles = StyleSheet.create({
@@ -56,17 +55,8 @@ const TemoinServiceSection = ({datas}) => (
       </View>
     </View>
     <View style={[styles.row,{ paddingVertical: 6,paddingHorizontal: 12, width: "100%", flexDirection: "column", gap: 6 }]}>
-        <Text style={[styles.form2_text,{lineHeight:1.4}]}>Avez vous fait partied'une armée, d'une milice, d'une unité de défence civile, d'un service de renseignement ou d'un corps de police(y compris le service non obligatoire et les unités de réserve et volontaires) ?</Text>
-        <View style={[[styles.row,{gap:15,alignItems:"center"}]]}>
-            <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-              <View style={{borderWidth:1,borderColor:"black", width:8, height:8}}></View>
-              <Text style={styles.form2_text}>* OUI</Text>
-            </View>
-            <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-              <View style={{borderWidth:1,borderColor:"black", width:8, height:8}}></View>
-              <Text style={styles.form2_text}>* NON</Text>
-            </View>
-          </View>
+        <Text style={[styles.form2_text,{lineHeight:1.4}]}>Avez-vous été témoin de mauvais traitements infligés à des prisonniers ou des civils, ou d'actes de pillage ou de profanation d'édifices religieux, ou avez-vous participé à ces actes ?</Text>
+        <CheckForm value={datas?.isOk} />
     </View>
     <View style={{borderTop:1}} wrap={false}>
         <HeaderT />

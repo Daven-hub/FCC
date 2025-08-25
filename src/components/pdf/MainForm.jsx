@@ -55,11 +55,11 @@ const MainForm = ({datas}) => {
           </View>
           <View style={[[styles.row,{gap:10,alignItems:"center"}]]}>
             <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-              <View style={{borderWidth:1,borderColor:"black", width:10, height:10}}></View>
+              <View style={{borderWidth:1,borderColor:"black", width:10, height:10, backgroundColor:datas?.Demandeur[0]==="principal" && "black"}}></View>
               <Text style={styles.form2_text}>* Le demandeur principal</Text>
             </View>
             <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-              <View style={{borderWidth:1,borderColor:"black", width:10, height:10}}></View>
+              <View style={{borderWidth:1,borderColor:"black", width:10, height:10, backgroundColor:datas?.Demandeur[0]!=="principal" && "black"}}></View>
               <Text style={styles.form2_text}>* L'époux, le conjoint, ou l'enfant à charge âgé de 18ans ou plus du demandeur principal</Text>
             </View>
           </View>

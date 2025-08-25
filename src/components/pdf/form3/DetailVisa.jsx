@@ -3,39 +3,48 @@ import { styles } from "../Form3";
 import { Image, Text, View } from "@react-pdf/renderer";
 import iconArrow from "/icon/caret-square-right.png";
 
-function DetailVisa({ datas }) {
-
-  const BodyD = () => {
-    return (
-      <View style={styles.row} wrap={false}>
-        <View style={{ flex: 1,width:"2.8%", justifyContent:"center",alignItems:"center", borderWidth:1,borderTop:0, borderRight:0 }}>
-          <Text style={styles.form2_titre}>1</Text>
+const BodyD = () => {
+  return (
+    <View style={styles.row} wrap={false}>
+      <View
+        style={{
+          flex: 1,
+          width: "2.8%",
+          justifyContent: "center",
+          alignItems: "center",
+          borderWidth: 1,
+          borderTop: 0,
+          borderRight: 0
+        }}>
+        <Text style={styles.form2_titre}>1</Text>
+      </View>
+      <View style={{ flexDirection: "column", width: "97.2%", borderWidth: 1, borderTop: 0 }}>
+        <View style={{ padding: 3.5, flexDirection: "column", gap: 2, borderBottom: 1 }}>
+          <Text style={styles.form2_text}>* Nom</Text>
+          <View style={[styles.form3_input, {}]}>
+            <Text style={styles.form3_text}> </Text>
+          </View>
         </View>
-        <View style={{ flexDirection: "column", width:"97.2%", borderWidth: 1,borderTop:0 }}>
-          <View style={{ padding: 3.5, flexDirection: "column", gap: 2, borderBottom:1 }}>
-            <Text style={styles.form2_text}>* Nom</Text>
-            <View style={[styles.form3_input, { }]}>
+        <View style={styles.row}>
+          <View style={{ width: "40%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
+            <Text style={styles.form2_text}>Lien de parenté</Text>
+            <View style={[styles.form3_input, {}]}>
               <Text style={styles.form3_text}> </Text>
             </View>
           </View>
-          <View style={styles.row}>
-            <View style={{ width: "40%", padding: 3.5, flexDirection: "column", gap: 2, borderRight: 1 }}>
-              <Text style={styles.form2_text}>Lien de parenté</Text>
-              <View style={[styles.form3_input, { }]}>
-                <Text style={styles.form3_text}> </Text>
-              </View>
-            </View>
-            <View style={{ width: "60%", padding: 3.5, flexDirection: "column", gap: 2 }}>
-              <Text style={styles.form2_text}>* Adresse au Canada</Text>
-              <View style={[styles.form3_input, {  }]}>
-                <Text style={styles.form3_text}> </Text>
-              </View>
+          <View style={{ width: "60%", padding: 3.5, flexDirection: "column", gap: 2 }}>
+            <Text style={styles.form2_text}>* Adresse au Canada</Text>
+            <View style={[styles.form3_input, {}]}>
+              <Text style={styles.form3_text}> </Text>
             </View>
           </View>
         </View>
       </View>
-    );
-  };
+    </View>
+  );
+};
+
+function DetailVisa({ datas }) {
   return (
     <View style={{ flexDirection: "column", gap: 2.5 }}>
       <Text style={{ fontSize: 9, fontWeight: "bold" }}>DÉTAILS SUR LA VISITE AU CANADA</Text>
@@ -108,7 +117,7 @@ function DetailVisa({ datas }) {
           </View>
         </View>
 
-        <View style={{flexDirection:"column"}}>
+        <View style={{ flexDirection: "column" }}>
           <View style={[styles.row, { borderWidth: 1 }]} wrap={false}>
             <View style={{ paddingHorizontal: 5, paddingVertical: 2, borderRight: 1 }}>
               <Text style={styles.form2_titre}>4</Text>

@@ -2,8 +2,8 @@ import React from "react";
 import { styles } from "../Form3";
 import { Page, Text, View, Image } from "@react-pdf/renderer";
 
-function Coordonnee({ datas }) {
-  const HeaderC = ({ titre, num }) => (
+const HeaderC = ({ titre, num,question, resp }) => {
+  return(
     <View style={[styles.row, { borderWidth: 1, borderBottom: 0 }]}>
       <View
         style={{
@@ -13,12 +13,86 @@ function Coordonnee({ datas }) {
         }}>
         <Text style={styles.form2_titre}>{num}</Text>
       </View>
-      <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
+      <View style={[styles.row, { gap: 20, paddingHorizontal: 5, paddingVertical: 2 }]}>
         <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>{titre}</Text>
+        {question!==null && <View style={[styles.row, { gap: 10 }]}>
+          <Text style={styles.form2_text}>{question}</Text>
+          <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: resp && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* OUI</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: !resp && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* NON</Text>
+            </View>
+          </View>
+        </View>}
       </View>
     </View>
-  );
+  )
+};
+const HeaderT = ({ titre, num, resp }) => {
+  return(
+    <View style={[styles.row, { borderWidth: 1, borderBottom: 0 }]}>
+      <View
+        style={{
+          paddingHorizontal: 5,
+          paddingVertical: 2,
+          borderRight: 1
+        }}>
+        <Text style={styles.form2_titre}>{num}</Text>
+      </View>
+      <View style={[styles.row, { gap: 20, paddingHorizontal: 5, paddingVertical: 2 }]}>
+        <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>{titre}</Text>
+        {resp!==null && <View style={[styles.row, { gap: 10 }]}>
+          <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: resp?.canada && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* Canada/USA</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: resp?.autre && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* Autre</Text>
+            </View>
+          </View>
+        </View>}
+      </View>
+    </View>
+  )
+};
 
+
+
+function Coordonnee({ datas }) {
   return (
     <View style={{ flexDirection: "column", gap: 2.5 }}>
       <Text style={{ fontSize: 9, fontWeight: "bold" }}>COORDONNÉES</Text>
@@ -125,7 +199,7 @@ function Coordonnee({ datas }) {
         </View>
 
         <View style={{ flexDirection: "column" }}>
-          <HeaderC titre={"Adresse du domicile"} num={2} />
+          <HeaderC titre={"Adresse du domicile"} question={"Identique à l'adresse postale?"} resp={true} num={2} />
           <View style={{ flexDirection: "column", borderWidth: 1 }}>
             <View style={[styles.row]}>
               <View style={[styles.coll, { borderRight: 1, width: "15%", borderColor: "black" }]}>
@@ -216,7 +290,7 @@ function Coordonnee({ datas }) {
 
         <View style={styles.row}>
           <View style={{ flexDirection: "column", width: "50%" }}>
-            <HeaderC titre={"Numéro de téléphone"} num={3} />
+            <HeaderT titre={"Numéro de téléphone"} resp={{autre:datas?.telephones?.autre,canada:datas?.telephones?.isCanada}} num={3} />
             <View style={{ flexDirection: "column", borderWidth: 1 }}>
               <View style={[styles.row]}>
                 <View style={[styles.coll, { borderRight: 1, width: "25%", borderColor: "black" }]}>
@@ -226,7 +300,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephone?.type}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephones?.type}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "20%", borderColor: "black" }]}>
@@ -236,7 +310,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephone?.indicatifPays}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephones?.indicatifPays}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "40%", borderColor: "black" }]}>
@@ -246,7 +320,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephone?.numero}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephones?.numero}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { width: "15%", borderColor: "black" }]}>
@@ -256,14 +330,14 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telephone?.poste}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{""}</Text>
                   </View>
                 </View>
               </View>
             </View>
           </View>
           <View style={{ flexDirection: "column", width: "50%" }}>
-            <HeaderC titre={"Autre numéro de téléphone"} num={4} />
+            <HeaderT titre={"Autre numéro de téléphone"} resp={{autre:datas?.autreTelephones?.autre,canada:datas?.autreTelephones?.isCanada}} num={4} />
             <View style={{ flexDirection: "column", borderWidth: 1 }}>
               <View style={[styles.row]}>
                 <View style={[styles.coll, { borderRight: 1, width: "25%", borderColor: "black" }]}>
@@ -273,7 +347,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephone?.type}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephones?.type}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "20%", borderColor: "black" }]}>
@@ -283,7 +357,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephone?.indicatifPays}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephones?.indicatifPays}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "40%", borderColor: "black" }]}>
@@ -293,7 +367,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephone?.numero}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephones?.numero}</Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { width: "15%", borderColor: "black" }]}>
@@ -303,7 +377,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.autreTelephone?.poste}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}>{" "}</Text>
                   </View>
                 </View>
               </View>
@@ -323,7 +397,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.indicatifPays}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}> </Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { borderRight: 1, width: "60%", borderColor: "black" }]}>
@@ -333,7 +407,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.numero}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}> </Text>
                   </View>
                 </View>
                 <View style={[styles.coll, { width: "20%", borderColor: "black" }]}>
@@ -343,7 +417,7 @@ function Coordonnee({ datas }) {
                     </View>
                   </View>
                   <View style={[styles.row, { gap: 2 }]}>
-                    <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.telecopieur?.poste}</Text>
+                    <Text style={[styles.form3_input, { width: "100%" }]}> </Text>
                   </View>
                 </View>
               </View>
@@ -353,7 +427,7 @@ function Coordonnee({ datas }) {
             <HeaderC titre={"Adresse électronique"} num={6} />
             <View style={{ flexDirection: "column", borderWidth: 1 }}>
               <View style={[styles.row]}>
-                <View style={[styles.coll, {borderColor: "black" }]}>
+                <View style={[styles.coll, { borderColor: "black" }]}>
                   <View style={[styles.row, {}]}>
                     <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
                       <Text style={[styles.form2_text, {}]}> </Text>

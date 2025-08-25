@@ -203,13 +203,13 @@ const PersonRow = ({ relation }) => (
             style={[
               styles.checkbox,
               {
-                backgroundColor: relation?.case_gauche ? "green" : "transparent"
+                backgroundColor: relation?.coming && "black"
               }
             ]}></View>
         </View>
         <View style={[{ flex: 1 }, styles.row]}>
           <Text style={{ fontSize: 7 }}>Non</Text>
-          <View style={[styles.checkbox, { backgroundColor: relation?.case_droite ? "red" : "transparent" }]} />
+          <View style={[styles.checkbox, { backgroundColor: !relation?.coming && "black" }]} />
         </View>
       </View>
     </View>
@@ -235,7 +235,7 @@ const TemplateTable = ({ items }) => (
           </View>
         ))}
       </View>
-    
+
       {items?.corps?.map((x, indd) => (
         <PersonRow key={indd} relation={x} />
       ))}
@@ -279,7 +279,68 @@ const TemplateTable = ({ items }) => (
   </View>
 );
 
-const PageFamille = ({ datas }) => datas?.body.map((item, ind) => <TemplateTable key={ind} items={item} />);
+const PageFamille = ({ datas }) => {
+  return (
+    <View style={{ flexDirection: "column", gap: 16 }}>
+      <View style={[styles.form2_grille, { justifyContent: "space-between" }]}>
+        <View style={[styles.row, { gap: 10, alignItems: "center" }]}>
+          <Text style={[{fontWeight:"bold",fontSize:8}]}>Type de demande</Text>
+          <View style={[[styles.row, { gap: 10, alignItems: "center" }]]}>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 10,
+                  height: 10,
+                  backgroundColor: datas?.typeDemande?.toLowerCase() === "visiteur" && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* Visiteur</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 10,
+                  height: 10,
+                  backgroundColor: datas?.typeDemande?.toLowerCase() === "travailleur" && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* Travaileur</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 10,
+                  height: 10,
+                  backgroundColor: datas?.typeDemande?.toLowerCase() === "etudiant" && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* Étudiant</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 10,
+                  height: 10,
+                  backgroundColor: datas?.typeDemande?.toLowerCase() === "autre" && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* Autre</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+      <View style={{flexDirection:"column",gap:16}}>
+        {datas?.body.map((item, ind) => (
+          <TemplateTable key={ind} items={item} />
+        ))}
+      </View>
+    </View>
+  );
+};
 
 const PageTemplate = ({ datas, image, type, nom, email, Custom }) => (
   <Page size="A4" orientation="portrait" style={styles.page}>
@@ -386,9 +447,9 @@ const PageTemplate = ({ datas, image, type, nom, email, Custom }) => (
 );
 
 const MonPdfDocument = ({ datac, dataa, documents }) => {
-  // console.log("dataaa",dataa)
   const fam = datac?.familyInfo;
   const familes = {
+    typeDemande: fam.typeDemande,
     body: [
       {
         section: "SECTION A",
@@ -427,9 +488,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
             date: fam?.applicant?.dob,
             adresse: fam?.applicant?.address,
             pays_naissance: fam?.applicant?.country,
-            profession: fam?.applicant?.occupation,
-            case_gauche: true,
-            case_droite: false
+            profession: fam?.applicant?.occupation
           },
           {
             role: "ÉPOUX OU CONJOINT DE FAIT",
@@ -439,8 +498,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
             adresse: fam?.epouse?.address,
             pays_naissance: fam?.epouse?.country,
             profession: fam?.epouse?.occupation,
-            case_gauche: true,
-            case_droite: false
+            coming: fam?.epouse?.coming
           },
           {
             role: "MÈRE",
@@ -450,8 +508,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
             adresse: fam?.mother?.address,
             pays_naissance: fam?.mother?.country,
             profession: fam?.mother?.occupation,
-            case_gauche: false,
-            case_droite: true
+            coming: fam?.mother?.coming
           },
           {
             role: "PÈRE",
@@ -461,8 +518,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
             adresse: fam?.father?.address,
             pays_naissance: fam?.father?.country,
             profession: fam?.father?.occupation,
-            case_gauche: false,
-            case_droite: true
+            coming: fam?.father?.coming
           }
         ]
       },
@@ -502,8 +558,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
           adresse: item?.address,
           pays_naissance: item?.country,
           profession: item?.occupation,
-          case_gauche: item?.coming,
-          case_droite: item?.coming,
+          coming: item?.coming,
           role: ""
         }))
       },
@@ -543,8 +598,7 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
           adresse: item?.address,
           pays_naissance: item?.country,
           profession: item?.occupation,
-          case_gauche: item?.coming,
-          case_droite: item?.coming,
+          coming: item?.coming,
           role: ""
         }))
       }
@@ -555,7 +609,11 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
   return (
     <Document>
       <PageTemplate
-        nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        nom={
+          datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
+          " " +
+          datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
+        }
         type={datac?.formulaireVisa?.informationsGenerales?.visa}
         email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
@@ -563,7 +621,11 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
         Custom={<Form3 datas={datac?.formulaireVisa} />}
       />
       <PageTemplate
-         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        nom={
+          datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
+          " " +
+          datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
+        }
         type={datac?.formulaireVisa?.informationsGenerales?.visa}
         email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
@@ -571,7 +633,11 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
         Custom={<PageFamille datas={familes} />}
       />
       <PageTemplate
-         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        nom={
+          datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
+          " " +
+          datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
+        }
         type={datac?.formulaireVisa?.informationsGenerales?.visa}
         email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}
@@ -579,7 +645,11 @@ const MonPdfDocument = ({ datac, dataa, documents }) => {
         Custom={<MainForm datas={datac?.resident} />}
       />
       <PageTemplate
-         nom={datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom+" "+datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms}
+        nom={
+          datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
+          " " +
+          datac?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
+        }
         type={datac?.formulaireVisa?.informationsGenerales?.visa}
         email={datac?.formulaireVisa?.coordonnees?.adresseElectronique}
         image={dataa}

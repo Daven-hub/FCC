@@ -1,6 +1,7 @@
 // components/MilitaryServiceSection.js
 import { View, Text, StyleSheet} from "@react-pdf/renderer";
 import { styles } from "./MainForm";
+import { CheckForm } from "./MilitaryServiceSection";
 
 // const styles = StyleSheet.create({
 //   row: {
@@ -115,16 +116,7 @@ const AffiliationServiceSection = ({datas}) => (
     </View>
     <View style={[styles.row,{ paddingVertical: 6,paddingHorizontal: 12, width: "100%", flexDirection: "column", gap: 6 }]}>
         <Text style={[styles.form2_text,{lineHeight:1.4}]}>Êtes-vous, ou avez-vous déjà été, membre ou affiliè d'un parti politique ou d'un autre groupe ou d'une autre organisation qui ont utilisé ou prôné la violence dans le but d'atteindre un objectif politique ou religieux, ou qui ont déjà été impliqués dans les activités criminelles ?</Text>
-        <View style={[[styles.row,{gap:15,alignItems:"center"}]]}>
-            <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-              <View style={{borderWidth:1,borderColor:"black", width:8, height:8}}></View>
-              <Text style={styles.form2_text}>* OUI</Text>
-            </View>
-            <View style={[styles.row,{gap:3,alignItems:"center"}]}>
-              <View style={{borderWidth:1,borderColor:"black", width:8, height:8}}></View>
-              <Text style={styles.form2_text}>* NON</Text>
-            </View>
-          </View>
+        <CheckForm value={datas?.isOk} />
     </View>
     <View style={{borderTop:1}}>
         <HeaderT />

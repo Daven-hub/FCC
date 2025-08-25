@@ -5,28 +5,57 @@ import { Page, Text, View, Image } from "@react-pdf/renderer";
 function IdentiteNationale({ datas }) {
   return (
     <View style={{ flexDirection: "column", gap: 2.5 }}>
-      <Text style={{ fontSize: 9, fontWeight: "bold" }}>
-        PIÈCE D'IDENTITÉ NATIONALE
-      </Text>
+      <Text style={{ fontSize: 9, fontWeight: "bold" }}>PIÈCE D'IDENTITÉ NATIONALE</Text>
       <View style={{ flexDirection: "column" }}>
         <View
           style={[
             styles.row,
             {
-              gap: 4,
-              padding: 3,
+              gap: 10,
               alignItems: "center",
               borderTop: 1,
               borderRight: 1,
               borderLeft: 1
             }
-          ]}
-        >
-          <Text style={styles.form2_text}>
-            d) Pour ce voyage, utiliserez vous un passeport délivré par le
-            ministre des affaires étrangères à Taiwan dans lequel figure votre
-            identification personnel?
-          </Text>
+          ]}>
+          <View style={[styles.row, {}]}>
+            <View
+              style={{
+                paddingHorizontal: 5,
+                paddingVertical: 2,
+                borderRight: 1,
+                borderBottom: 0
+              }}>
+              <Text style={styles.form2_titre}>1</Text>
+            </View>
+            <View style={{ paddingHorizontal: 3, paddingVertical: 3 }}>
+              <Text style={styles.form2_text}>Avez vous une pièce d'identité nationale ?</Text>
+            </View>
+          </View>
+          <View style={[[styles.row, { gap: 10, alignItems: "center" }]]}>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: datas?.possede && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* OUI</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: !datas?.possede && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* NON</Text>
+            </View>
+          </View>
         </View>
         <View style={[styles.row]}>
           <View style={{ borderWidth: 1, width: "30%", borderColor: "black" }}>
@@ -37,20 +66,15 @@ function IdentiteNationale({ datas }) {
                   paddingVertical: 2,
                   borderRight: 1,
                   borderBottom: 1
-                }}
-              >
+                }}>
                 <Text style={styles.form2_titre}>2</Text>
               </View>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  Numéro de la pièce
-                </Text>
+                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Numéro de la pièce</Text>
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.numero}
-              </Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.numero}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "30%", borderColor: "black" }}>
@@ -61,20 +85,15 @@ function IdentiteNationale({ datas }) {
                   paddingVertical: 2,
                   borderRight: 1,
                   borderBottom: 1
-                }}
-              >
+                }}>
                 <Text style={styles.form2_titre}>3</Text>
               </View>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  Pays ou térritoire de délivrance
-                </Text>
+                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Pays ou térritoire de délivrance</Text>
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.paysDelivrance}
-              </Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.paysDelivrance}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "20%", borderColor: "black" }}>
@@ -85,20 +104,15 @@ function IdentiteNationale({ datas }) {
                   paddingVertical: 2,
                   borderRight: 1,
                   borderBottom: 1
-                }}
-              >
+                }}>
                 <Text style={styles.form2_titre}>4</Text>
               </View>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  Date de délivrance
-                </Text>
+                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Date de délivrance</Text>
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.dateDelivrance}
-              </Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateDelivrance}</Text>
             </View>
           </View>
           <View style={{ borderWidth: 1, width: "20%", borderColor: "black" }}>
@@ -109,20 +123,15 @@ function IdentiteNationale({ datas }) {
                   paddingVertical: 2,
                   borderRight: 1,
                   borderBottom: 1
-                }}
-              >
+                }}>
                 <Text style={styles.form2_titre}>5</Text>
               </View>
               <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
-                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
-                  Date d'expiration
-                </Text>
+                <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Date d'expiration</Text>
               </View>
             </View>
             <View style={[styles.row, { gap: 2 }]}>
-              <Text style={[styles.form3_input, { width: "100%" }]}>
-                {datas?.dateExpiration}
-              </Text>
+              <Text style={[styles.form3_input, { width: "100%" }]}>{datas?.dateExpiration}</Text>
             </View>
           </View>
         </View>

@@ -6,7 +6,7 @@ function Langue({ datas }) {
   return (
     <View style={{ flexDirection: "column", gap: 2.5 }}>
       <Text style={{ fontSize: 9, fontWeight: "bold" }}>LANGUES</Text>
-      <View style={{ flexDirection: "column" }}>
+      <View style={{ flexDirection: "column" }} wrap={false}>
         <View style={[styles.row, { borderWidth: 1 }]}>
           <View style={{ borderRight: 1, width: "25%" }}>
             <View style={[styles.row, {}]}>
@@ -36,10 +36,34 @@ function Langue({ datas }) {
             <Text style={styles.form3_input}>{datas?.languePlusAise}</Text>
           </View>
         </View>
-        <View style={[styles.row, { gap: 4, padding: 3, alignItems: "center", borderBottom: 1, borderRight: 1, borderLeft: 1 }]}>
+        <View style={[styles.row, { gap: 20, padding: 3, alignItems: "center", borderBottom: 1, borderRight: 1, borderLeft: 1 }]}>
           <Text style={styles.form2_text}>
             d) Avez vous fait évaluer votre compétence en français ou en anglais par un organisme d'évaluation aprouvé?
           </Text>
+          <View style={[[styles.row, { gap: 10, alignItems: "center" }]]}>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: datas?.evaluationOrganismeApprouve && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* OUI</Text>
+            </View>
+            <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  width: 6,
+                  height: 6,
+                  backgroundColor: !datas?.evaluationOrganismeApprouve && "black"
+                }}></View>
+              <Text style={styles.form2_text}>* NON</Text>
+            </View>
+          </View>
         </View>
       </View>
     </View>

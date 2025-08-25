@@ -7,7 +7,7 @@ export const BackgroundHistoryStep = ({ formData, setFormData, handleArrayChange
             {/* Champ Demandeur */}
             <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Qui est le demandeur principal ? (sélectionnez une seule option)
+                    Qui est le demandeur principal ? (sélectionnez une seule option) <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-2">
                     <label className="flex items-center">
@@ -54,7 +54,7 @@ export const BackgroundHistoryStep = ({ formData, setFormData, handleArrayChange
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Service militaire ou paramilitaire</h3>
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Avez-vous fait partie d'une armée, d'une milice, d'une unité de défense civile, d'un service de renseignement ou d'un corps de police (y compris le service national non obligatoire et les unités de réserve ou volontaires) ?
+                        Avez-vous fait partie d'une armée, d'une milice, d'une unité de défense civile, d'un service de renseignement ou d'un corps de police (y compris le service national non obligatoire et les unités de réserve ou volontaires) ?  <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
@@ -201,7 +201,7 @@ export const BackgroundHistoryStep = ({ formData, setFormData, handleArrayChange
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Témoin de crimes de guerre ou crimes contre l'humanité</h3>
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Avez-vous été témoin de mauvais traitements infligés à des prisonniers ou des civils, ou d'actes de pillage ou de profanation d'édifices religieux, ou avez-vous participé à ces actes ?
+                        Avez-vous été témoin de mauvais traitements infligés à des prisonniers ou des civils, ou d'actes de pillage ou de profanation d'édifices religieux, ou avez-vous participé à ces actes ? <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
@@ -361,7 +361,7 @@ export const BackgroundHistoryStep = ({ formData, setFormData, handleArrayChange
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Appartenance ou affiliation à des organisations</h3>
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Êtes-vous, ou avez-vous déjà été, membre ou affilié d’un parti politique ou d’un autre groupe ou d’une autre organisation qui ont utilisé ou prôné la violence dans le but d’atteindre un objectif politique ou religieux, ou qui ont déjà été impliqués dans des activités criminelles ? N’utilisez pas d’abréviations.
+                        Êtes-vous, ou avez-vous déjà été, membre ou affilié d’un parti politique ou d’un autre groupe ou d’une autre organisation qui ont utilisé ou prôné la violence dans le but d’atteindre un objectif politique ou religieux, ou qui ont déjà été impliqués dans des activités criminelles ? N’utilisez pas d’abréviations. <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
@@ -517,7 +517,7 @@ export const BackgroundHistoryStep = ({ formData, setFormData, handleArrayChange
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Charges publiques officielles</h3>
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        AAvez-vous déjà occupé une charge publique (telle que fonctionnaire, juge, policier, maire, député, administrateur d’hôpital) ? N’utilisez pas d’abréviations.
+                        AAvez-vous déjà occupé une charge publique (telle que fonctionnaire, juge, policier, maire, député, administrateur d’hôpital) ? N’utilisez pas d’abréviations. <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
@@ -673,7 +673,7 @@ export const BackgroundHistoryStep = ({ formData, setFormData, handleArrayChange
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Voyage précédente</h3>
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Depuis l’âge de 18 ans ou au cours des cinq dernières années, selon la plus récente, avez-vous voyagé vers un pays ou territoire autre que le pays de votre nationalité ou votre pays ou territoire de résidence actuel ?
+                        Depuis l’âge de 18 ans ou au cours des cinq dernières années, selon la plus récente, avez-vous voyagé vers un pays ou territoire autre que le pays de votre nationalité ou votre pays ou territoire de résidence actuel ? <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">

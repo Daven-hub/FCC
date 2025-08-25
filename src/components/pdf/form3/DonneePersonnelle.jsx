@@ -201,7 +201,7 @@ function DonneePersonnelle({ datas }) {
               }}>
               <Text style={styles.form2_titre}>2</Text>
             </View>
-            <View style={[styles.row,{gap:20, paddingHorizontal: 5, paddingVertical: 2 }]}>
+            <View style={[styles.row, { gap: 20, paddingHorizontal: 5, paddingVertical: 2 }]}>
               <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>Avez vous déjà utilisé un autre nom ?</Text>
               <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
                 <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
@@ -211,7 +211,7 @@ function DonneePersonnelle({ datas }) {
                       borderColor: "black",
                       width: 6,
                       height: 6,
-                      backgroundColor: datas?.educationPostsecondaire && "black"
+                      backgroundColor: datas?.pers?.autreNomUtilise?.utilise && "black"
                     }}></View>
                   <Text style={styles.form2_text}>* OUI</Text>
                 </View>
@@ -222,7 +222,7 @@ function DonneePersonnelle({ datas }) {
                       borderColor: "black",
                       width: 6,
                       height: 6,
-                      backgroundColor: !datas?.educationPostsecondaire && "black"
+                      backgroundColor: !datas?.pers?.autreNomUtilise?.utilise && "black"
                     }}></View>
                   <Text style={styles.form2_text}>* NON</Text>
                 </View>
@@ -366,10 +366,34 @@ function DonneePersonnelle({ datas }) {
               }}>
               <Text style={styles.form2_titre}>8</Text>
             </View>
-            <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
+            <View style={[styles.row, { gap: 20, paddingHorizontal: 5, paddingVertical: 2 }]}>
               <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>
                 * Pays ou Territoire de résidence(s) antérieure(s):
               </Text>
+              <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+                <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "black",
+                      width: 6,
+                      height: 6,
+                      backgroundColor: datas?.resid?.anterieure?.aVecuAutrePays && "black"
+                    }}></View>
+                  <Text style={styles.form2_text}>* OUI</Text>
+                </View>
+                <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "black",
+                      width: 6,
+                      height: 6,
+                      backgroundColor: !datas?.resid?.anterieure?.aVecuAutrePays && "black"
+                    }}></View>
+                  <Text style={styles.form2_text}>* NON</Text>
+                </View>
+              </View>
             </View>
           </View>
           <View style={{ flexDirection: "column" }} wrap={false}>
@@ -389,8 +413,35 @@ function DonneePersonnelle({ datas }) {
               }}>
               <Text style={styles.form2_titre}>9</Text>
             </View>
-            <View style={{ paddingHorizontal: 5, paddingVertical: 2 }}>
+            <View style={[styles.row, { gap: 20, paddingHorizontal: 5, paddingVertical: 2 }]}>
               <Text style={[styles.form2_titre, { fontWeight: "bold" }]}>* Pays ou Territoire ou vous éffectuez la demande:</Text>
+              <View style={[styles.row, { gap: 8, alignItems: "center" }]}>
+                <Text style={styles.form2_text}>Même que votre pays ou residence actuelle ?</Text>
+                <View style={[[styles.row, { gap: 15, alignItems: "center" }]]}>
+                  <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "black",
+                        width: 6,
+                        height: 6,
+                        backgroundColor: datas?.resid?.paysDemande?.memeQueResidence && "black"
+                      }}></View>
+                    <Text style={styles.form2_text}>* OUI</Text>
+                  </View>
+                  <View style={[styles.row, { gap: 3, alignItems: "center" }]}>
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "black",
+                        width: 6,
+                        height: 6,
+                        backgroundColor: !datas?.resid?.paysDemande?.memeQueResidence && "black"
+                      }}></View>
+                    <Text style={styles.form2_text}>* NON</Text>
+                  </View>
+                </View>
+              </View>
             </View>
           </View>
           <View style={{ flexDirection: "column" }}>

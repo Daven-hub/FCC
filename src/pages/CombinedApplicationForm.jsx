@@ -22,9 +22,9 @@ const CombinedApplicationForme = () => {
     declarationAgreed: false,
     selectedRecipient: RecipientData.One.email
   });
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState("Confirmer et soumettre");
   const [uploadProgress, setUploadProgress] = useState({});
-//   const [submittedData, setSubmittedData] = useState(null);
+  //   const [submittedData, setSubmittedData] = useState(null);
   const [showRecipientModal, setShowRecipientModal] = useState(false);
 
   useEffect(() => {
@@ -61,9 +61,9 @@ const CombinedApplicationForme = () => {
     formData.formulaireVisa.informationsGenerales.IUC
   ]);
 
-  useEffect(()=>{
-    console.log("submitStatus",submitStatus)
-  },[submitStatus])
+  // useEffect(()=>{
+  //   console.log("submitStatus",submitStatus)
+  // },[submitStatus])
 
   const handleRecipientChange = (email) => {
     setFormData((prev) => ({
@@ -196,12 +196,12 @@ const CombinedApplicationForme = () => {
     // Récupérer le titre et le type du document
     const document = formData.documents[sectionIndex].corps[docIndex];
     const doc = formData.formulaireVisa.donneesPersonnelles.nomComplet;
-    const titre = document.titre.replace(/[^a-zA-Z0-9]/g, "_"); // Nettoyer le titre pour le nom de fichier
-    const type = doc.nom.toLowerCase();
+    const titre = document.titre.toLowerCase().replace(/[' ]/g, "_"); // Nettoyer le titre pour le nom de fichier
+    const type = doc.nom.toLowerCase() + "_" + doc.prenoms.toLowerCase();
 
     // Créer le nouveau nom de fichier
     const originalExtension = file.name.split(".").pop();
-    const newFileName = `${titre}_${type}.${originalExtension}`;
+    const newFileName = `${titre}_de_${type}.${originalExtension}`;
 
     // Créer un nouveau fichier avec le nom modifié
     const renamedFile = new File([file], newFileName, { type: file.type });
@@ -341,8 +341,31 @@ const CombinedApplicationForme = () => {
     switch (stepIndex) {
       case 0: // Informations personnelles
         return (
-          formData.formulaireVisa.informationsGenerales.servi !== ""
-          // formData.formulaireVisa.informationsGenerales.visa !== ""
+          formData.formulaireVisa.informationsGenerales.servi !== "" &&
+          formData.formulaireVisa.informationsGenerales.visa !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.nomComplet.nom !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.nomComplet.prenoms !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.dateNaissance !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.citoyennete !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.lieuNaissance.pays !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.lieuNaissance.villeVillage !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.sexe !== "" &&
+          formData.formulaireVisa.passeport.dateDelivrance !== "" &&
+          formData.formulaireVisa.passeport.dateExpiration !== "" &&
+          formData.formulaireVisa.passeport.numero !== "" &&
+          formData.formulaireVisa.passeport.paysDelivrance !== "" &&
+          formData.formulaireVisa.pieceIdentiteNationale.possede !== undefined &&
+          formData.formulaireVisa.coordonnees.adressePostaleActuelle.pays !== "" &&
+          formData.formulaireVisa.coordonnees.adressePostaleActuelle.villeVillage !== "" &&
+          formData.formulaireVisa.coordonnees.adressePostaleActuelle.district !== "" &&
+          formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale !== undefined &&
+          formData.formulaireVisa.coordonnees.telephones.numero !== "" &&
+          formData.formulaireVisa.coordonnees.telephones.indicatifPays !== "" &&
+          formData.formulaireVisa.coordonnees.adresseElectronique !== ""  &&
+          formData.formulaireVisa.etatMatrimonial.etat !== "" &&
+          formData.formulaireVisa.mariage.etat !== ""
+
+ 
         );
 
       case 1: // Antécédents et historique
@@ -356,13 +379,13 @@ const CombinedApplicationForme = () => {
 
       case 2: // Informations familiales
         return (
-          // formData.familyInfo.typeDemande !== ""
-          formData.familyInfo.applicant.name !== ""
-          // formData.familyInfo.applicant.dob !== "" &&
-          // formData.familyInfo.applicant.country !== "" &&
-          // formData.familyInfo.applicant.occupation !== "" &&
-          // formData.familyInfo.applicant.maritalStatus !== "" &&
-          // formData.familyInfo.applicant.address !== ""
+          formData.familyInfo.typeDemande !== "" &&
+          formData.familyInfo.applicant.name !== "" &&
+          formData.familyInfo.applicant.dob !== "" &&
+          formData.familyInfo.applicant.country !== "" &&
+          formData.familyInfo.applicant.occupation !== "" &&
+          formData.familyInfo.applicant.maritalStatus !== "" &&
+          formData.familyInfo.applicant.address !== ""
         );
 
       case 3: // Documents
@@ -396,54 +419,56 @@ const CombinedApplicationForme = () => {
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
-    setSubmitStatus("loading");
+    // setSubmitStatus("loading");
 
     try {
+      setSubmitStatus("generation pdf...");
       const formDataToSend = new FormData();
       const dataa = formData.documents[0].corps[3].imageData;
-      setSubmitStatus("generation pdf...");
       const blob = await pdf(<MonPdfDocument datac={formData} dataa={dataa} documents={formData?.documents} />).toBlob();
       formDataToSend.append(
         "pdf",
         blob,
-        `${
-          "doc_de_" +
-          formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
-          "_" +
-          formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
+        `${"doc_de_" +
+        formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
+        "_" +
+        formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
         }.pdf`
       );
       formDataToSend.append("to", formData?.selectedRecipient);
       formDataToSend.append(
         "name",
-        `${
-          formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
-          "_" +
-          formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
+        `${formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
+        "_" +
+        formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
         }`
       );
       setSubmitStatus("preparation des docs...");
       formData?.documents.forEach((section, sIndex) => {
         section?.corps.forEach((item, cIndex) => {
-            if(item.file){
-                formDataToSend.append("docs[]",item.file)
-            }
+          if (item.file) {
+            formDataToSend.append("docs[]", item.file)
+          }
         })
-    });
+      });
 
-    //   console.log([...formDataToSend.entries()]);
-      console.log(formData);
+      //   console.log([...formDataToSend.entries()]);
+      // console.log(formData);
 
       setSubmitStatus("envoi des documents");
-      const result= await submitCombinedApplication(formDataToSend);
-      console.log(result)
-      if(result.status==="success"){
-        setSubmitStatus("success");
+      const result = await submitCombinedApplication(formDataToSend);
+      // console.log(result)
+      if (result.status === "success") {
         setShowRecipientModal(false);
         showSuccessToast("Soumission réussie");
+        setSubmitStatus("Confirmer et soumettre");
+      } else {
+        showErrorToast("Soumission échouée");
+        setSubmitStatus("Confirmer et soumettre");
       }
       // setSubmittedData(applicationData);
     } catch (error) {
+      showErrorToast("Soumission échouée");
       console.error("Erreur de soumission:", error);
       setSubmitStatus("error");
     }
@@ -599,6 +624,7 @@ const CombinedApplicationForme = () => {
             onRecipientChange={handleRecipientChange}
             onSubmit={handleSubmit} // On passe directement la fonction
             formData={formData}
+            submitStatus={submitStatus}
           />
         </div>
 

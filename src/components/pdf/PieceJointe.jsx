@@ -1,17 +1,3 @@
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Image
-} from "@react-pdf/renderer";
-import MilitaryServiceSection from "./MilitaryServiceSection";
-// import iconArrow from "/icon/caret-square-right.png"
-import TemoinServiceSection from "./TemoinServiceSection";
-import AffiliationServiceSection from "./AffiliationServiceSection";
-import ChargesServiceSection from "./ChargesServviceSection";
-import VoyageServiceSection from "./VoyageServiceSection";
 import PieceServiceSection from "./PieceServiceSection";
 
 // const styles = StyleSheet.create({

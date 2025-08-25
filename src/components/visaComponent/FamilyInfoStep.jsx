@@ -8,7 +8,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
         <div className="space-y-6">
             {/* Section Type de demande */}
             <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Type de demande</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Type de demande <span className="text-red-500">*</span></h3>
                 <div className="space-y-3">
                     <div className="flex items-center">
                         <input
@@ -94,7 +94,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Informations sur le demandeur principal</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.familyInfo.applicant.name}
@@ -112,7 +112,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance <span className="text-red-500">*</span></label>
                         <input
                             type="date"
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -131,7 +131,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.familyInfo.applicant.country}
@@ -149,7 +149,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Profession <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.familyInfo.applicant.occupation}
@@ -167,7 +167,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial <span className="text-red-500">*</span></label>
                         <select
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.familyInfo.applicant.maritalStatus}
@@ -194,7 +194,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.familyInfo.applicant.address}
@@ -263,7 +263,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Informations sur l'époux/conjoint</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet <span className="text-red-500">*</span></label>
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.epouse.name}
@@ -281,7 +281,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance <span className="text-red-500">*</span></label>
                                 <input
                                     type="date"
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -300,7 +300,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance <span className="text-red-500">*</span></label>
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.epouse.country}
@@ -318,7 +318,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Profession <span className="text-red-500">*</span></label>
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.epouse.occupation}
@@ -336,7 +336,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial <span className="text-red-500">*</span></label>
                                 <select
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.epouse.maritalStatus}
@@ -363,7 +363,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle <span className="text-red-500">*</span></label>
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.epouse.address}
@@ -381,7 +381,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ?</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ? <span className="text-red-500">*</span></label>
                                 <div className="flex gap-4 mt-1">
                                     <label className="flex items-center">
                                         <input
@@ -434,7 +434,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                         <h4 className="text-md font-medium text-gray-800 mb-3">Père</h4>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet <span className="text-red-500">*</span></label>
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.father.name}
@@ -452,7 +452,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance <span className="text-red-500">*</span></label>
                                 <input
                                     type="date"
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -471,7 +471,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance <span className="text-red-500">*</span></label>
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.father.country}
@@ -489,7 +489,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Profession <span className="text-red-500">*</span></label>
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.father.occupation}
@@ -507,7 +507,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial <span className="text-red-500">*</span></label>
                                 <select
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.father.maritalStatus}
@@ -534,7 +534,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse actuelle <span className="text-red-500">*</span></label>
                                 <input
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={formData.familyInfo.father.address}
@@ -552,7 +552,7 @@ export const FamilyInfoStep = ({ formData, setFormData, handleArrayChange, addAr
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ?</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Accompagne le demandeur au Canada ? <span className="text-red-500">*</span></label>
                                 <div className="flex gap-4 mt-1">
                                     <label className="flex items-center">
                                         <input
