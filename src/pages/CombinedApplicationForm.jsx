@@ -470,7 +470,7 @@ const CombinedApplicationForme = () => {
     } catch (error) {
       showErrorToast("Soumission échouée");
       console.error("Erreur de soumission:", error);
-      setSubmitStatus("error");
+      setSubmitStatus("Confirmer et soumettre");
     }
   };
 
