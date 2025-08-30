@@ -17,7 +17,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Je veux être servi(e) en</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Je veux être servi(e) en <span className="text-red-500">*</span></label>
                         <select
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.informationsGenerales.servi}
@@ -30,7 +30,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Type de demande de visa</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Type de demande de visa <span className="text-red-500">*</span></label>
                         <select
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.informationsGenerales.visa}
@@ -51,7 +51,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Données Personnelles</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Nom de famille</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Nom de famille <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.donneesPersonnelles.nomComplet.nom}
@@ -60,7 +60,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Prénom(s)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Prénon(s) <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.donneesPersonnelles.nomComplet.prenoms}
@@ -119,7 +119,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 )}
 
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Sexe</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sexe <span className="text-red-500">*</span></label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
                             <input
@@ -144,7 +144,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 </div>
 
                 <div className='mt-4'>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance <span className="text-red-500">*</span></label>
                     <input
                         type="date"
                         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -156,7 +156,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village de naissance</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village de naissance <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.donneesPersonnelles.lieuNaissance.villeVillage}
@@ -165,7 +165,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de naissance <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.donneesPersonnelles.lieuNaissance.pays}
@@ -176,7 +176,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 </div>
 
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Citoyenneté</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Citoyenneté <span className="text-red-500">*</span></label>
                     <input
                         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={formData.formulaireVisa.donneesPersonnelles.citoyennete}
@@ -192,7 +192,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de résidence actuelle</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de résidence actuelle <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.residence.actuelle.pays}
@@ -201,7 +201,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Statut de résidence</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Statut de résidence <span className="text-red-500">*</span></label>
                         <select
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.residence.actuelle.statut}
@@ -259,7 +259,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Avez-vous vécu dans un autre pays que votre pays de citoyenneté ou de résidence actuelle ?
+                        Avez-vous vécu dans un autre pays que votre pays de citoyenneté ou de résidence actuelle ? <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
@@ -385,7 +385,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 {/* Section pays de demande */}
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire où vous effectuez la demande : Même que votre pays ou territoire de résidence actuel ?</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire où vous effectuez la demande : Même que votre pays ou territoire de résidence actuel ? <span className="text-red-500">*</span></label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
                             <input
@@ -485,7 +485,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 <h3 className="text-lg font-medium text-gray-900 mb-4">État Matrimonial</h3>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial actuel</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">État matrimonial actuel <span className="text-red-500">*</span></label>
                     <select
                         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={formData.formulaireVisa.etatMatrimonial.etat}
@@ -581,7 +581,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 {/* Question principale */}
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Êtes-vous ou avez-vous déjà été marié(e) ou en union de fait ? *
+                        Êtes-vous ou avez-vous déjà été marié(e) ou en union de fait ? <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-4">
                         <label className="inline-flex items-center">
@@ -745,7 +745,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Langue maternelle</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Langue maternelle <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.langues.langueMaternelle}
@@ -754,7 +754,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Communiquez-vous en français ou en anglais ?</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Communiquez-vous en français ou en anglais ? <span className="text-red-500">*</span></label>
                         <select
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.langues.communiqueFrancaisAnglaisDeuxLangues}
@@ -769,7 +769,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Langue dans laquelle vous êtes le plus à l'aise</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Langue dans laquelle vous êtes le plus à l'aise <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.langues.languePlusAise}
@@ -778,7 +778,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous passé une évaluation linguistique par un organisme approuvé ?</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Avez-vous passé une évaluation linguistique par un organisme approuvé ? <span className="text-red-500">*</span></label>
                         <div className="flex gap-4 mt-1">
                             <label className="flex items-center">
                                 <input
@@ -810,7 +810,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de passeport</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de passeport <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.passeport.numero}
@@ -819,7 +819,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de délivrance</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays de délivrance <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.passeport.paysDelivrance}
@@ -828,7 +828,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Date de délivrance</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Date de délivrance <span className="text-red-500">*</span></label>
                         <input
                             type="date"
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -838,7 +838,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Date d'expiration</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Date d'expiration <span className="text-red-500">*</span></label>
                         <input
                             type="date"
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -851,7 +851,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Passeport délivré par Taïwan avec numéro d'identification ?</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Passeport délivré par Taïwan avec numéro d'identification ? <span className="text-red-500">*</span></label>
                         <div className="flex gap-4 mt-1">
                             <label className="flex items-center">
                                 <input
@@ -903,10 +903,10 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
             {/* Section Pièce d'identité nationale */}
             <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Pièce d'identité nationale</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Pièce d'identité nationale </h3>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Possédez-vous une pièce d'identité nationale ?</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Possédez-vous une pièce d'identité nationale ? <span className="text-red-500">*</span></label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
                             <input
@@ -979,7 +979,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Carte de résident permanent des États-Unis</h3>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Possédez-vous une carte de résident permanent des États-Unis ?</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Possédez-vous une carte de résident permanent des États-Unis ? <span className="text-red-500">*</span></label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
                             <input
@@ -1044,7 +1044,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div> */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">No d'app/unité</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">No d'app/unité <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.noAppUnite}
@@ -1060,7 +1060,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Nom de rue</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Nom de rue <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.nomRue}
@@ -1068,7 +1068,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Ville/Village <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.villeVillage}
@@ -1077,7 +1077,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Pays ou territoire <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.pays}
@@ -1086,7 +1086,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Province/État</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Province/État <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.provinceEtat}
@@ -1094,7 +1094,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Code postal</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Code postal </label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.codePostal}
@@ -1102,7 +1102,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">District</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">District <span className="text-red-500">*</span></label>
                         <input
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.formulaireVisa.coordonnees.adressePostaleActuelle.district}
@@ -1117,7 +1117,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 {/* Nouvelle question avec checkbox Oui/Non */}
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        L'adresse du domicile est-elle identique à l'adresse postale actuelle ?
+                        L'adresse du domicile est-elle identique à l'adresse postale actuelle ? <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
@@ -1213,7 +1213,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             {/* Première colonne - Type et checkboxes */}
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Type de téléphone</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Type de téléphone <span className="text-red-500">*</span></label>
                                     <select
                                         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                         value={formData.formulaireVisa.coordonnees.telephones.type}
@@ -1274,7 +1274,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                 {/* Indicatif de pays (conditionnel) */}
                                 {!formData.formulaireVisa.coordonnees.telephones.isCanada && (
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Indicatif de pays</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Indicatif de pays <span className="text-red-500">*</span></label>
                                         <input
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                             value={formData.formulaireVisa.coordonnees.telephones.indicatifPays}
@@ -1288,7 +1288,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                                 {/* Numéro de téléphone */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Numéro de téléphone
+                                        Numéro de téléphone <span className="text-red-500">*</span>
                                         {formData.formulaireVisa.coordonnees.telephones.isCanada && (
                                             <span className="text-xs text-gray-500 ml-1">(sans indicatif)</span>
                                         )}
@@ -1311,7 +1311,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                             {/* Première colonne - Type et checkboxes */}
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Type de téléphone</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Type de téléphone </label>
                                     <select
                                         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                         value={formData.formulaireVisa.coordonnees.autreTelephones.type}
@@ -1471,7 +1471,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 </div> */}
 
                 {/* Adresse électronique */}
-                <h4 className="text-md font-medium text-gray-800 mb-2">5. Adresse électronique</h4>
+                <h4 className="text-md font-medium text-gray-800 mb-2">5. Adresse électronique <span className="text-red-500">*</span></h4>
                 <div className="mb-4">
                     <input
                         type="email"
@@ -1489,7 +1489,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Avez-vous reçu une éducation postsecondaire (y compris l'université, le collège ou une formation en apprentissage)?
+                        Avez-vous reçu une éducation postsecondaire (y compris l'université, le collège ou une formation en apprentissage)? <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center">
@@ -1677,7 +1677,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                     y compris si vous avez occupé des postes gouvernementaux (par exemple fonctionnaire, juge,
                     agent de police, maire, député, administrateur d'hôpital, employé d'une agence de sécurité).
                     Ne pas laisser de lacunes. Si vous êtes à la retraite, sans travail ou non aux études, veuillez l'indiquer.
-                    Dans le cas des retraités, veuillez fournir des détails sur les 10 années précédant votre retraite.
+                    Dans le cas des retraités, veuillez fournir des détails sur les 10 années précédant votre retraite.     <span className="text-red-500">*</span>
                 </p>
 
                 <div className="space-y-4">
@@ -1870,7 +1870,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
 
                 {/* Santé */}
                 <div className="mb-6">
-                    <h4 className="text-md font-medium text-gray-800 mb-3">Santé</h4>
+                    <h4 className="text-md font-medium text-gray-800 mb-3">Santé <span className="text-red-500">*</span></h4>
                     <div className="space-y-3">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1900,7 +1900,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous un trouble physique ou mental qui nécessite des soins sociaux ou médicaux au Canada ?
+                                Avez-vous un trouble physique ou mental qui nécessite des soins sociaux ou médicaux au Canada ? <span className="text-red-500">*</span>
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -1945,7 +1945,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                     <div className="space-y-3">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Êtes-vous resté(e) au Canada après l'expiration de votre statut ?
+                                Êtes-vous resté(e) au Canada après l'expiration de votre statut ? <span className="text-red-500">*</span>
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -1971,7 +1971,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous déjà été refusé(e) un visa ou permis canadien ?
+                                Avez-vous déjà été refusé(e) un visa ou permis canadien ? <span className="text-red-500">*</span>
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -1997,7 +1997,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous déjà fait une demande d'entrée au Canada ?
+                                Avez-vous déjà fait une demande d'entrée au Canada ? <span className="text-red-500">*</span>
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -2043,7 +2043,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                     <div className="space-y-3">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous déjà commis, été accusé(e) ou condamné(e) pour une infraction pénale ?
+                                Avez-vous déjà commis, été accusé(e) ou condamné(e) pour une infraction pénale ? <span className="text-red-500">*</span>
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -2087,7 +2087,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                     <div className="space-y-3">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous déjà fait partie d'un service militaire ou de police ?
+                                Avez-vous déjà fait partie d'un service militaire ou de police ? <span className="text-red-500">*</span>
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -2131,7 +2131,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                     <div className="space-y-3">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous déjà été membre ou affilié à un groupe ou organisation qui a commis ou prôné des actes violents ?
+                                Avez-vous déjà été membre ou affilié à un groupe ou organisation qui a commis ou prôné des actes violents ? <span className="text-red-500">*</span>
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -2164,7 +2164,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                     <div className="space-y-3">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Avez-vous déjà été témoin ou participé à des mauvais traitements ou à des crimes de guerre ?
+                                Avez-vous déjà été témoin ou participé à des mauvais traitements ou à des crimes de guerre ? <span className="text-red-500">*</span>
                             </label>
                             <div className="flex gap-4 mt-1">
                                 <label className="flex items-center">
@@ -2202,7 +2202,7 @@ export const PersonalInfoStep = ({ formData, handleChange, handleArrayChange, ad
                 </p>
 
                 <p className="text-sm font-medium text-gray-700 mb-3">
-                    Acceptez-vous que CIC, ou un organisme mandaté par CIC, communique avec vous dans l'avenir? (O/N)
+                    Acceptez-vous que CIC, ou un organisme mandaté par CIC, communique avec vous dans l'avenir? (O/N) <span className="text-red-500">*</span>
                 </p>
 
                 <div className="flex gap-6">

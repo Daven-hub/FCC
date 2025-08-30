@@ -24,7 +24,7 @@ const CombinedApplicationForme = () => {
   });
   const [submitStatus, setSubmitStatus] = useState("Confirmer et soumettre");
   const [uploadProgress, setUploadProgress] = useState({});
-//   const [submittedData, setSubmittedData] = useState(null);
+  //   const [submittedData, setSubmittedData] = useState(null);
   const [showRecipientModal, setShowRecipientModal] = useState(false);
 
   useEffect(() => {
@@ -197,7 +197,7 @@ const CombinedApplicationForme = () => {
     const document = formData.documents[sectionIndex].corps[docIndex];
     const doc = formData.formulaireVisa.donneesPersonnelles.nomComplet;
     const titre = document.titre.toLowerCase().replace(/[' ]/g, "_"); // Nettoyer le titre pour le nom de fichier
-    const type = doc.nom.toLowerCase()+"_"+doc.prenoms.toLowerCase();
+    const type = doc.nom.toLowerCase() + "_" + doc.prenoms.toLowerCase();
 
     // Créer le nouveau nom de fichier
     const originalExtension = file.name.split(".").pop();
@@ -341,8 +341,31 @@ const CombinedApplicationForme = () => {
     switch (stepIndex) {
       case 0: // Informations personnelles
         return (
-          formData.formulaireVisa.informationsGenerales.servi !== ""
-          // formData.formulaireVisa.informationsGenerales.visa !== ""
+          formData.formulaireVisa.informationsGenerales.servi !== "" &&
+          formData.formulaireVisa.informationsGenerales.visa !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.nomComplet.nom !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.nomComplet.prenoms !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.dateNaissance !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.citoyennete !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.lieuNaissance.pays !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.lieuNaissance.villeVillage !== "" &&
+          formData.formulaireVisa.donneesPersonnelles.sexe !== "" &&
+          formData.formulaireVisa.passeport.dateDelivrance !== "" &&
+          formData.formulaireVisa.passeport.dateExpiration !== "" &&
+          formData.formulaireVisa.passeport.numero !== "" &&
+          formData.formulaireVisa.passeport.paysDelivrance !== "" &&
+          formData.formulaireVisa.pieceIdentiteNationale.possede !== undefined &&
+          formData.formulaireVisa.coordonnees.adressePostaleActuelle.pays !== "" &&
+          formData.formulaireVisa.coordonnees.adressePostaleActuelle.villeVillage !== "" &&
+          formData.formulaireVisa.coordonnees.adressePostaleActuelle.district !== "" &&
+          formData.formulaireVisa.coordonnees.adresseDomicile.identiqueAdressePostale !== undefined &&
+          formData.formulaireVisa.coordonnees.telephones.numero !== "" &&
+          formData.formulaireVisa.coordonnees.telephones.indicatifPays !== "" &&
+          formData.formulaireVisa.coordonnees.adresseElectronique !== ""  &&
+          formData.formulaireVisa.etatMatrimonial.etat !== "" &&
+          formData.formulaireVisa.mariage.etat !== ""
+
+ 
         );
 
       case 1: // Antécédents et historique
@@ -356,13 +379,13 @@ const CombinedApplicationForme = () => {
 
       case 2: // Informations familiales
         return (
-          // formData.familyInfo.typeDemande !== ""
-          formData.familyInfo.applicant.name !== ""
-          // formData.familyInfo.applicant.dob !== "" &&
-          // formData.familyInfo.applicant.country !== "" &&
-          // formData.familyInfo.applicant.occupation !== "" &&
-          // formData.familyInfo.applicant.maritalStatus !== "" &&
-          // formData.familyInfo.applicant.address !== ""
+          formData.familyInfo.typeDemande !== "" &&
+          formData.familyInfo.applicant.name !== "" &&
+          formData.familyInfo.applicant.dob !== "" &&
+          formData.familyInfo.applicant.country !== "" &&
+          formData.familyInfo.applicant.occupation !== "" &&
+          formData.familyInfo.applicant.maritalStatus !== "" &&
+          formData.familyInfo.applicant.address !== ""
         );
 
       case 3: // Documents
@@ -406,42 +429,40 @@ const CombinedApplicationForme = () => {
       formDataToSend.append(
         "pdf",
         blob,
-        `${
-          "doc_de_" +
-          formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
-          "_" +
-          formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
+        `${"doc_de_" +
+        formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
+        "_" +
+        formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
         }.pdf`
       );
       formDataToSend.append("to", formData?.selectedRecipient);
       formDataToSend.append(
         "name",
-        `${
-          formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
-          "_" +
-          formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
+        `${formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.nom +
+        "_" +
+        formData?.formulaireVisa?.donneesPersonnelles?.nomComplet?.prenoms
         }`
       );
       setSubmitStatus("preparation des docs...");
       formData?.documents.forEach((section, sIndex) => {
         section?.corps.forEach((item, cIndex) => {
-            if(item.file){
-                formDataToSend.append("docs[]",item.file)
-            }
+          if (item.file) {
+            formDataToSend.append("docs[]", item.file)
+          }
         })
-    });
+      });
 
-    //   console.log([...formDataToSend.entries()]);
+      //   console.log([...formDataToSend.entries()]);
       // console.log(formData);
 
       setSubmitStatus("envoi des documents");
-      const result= await submitCombinedApplication(formDataToSend);
+      const result = await submitCombinedApplication(formDataToSend);
       // console.log(result)
-      if(result.status==="success"){
+      if (result.status === "success") {
         setShowRecipientModal(false);
         showSuccessToast("Soumission réussie");
         setSubmitStatus("Confirmer et soumettre");
-      }else{
+      } else {
         showErrorToast("Soumission échouée");
         setSubmitStatus("Confirmer et soumettre");
       }
