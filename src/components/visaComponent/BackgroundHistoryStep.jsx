@@ -810,7 +810,7 @@ export const BackgroundHistoryStep = ({ formData, setFormData, handleArrayChange
                             })}
                             className="flex items-center text-primary hover:text-primary-dark"
                         >
-                            <FiPlus className="mr-1" /> Ajouter un refus
+                            <FiPlus className="mr-1" /> Ajouter un voyage
                         </button>
                     </div>
                 )}
